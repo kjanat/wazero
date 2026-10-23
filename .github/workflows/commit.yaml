@@ -1,5 +1,6 @@
 name: Test
 on:
+  workflow_dispatch:
   pull_request:
     branches: [main]
     paths-ignore:  # ignore docs as they are built with Netlify.
