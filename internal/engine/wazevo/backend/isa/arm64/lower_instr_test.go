@@ -6,11 +6,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/backend"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/backend/regalloc"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/ssa"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/wazevoapi"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/engine/wazevo/backend"
+	"github.com/kjanat/wazero/internal/engine/wazevo/backend/regalloc"
+	"github.com/kjanat/wazero/internal/engine/wazevo/ssa"
+	"github.com/kjanat/wazero/internal/engine/wazevo/wazevoapi"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func TestMachine_LowerConditionalBranch(t *testing.T) {
@@ -231,7 +231,6 @@ func TestMachine_LowerSingleBranch(t *testing.T) {
 			instructions: []string{"ret"},
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			ctx, b, m := newSetupWithMockContext()
 			instr := tc.setup(ctx, b, m)
@@ -1355,7 +1354,6 @@ swpalb w3?, w4?, x2?
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			_, _, m := newSetupWithMockContext()
 			var typ ssa.Type
@@ -1443,7 +1441,6 @@ casalb w2?, w3?, x1?
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			_, _, m := newSetupWithMockContext()
 			var typ ssa.Type
@@ -1529,7 +1526,6 @@ ldarb w2?, x1?
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			_, _, m := newSetupWithMockContext()
 			var typ ssa.Type
@@ -1613,7 +1609,6 @@ stlrb w2?, x1?
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			_, _, m := newSetupWithMockContext()
 			var typ ssa.Type

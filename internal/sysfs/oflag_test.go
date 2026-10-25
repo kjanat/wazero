@@ -4,8 +4,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/tetratelabs/wazero/experimental/sys"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/experimental/sys"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 // Test_toOsOpenFlag doesn't use subtests to reduce volume of verbose output,

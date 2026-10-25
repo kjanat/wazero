@@ -1,8 +1,8 @@
 package arm64
 
 import (
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/backend/regalloc"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/ssa"
+	"github.com/kjanat/wazero/internal/engine/wazevo/backend/regalloc"
+	"github.com/kjanat/wazero/internal/engine/wazevo/ssa"
 )
 
 // lowerConstant allocates a new VReg and inserts the instruction to load the constant value.
@@ -192,7 +192,7 @@ func const16bitAligned(v int64) (ret int) {
 func (m *machine) load64bitConst(c int64, dst regalloc.VReg) {
 	var bits [4]uint64
 	var zeros, negs int
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		bits[i] = uint64(c) >> uint(i*16) & 0xffff
 		if v := bits[i]; v == 0 {
 			zeros++

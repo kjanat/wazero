@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"slices"
 	"sort"
 	"strings"
 	"sync"
@@ -186,8 +187,8 @@ entry:
 		files := lineReader.Files()
 		// inlinedRoutines contain the inlined call information in the reverse order (children is higher than parent),
 		// so we traverse the reverse order and emit the inlined calls.
-		for i := len(inlinedRoutines) - 1; i >= 0; i-- {
-			inlined := inlinedRoutines[i]
+		for i, inlined := range slices.Backward(inlinedRoutines) {
+
 			fileIndex, ok := inlined.Val(dwarf.AttrCallFile).(int64)
 			if !ok {
 				return

@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tetratelabs/wazero/experimental/sys"
+	"github.com/kjanat/wazero/experimental/sys"
 )
 
 func BenchmarkFsFileUtimesNs(b *testing.B) {
@@ -50,8 +50,6 @@ func BenchmarkFsFileRead(b *testing.B) {
 	buf := make([]byte, 3)
 
 	for _, bc := range benches {
-		bc := bc
-
 		b.Run(bc.name, func(b *testing.B) {
 			name := "wazero.txt"
 			f, errno := OpenFSFile(bc.fs, name, sys.O_RDONLY, 0)

@@ -16,10 +16,10 @@ import (
 	"context"
 	"strings"
 
-	"github.com/tetratelabs/wazero"
-	"github.com/tetratelabs/wazero/api"
-	internal "github.com/tetratelabs/wazero/internal/emscripten"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero"
+	"github.com/kjanat/wazero/api"
+	internal "github.com/kjanat/wazero/internal/emscripten"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 const i32 = wasm.ValueTypeI32

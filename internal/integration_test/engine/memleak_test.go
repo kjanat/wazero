@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tetratelabs/wazero"
-	"github.com/tetratelabs/wazero/internal/platform"
+	"github.com/kjanat/wazero"
+	"github.com/kjanat/wazero/internal/platform"
 )
 
 func TestMemoryLeak(t *testing.T) {
@@ -52,7 +52,7 @@ func testMemoryLeakInstantiateRuntimeAndModule() error {
 
 	hostBuilder := r.NewHostModuleBuilder("test")
 
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		hostBuilder.NewFunctionBuilder().WithFunc(func() uint32 { return uint32(i) }).Export(strconv.Itoa(i))
 	}
 

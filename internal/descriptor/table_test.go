@@ -3,9 +3,9 @@ package descriptor_test
 import (
 	"testing"
 
-	"github.com/tetratelabs/wazero/internal/descriptor"
-	"github.com/tetratelabs/wazero/internal/sys"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/descriptor"
+	"github.com/kjanat/wazero/internal/sys"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func TestFileTable(t *testing.T) {
@@ -146,7 +146,7 @@ func Test_sizeOfTable(t *testing.T) {
 		{
 			name: "32 inserts",
 			operation: func(table *descriptor.Table[int32, string]) {
-				for i := 0; i < 32; i++ {
+				for range 32 {
 					table.Insert("a")
 				}
 			},
@@ -155,7 +155,7 @@ func Test_sizeOfTable(t *testing.T) {
 		{
 			name: "257 inserts",
 			operation: func(table *descriptor.Table[int32, string]) {
-				for i := 0; i < 257; i++ {
+				for range 257 {
 					table.Insert("a")
 				}
 			},
@@ -185,7 +185,7 @@ func Test_sizeOfTable(t *testing.T) {
 		{
 			name: "insert at until 320",
 			operation: func(table *descriptor.Table[int32, string]) {
-				for i := int32(0); i < 320; i++ {
+				for i := range int32(320) {
 					table.InsertAt("a", i)
 				}
 			},

@@ -5,10 +5,10 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/backend/regalloc"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/ssa"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/wazevoapi"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/engine/wazevo/backend/regalloc"
+	"github.com/kjanat/wazero/internal/engine/wazevo/ssa"
+	"github.com/kjanat/wazero/internal/engine/wazevo/wazevoapi"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func Test_calleeSavedVRegs(t *testing.T) {
@@ -518,7 +518,6 @@ L2:
 `,
 		},
 	} {
-		tc := tc
 		t.Run(tc.exp, func(t *testing.T) {
 			_, _, m := newSetupWithMockContext()
 			m.nextLabel = 1

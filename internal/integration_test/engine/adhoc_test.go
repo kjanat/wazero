@@ -14,21 +14,21 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/tetratelabs/wazero"
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/experimental"
-	"github.com/tetratelabs/wazero/experimental/logging"
-	"github.com/tetratelabs/wazero/experimental/table"
-	"github.com/tetratelabs/wazero/internal/leb128"
-	"github.com/tetratelabs/wazero/internal/platform"
-	"github.com/tetratelabs/wazero/internal/testing/binaryencoding"
-	"github.com/tetratelabs/wazero/internal/testing/proxy"
-	"github.com/tetratelabs/wazero/internal/testing/require"
-	"github.com/tetratelabs/wazero/internal/wasm"
-	"github.com/tetratelabs/wazero/internal/wasm/binary"
-	"github.com/tetratelabs/wazero/internal/wasmdebug"
-	"github.com/tetratelabs/wazero/internal/wasmruntime"
-	"github.com/tetratelabs/wazero/sys"
+	"github.com/kjanat/wazero"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/experimental"
+	"github.com/kjanat/wazero/experimental/logging"
+	"github.com/kjanat/wazero/experimental/table"
+	"github.com/kjanat/wazero/internal/leb128"
+	"github.com/kjanat/wazero/internal/platform"
+	"github.com/kjanat/wazero/internal/testing/binaryencoding"
+	"github.com/kjanat/wazero/internal/testing/proxy"
+	"github.com/kjanat/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/wasm"
+	"github.com/kjanat/wazero/internal/wasm/binary"
+	"github.com/kjanat/wazero/internal/wasmdebug"
+	"github.com/kjanat/wazero/internal/wasmruntime"
+	"github.com/kjanat/wazero/sys"
 )
 
 type testCase struct {
@@ -99,8 +99,6 @@ var memoryCapacityPages = uint32(2)
 
 func runAllTests(t *testing.T, tests map[string]testCase, config wazero.RuntimeConfig, isWazevo bool) {
 	for name, tc := range tests {
-		name := name
-		tc := tc
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			tc.f(t, wazero.NewRuntimeWithConfig(testCtx, config))
@@ -457,7 +455,7 @@ func testHostFunctionContextParameter(t *testing.T, r wazero.Runtime) {
 	importingName := t.Name() + "-importing"
 
 	var importing api.Module
-	fns := map[string]interface{}{
+	fns := map[string]any{
 		"ctx": func(ctx context.Context, p uint32) uint32 {
 			require.Equal(t, testCtx, ctx)
 			return p + 1
@@ -498,7 +496,7 @@ func testHostFunctionNumericParameter(t *testing.T, r wazero.Runtime) {
 	importedName := t.Name() + "-imported"
 	importingName := t.Name() + "-importing"
 
-	fns := map[string]interface{}{
+	fns := map[string]any{
 		"i32": func(ctx context.Context, p uint32) uint32 {
 			return p + 1
 		},
@@ -900,7 +898,7 @@ func testMultipleInstantiation(t *testing.T, r wazero.Runtime) {
 	}()
 
 	// Instantiate multiple modules with the same source (*CompiledModule).
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		module, err := r.InstantiateModule(testCtx, compiled, wazero.NewModuleConfig().WithName(strconv.Itoa(i)))
 		require.NoError(t, err)
 
@@ -1280,7 +1278,6 @@ wasm stack trace:
 	host_importer.call_host_div(i32) i32
 	main.main(i32) i32`},
 		} {
-			tc := tc
 			t.Run(tc.name, func(t *testing.T) {
 				mainFn := inst.ExportedFunction("main")
 				require.NotNil(t, mainFn)
@@ -1694,7 +1691,7 @@ func manyParamsResultsMod() (bin []byte, params []uint64) {
 	callManyConstsType := wasm.FunctionType{}
 	pickLastVectorType := wasm.FunctionType{Results: []wasm.ValueType{v128}}
 	callManyConstsAndPickLastVectorType := wasm.FunctionType{Results: []wasm.ValueType{v128}}
-	for i := 0; i < 20; i++ {
+	for range 20 {
 		swapperType.Params = append(swapperType.Params, i32, i64, f32, f64, v128)
 		swapperType.Results = append(swapperType.Results, v128, f64, f32, i64, i32)
 		mainType.Params = append(mainType.Params, i32, i64, f32, f64, v128)
@@ -1707,7 +1704,7 @@ func manyParamsResultsMod() (bin []byte, params []uint64) {
 	}
 
 	var mainBody []byte
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		mainBody = append(mainBody, wasm.OpcodeLocalGet)
 		mainBody = append(mainBody, leb128.EncodeUint32(uint32(i))...)
 	}
@@ -1716,7 +1713,7 @@ func manyParamsResultsMod() (bin []byte, params []uint64) {
 	mainBody = append(mainBody, wasm.OpcodeEnd)
 
 	var swapperBody []byte
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		swapperBody = append(swapperBody, wasm.OpcodeLocalGet)
 		swapperBody = append(swapperBody, leb128.EncodeUint32(uint32(99-i))...)
 	}
@@ -2302,7 +2299,7 @@ func testCloseTableExportingModule(t *testing.T, r wazero.Runtime) {
 	runtime.GC()
 
 	// Call call_indirect multiple times, should be safe.
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		_, err = main.Call(ctx, 0)
 		// Null function call
 		require.Error(t, err)
@@ -2389,7 +2386,7 @@ func testCloseTableImportingModule(t *testing.T, r wazero.Runtime) {
 	require.NotNil(t, main)
 
 	// Call call_indirect multiple times, should be safe.
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		_, err = main.Call(ctx, 0)
 		// Null function call
 		require.Error(t, err)
@@ -2423,7 +2420,7 @@ func testHugeBinary(t *testing.T, r wazero.Runtime) {
 		t.Skip("skipping testHugeBinary in short mode since it takes a long time")
 	}
 	var addFuncBody []byte
-	for i := 0; i < 1024; i++ {
+	for i := range 1024 {
 		addFuncBody = append(addFuncBody, wasm.OpcodeLocalGet, 0)
 		addFuncBody = append(addFuncBody, wasm.OpcodeI32Const)
 		addFuncBody = append(addFuncBody, leb128.EncodeInt32(int32(i))...)
@@ -2445,7 +2442,7 @@ func testHugeBinary(t *testing.T, r wazero.Runtime) {
 	// Create a Code section with 20000 functions.
 	codes := make([]wasm.Code, functionCount)
 	codes[0] = wasm.Code{Body: firstFunctionBody}
-	for i := 0; i < functionCount-2; i++ {
+	for i := range functionCount - 2 {
 		codes[i+1] = wasm.Code{Body: addFuncBody}
 	}
 	codes[functionCount-1] = wasm.Code{Body: lastFunctionBody}

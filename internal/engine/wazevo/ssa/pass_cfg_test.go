@@ -1,10 +1,10 @@
 package ssa
 
 import (
-	"sort"
+	"slices"
 	"testing"
 
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func TestBuilder_passCalculateImmediateDominators(t *testing.T) {
@@ -523,7 +523,6 @@ func TestBuilder_passCalculateImmediateDominators(t *testing.T) {
 			expLoops: map[BasicBlockID]struct{}{1: {}},
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			b := constructGraphFromEdges(tc.edges)
 			passCalculateImmediateDominators(b)
@@ -644,7 +643,6 @@ func TestBuildLoopNestingForest(t *testing.T) {
 			},
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			b := constructGraphFromEdges(tc.edges)
 			// buildLoopNestingForest requires passCalculateImmediateDominators to be done.
@@ -661,9 +659,7 @@ func TestBuildLoopNestingForest(t *testing.T) {
 			for _, root := range b.loopNestingForestRoots {
 				forestRoots = append(forestRoots, root.(*basicBlock).id)
 			}
-			sort.Slice(forestRoots, func(i, j int) bool {
-				return forestRoots[i] < forestRoots[j]
-			})
+			slices.Sort(forestRoots)
 			require.Equal(t, tc.expLNF.roots, forestRoots)
 
 			for expBlkID, blk := range blocks {
@@ -672,9 +668,7 @@ func TestBuildLoopNestingForest(t *testing.T) {
 				for _, child := range blk.loopNestingForestChildren.View() {
 					actualChildren = append(actualChildren, child.(*basicBlock).id)
 				}
-				sort.Slice(actualChildren, func(i, j int) bool {
-					return actualChildren[i] < actualChildren[j]
-				})
+				slices.Sort(actualChildren)
 				require.Equal(t, expChildren, actualChildren, "block %d", expBlkID)
 			}
 		})
@@ -828,7 +822,6 @@ func TestDominatorTree(t *testing.T) {
 			},
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			b := constructGraphFromEdges(tc.edges)
 			// buildDominatorTree requires passCalculateImmediateDominators to be done.

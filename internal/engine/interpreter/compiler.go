@@ -7,9 +7,9 @@ import (
 	"math"
 	"strings"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/internal/leb128"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/internal/leb128"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 type controlFrameKind byte
@@ -338,7 +338,7 @@ func (c *compiler) Next() (*compilationResult, error) {
 	c.result.UsesMemory = false
 	// Clears the existing entries in LabelCallers.
 	for frameID := uint32(0); frameID <= c.currentFrameID; frameID++ {
-		for k := labelKind(0); k < labelKindNum; k++ {
+		for k := range labelKindNum {
 			delete(c.result.LabelCallers, newLabel(k, frameID))
 		}
 	}
@@ -2109,7 +2109,7 @@ operatorSwitch:
 		case wasm.OpcodeVecV128i8x16Shuffle:
 			c.pc++
 			lanes := make([]uint64, 16)
-			for i := uint64(0); i < 16; i++ {
+			for i := range uint64(16) {
 				lanes[i] = uint64(c.body[c.pc+i])
 			}
 			op := newOperationV128Shuffle(lanes)

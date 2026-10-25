@@ -14,7 +14,7 @@ import (
 	"math"
 	"strings"
 
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/wazevoapi"
+	"github.com/kjanat/wazero/internal/engine/wazevo/wazevoapi"
 )
 
 // NewAllocator returns a new Allocator.
@@ -394,7 +394,7 @@ const (
 func (a *Allocator[I, B, F]) livenessAnalysis(f F) {
 	s := &a.state
 
-	for i := VRegID(0); i < vRegIDReservedForRealNum; i++ {
+	for i := range vRegIDReservedForRealNum {
 		s.getOrAllocateVRegState(VReg(i).SetRealReg(RealReg(i)))
 	}
 
@@ -417,7 +417,7 @@ func (a *Allocator[I, B, F]) livenessAnalysis(f F) {
 			flagLive    = true
 		)
 		ns := blk.Succs()
-		for i := 0; i < ns; i++ {
+		for i := range ns {
 			succ := f.Succ(blk, i)
 			if succ == nilBlk {
 				continue
@@ -481,7 +481,7 @@ func (a *Allocator[I, B, F]) livenessAnalysis(f F) {
 	}
 
 	nrs := f.LoopNestingForestRoots()
-	for i := 0; i < nrs; i++ {
+	for i := range nrs {
 		root := f.LoopNestingForestRoot(i)
 		a.loopTreeDFS(f, root)
 	}
@@ -512,7 +512,7 @@ func (a *Allocator[I, B, F]) loopTreeDFS(f F, entry B) {
 
 		var siblingAddedView []*vrState[I, B, F]
 		cn := loop.LoopNestingForestChildren()
-		for i := 0; i < cn; i++ {
+		for i := range cn {
 			child := f.LoopNestingForestChild(loop, i)
 			childID := child.ID()
 			childInfo := a.getOrAllocateBlockState(childID)
@@ -606,7 +606,7 @@ func (a *Allocator[I, B, F]) finalizeStartReg(f F, blk B) {
 		currentBlkState.startFromPredIndex = 0
 	default:
 		// TODO: there should be some better heuristic to choose the predecessor.
-		for i := 0; i < preds; i++ {
+		for i := range preds {
 			predID := f.Pred(blk, i).ID()
 			if _predState := a.getOrAllocateBlockState(predID); _predState.visited {
 				predState = _predState
@@ -928,7 +928,7 @@ func (a *Allocator[I, B, F]) allocBlock(f F, blk B) {
 func (a *Allocator[I, B, F]) releaseCallerSavedRegs(addrReg RealReg) {
 	s := &a.state
 
-	for allocated := RealReg(0); allocated < 64; allocated++ {
+	for allocated := range RealReg(64) {
 		if allocated == addrReg { // If this is the call indirect, we should not touch the addr register.
 			continue
 		}
@@ -971,7 +971,7 @@ func (a *Allocator[I, B, F]) fixMergeState(f F, blk B) {
 	s.currentBlockID = bID
 	a.updateLiveInVRState(blkSt)
 
-	for i := 0; i < preds; i++ {
+	for i := range preds {
 		if i == blkSt.startFromPredIndex {
 			continue
 		}
@@ -994,7 +994,7 @@ func (a *Allocator[I, B, F]) fixMergeState(f F, blk B) {
 			floatTmp = FromRealReg(floatFree, RegTypeFloat)
 		}
 
-		for r := RealReg(0); r < 64; r++ {
+		for r := range RealReg(64) {
 			desiredVReg := desiredOccupants.get(r)
 			if desiredVReg == nil {
 				continue
@@ -1147,7 +1147,7 @@ func (a *Allocator[I, B, F]) scheduleSpill(f F, vs *vrState[I, B, F]) {
 	}
 	for pos != definingBlk {
 		st := a.getOrAllocateBlockState(pos.ID())
-		for rr := RealReg(0); rr < 64; rr++ {
+		for rr := range RealReg(64) {
 			if vs := st.startRegs.get(rr); vs != nil && vs.v == v {
 				r = rr
 				// Already in the register, so we can place the spill at the beginning of the block.

@@ -9,13 +9,13 @@ import (
 	"strings"
 	"unsafe"
 
-	"github.com/tetratelabs/wazero/api"
-	experimentalsys "github.com/tetratelabs/wazero/experimental/sys"
-	socketapi "github.com/tetratelabs/wazero/internal/sock"
-	"github.com/tetratelabs/wazero/internal/sys"
-	"github.com/tetratelabs/wazero/internal/wasip1"
-	"github.com/tetratelabs/wazero/internal/wasm"
-	sysapi "github.com/tetratelabs/wazero/sys"
+	"github.com/kjanat/wazero/api"
+	experimentalsys "github.com/kjanat/wazero/experimental/sys"
+	socketapi "github.com/kjanat/wazero/internal/sock"
+	"github.com/kjanat/wazero/internal/sys"
+	"github.com/kjanat/wazero/internal/wasip1"
+	"github.com/kjanat/wazero/internal/wasm"
+	sysapi "github.com/kjanat/wazero/sys"
 )
 
 // fdAdvise is the WASI function named FdAdviseName which provides file
@@ -979,11 +979,7 @@ func maxDirents(dirents []experimentalsys.Dirent, bufLen uint32) (bufToWrite uin
 			// we need to write DirentSize(24) + 4096 bytes to write the entry.
 			// In this case, we only write up to DirentSize(24) to allow the
 			// caller to resize.
-			if lenRemaining >= wasip1.DirentSize {
-				truncatedLen = wasip1.DirentSize
-			} else {
-				truncatedLen = lenRemaining
-			}
+			truncatedLen = min(lenRemaining, wasip1.DirentSize)
 			bufToWrite += truncatedLen
 			break
 		}

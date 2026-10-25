@@ -8,14 +8,14 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/experimental"
-	"github.com/tetratelabs/wazero/internal/filecache"
-	"github.com/tetratelabs/wazero/internal/platform"
-	"github.com/tetratelabs/wazero/internal/testing/binaryencoding"
-	"github.com/tetratelabs/wazero/internal/testing/require"
-	"github.com/tetratelabs/wazero/internal/wasm"
-	"github.com/tetratelabs/wazero/sys"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/experimental"
+	"github.com/kjanat/wazero/internal/filecache"
+	"github.com/kjanat/wazero/internal/platform"
+	"github.com/kjanat/wazero/internal/testing/binaryencoding"
+	"github.com/kjanat/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/wasm"
+	"github.com/kjanat/wazero/sys"
 )
 
 type arbitrary struct{}
@@ -39,7 +39,7 @@ func (h *HostContext) Done() <-chan struct{} { return nil }
 
 func (h *HostContext) Err() error { return nil }
 
-func (h *HostContext) Value(key interface{}) interface{} { return nil }
+func (h *HostContext) Value(key any) any { return nil }
 
 func TestRuntime_CompileModule(t *testing.T) {
 	tests := []struct {
@@ -830,8 +830,7 @@ func TestNewRuntime_concurrent(t *testing.T) {
 		configs[1] = NewRuntimeConfigInterpreter().WithCompilationCache(c)
 	}
 	wg.Add(num)
-	for i := 0; i < num; i++ {
-		i := i
+	for i := range num {
 		go func() {
 			defer wg.Done()
 			r := NewRuntimeWithConfig(testCtx, configs[i%2])

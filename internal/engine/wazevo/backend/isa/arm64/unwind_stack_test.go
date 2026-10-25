@@ -5,7 +5,7 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func TestUnwindStack(t *testing.T) {
@@ -98,7 +98,6 @@ func TestUnwindStack(t *testing.T) {
 			exp: []uintptr{0xaa, 0xbb, 0xcc},
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			buf := make([]byte, len(tc.contents)*8+1)
 			for i, v := range tc.contents {

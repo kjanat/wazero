@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/tetratelabs/wazero/internal/testing/maintester"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/testing/maintester"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 // Test_main ensures the following will work:
@@ -18,7 +18,6 @@ import (
 //	go run cat.go /test.txt
 func Test_main(t *testing.T) {
 	for _, toolchain := range []string{"cargo-wasi", "tinygo", "zig", "zig-cc"} {
-		toolchain := toolchain
 		t.Run(toolchain, func(t *testing.T) {
 			t.Setenv("TOOLCHAIN", toolchain)
 			stdout, stderr := maintester.TestMain(t, main, "cat", "test.txt")
@@ -30,7 +29,7 @@ func Test_main(t *testing.T) {
 
 // Test_cli ensures the following will work:
 //
-// go run github.com/tetratelabs/wazero/cmd/wazero run -mount=testdata:/ cat.wasm /test.txt
+// go run github.com/kjanat/wazero/cmd/wazero run -mount=testdata:/ cat.wasm /test.txt
 func Test_cli(t *testing.T) {
 	tests := []struct {
 		toolchain string

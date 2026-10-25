@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/tetratelabs/wazero/internal/leb128"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero/internal/leb128"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 const (
@@ -83,7 +83,7 @@ func decodeFunctionNames(r *bytes.Reader) (wasm.NameMap, error) {
 	}
 
 	result := make(wasm.NameMap, functionCount)
-	for i := uint32(0); i < functionCount; i++ {
+	for i := range functionCount {
 		functionIndex, err := decodeFunctionIndex(r, subsectionIDFunctionNames)
 		if err != nil {
 			return nil, err
@@ -105,7 +105,7 @@ func decodeLocalNames(r *bytes.Reader) (wasm.IndirectNameMap, error) {
 	}
 
 	result := make(wasm.IndirectNameMap, functionCount)
-	for i := uint32(0); i < functionCount; i++ {
+	for i := range functionCount {
 		functionIndex, err := decodeFunctionIndex(r, subsectionIDLocalNames)
 		if err != nil {
 			return nil, err
@@ -117,7 +117,7 @@ func decodeLocalNames(r *bytes.Reader) (wasm.IndirectNameMap, error) {
 		}
 
 		locals := make(wasm.NameMap, localCount)
-		for j := uint32(0); j < localCount; j++ {
+		for j := range localCount {
 			localIndex, _, err := leb128.DecodeUint32(r)
 			if err != nil {
 				return nil, fmt.Errorf("failed to read a local index of function[%d]: %w", functionIndex, err)

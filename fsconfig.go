@@ -2,10 +2,11 @@ package wazero
 
 import (
 	"io/fs"
+	"maps"
 
-	experimentalsys "github.com/tetratelabs/wazero/experimental/sys"
-	"github.com/tetratelabs/wazero/internal/sys"
-	"github.com/tetratelabs/wazero/internal/sysfs"
+	experimentalsys "github.com/kjanat/wazero/experimental/sys"
+	"github.com/kjanat/wazero/internal/sys"
+	"github.com/kjanat/wazero/internal/sysfs"
 )
 
 // FSConfig configures filesystem paths the embedding host allows the wasm
@@ -155,9 +156,7 @@ func (c *fsConfig) clone() *fsConfig {
 	ret.guestPaths = make([]string, 0, len(c.guestPaths))
 	ret.guestPaths = append(ret.guestPaths, c.guestPaths...)
 	ret.guestPathToFS = make(map[string]int, len(c.guestPathToFS))
-	for key, value := range c.guestPathToFS {
-		ret.guestPathToFS[key] = value
-	}
+	maps.Copy(ret.guestPathToFS, c.guestPathToFS)
 	return &ret
 }
 

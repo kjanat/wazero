@@ -8,7 +8,7 @@ import (
 	"math"
 	"reflect"
 
-	"github.com/tetratelabs/wazero/api"
+	"github.com/kjanat/wazero/api"
 )
 
 type paramsKind byte
@@ -22,9 +22,9 @@ const (
 // Below are reflection code to get the interface type used to parse functions and set values.
 
 var (
-	moduleType    = reflect.TypeOf((*api.Module)(nil)).Elem()
-	goContextType = reflect.TypeOf((*context.Context)(nil)).Elem()
-	errorType     = reflect.TypeOf((*error)(nil)).Elem()
+	moduleType    = reflect.TypeFor[api.Module]()
+	goContextType = reflect.TypeFor[context.Context]()
+	errorType     = reflect.TypeFor[error]()
 )
 
 // compile-time check to ensure reflectGoModuleFunction implements
@@ -42,7 +42,7 @@ func (f *reflectGoModuleFunction) Call(ctx context.Context, mod api.Module, stac
 }
 
 // EqualTo is exposed for testing.
-func (f *reflectGoModuleFunction) EqualTo(that interface{}) bool {
+func (f *reflectGoModuleFunction) EqualTo(that any) bool {
 	if f2, ok := that.(*reflectGoModuleFunction); !ok {
 		return false
 	} else {
@@ -61,7 +61,7 @@ type reflectGoFunction struct {
 }
 
 // EqualTo is exposed for testing.
-func (f *reflectGoFunction) EqualTo(that interface{}) bool {
+func (f *reflectGoFunction) EqualTo(that any) bool {
 	if f2, ok := that.(*reflectGoFunction); !ok {
 		return false
 	} else {
@@ -155,7 +155,7 @@ func newModuleVal(m api.Module) reflect.Value {
 //
 // Exposing this simplifies FunctionDefinition of host functions in built-in host
 // modules and tests.
-func MustParseGoReflectFuncCode(fn interface{}) Code {
+func MustParseGoReflectFuncCode(fn any) Code {
 	_, _, code, err := parseGoReflectFunc(fn)
 	if err != nil {
 		panic(err)
@@ -163,7 +163,7 @@ func MustParseGoReflectFuncCode(fn interface{}) Code {
 	return code
 }
 
-func parseGoReflectFunc(fn interface{}) (params, results []ValueType, code Code, err error) {
+func parseGoReflectFunc(fn any) (params, results []ValueType, code Code, err error) {
 	fnV := reflect.ValueOf(fn)
 	p := fnV.Type()
 

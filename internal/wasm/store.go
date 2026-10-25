@@ -7,12 +7,12 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/experimental"
-	"github.com/tetratelabs/wazero/internal/expctxkeys"
-	"github.com/tetratelabs/wazero/internal/internalapi"
-	internalsys "github.com/tetratelabs/wazero/internal/sys"
-	"github.com/tetratelabs/wazero/sys"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/experimental"
+	"github.com/kjanat/wazero/internal/expctxkeys"
+	"github.com/kjanat/wazero/internal/internalapi"
+	internalsys "github.com/kjanat/wazero/internal/sys"
+	"github.com/kjanat/wazero/sys"
 )
 
 // nameToModuleShrinkThreshold is the size the nameToModule map can grow to
@@ -350,9 +350,10 @@ func (s *Store) instantiate(
 		return nil, err
 	}
 
+	limiter, _ := ctx.Value(expctxkeys.TableLimiterKey{}).(experimental.TableLimiter)
 	err = m.buildTables(module,
 		// As of reference-types proposal, boundary check must be done after instantiation.
-		s.EnabledFeatures.IsEnabled(api.CoreFeatureReferenceTypes))
+		s.EnabledFeatures.IsEnabled(api.CoreFeatureReferenceTypes), limiter)
 	if err != nil {
 		return nil, err
 	}

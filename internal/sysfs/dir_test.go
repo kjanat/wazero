@@ -8,10 +8,10 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/tetratelabs/wazero/experimental/sys"
-	"github.com/tetratelabs/wazero/internal/fstest"
-	"github.com/tetratelabs/wazero/internal/sysfs"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/experimental/sys"
+	"github.com/kjanat/wazero/internal/fstest"
+	"github.com/kjanat/wazero/internal/sysfs"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func TestFSFileReaddir(t *testing.T) {
@@ -37,8 +37,6 @@ func TestFSFileReaddir(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
-
 		t.Run(tc.name, func(t *testing.T) {
 			dotF, errno := sysfs.OpenFSFile(tc.fs, ".", sys.O_RDONLY, 0)
 			require.EqualErrno(t, 0, errno)

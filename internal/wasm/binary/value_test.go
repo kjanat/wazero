@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/tetratelabs/wazero/internal/testing/binaryencoding"
-	"github.com/tetratelabs/wazero/internal/testing/require"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero/internal/testing/binaryencoding"
+	"github.com/kjanat/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 func TestEncodeValTypes(t *testing.T) {

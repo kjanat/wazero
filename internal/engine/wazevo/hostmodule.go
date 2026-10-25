@@ -5,8 +5,8 @@ import (
 	"reflect"
 	"unsafe"
 
-	"github.com/tetratelabs/wazero/experimental"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero/experimental"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 func buildHostModuleOpaque(m *wasm.Module, listeners []experimental.FunctionListener) moduleContextOpaque {
@@ -75,14 +75,14 @@ func hostModuleGoFuncFromOpaque[T any](index int, opaqueBegin uintptr) T {
 	return readIface(opaqueViewOverFunction).(T)
 }
 
-func writeIface(goFn interface{}, buf []byte) {
+func writeIface(goFn any, buf []byte) {
 	goFnIface := *(*[2]uint64)(unsafe.Pointer(&goFn))
 	binary.LittleEndian.PutUint64(buf, goFnIface[0])
 	binary.LittleEndian.PutUint64(buf[8:], goFnIface[1])
 }
 
-func readIface(buf []byte) interface{} {
+func readIface(buf []byte) any {
 	b := binary.LittleEndian.Uint64(buf)
 	s := binary.LittleEndian.Uint64(buf[8:])
-	return *(*interface{})(unsafe.Pointer(&[2]uint64{b, s}))
+	return *(*any)(unsafe.Pointer(&[2]uint64{b, s}))
 }

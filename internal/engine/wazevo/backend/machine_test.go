@@ -3,9 +3,9 @@ package backend
 import (
 	"context"
 
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/backend/regalloc"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/ssa"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/wazevoapi"
+	"github.com/kjanat/wazero/internal/engine/wazevo/backend/regalloc"
+	"github.com/kjanat/wazero/internal/engine/wazevo/ssa"
+	"github.com/kjanat/wazero/internal/engine/wazevo/wazevoapi"
 )
 
 // mockMachine implements Machine for testing.

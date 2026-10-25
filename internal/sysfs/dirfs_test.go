@@ -10,10 +10,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tetratelabs/wazero/experimental/sys"
-	"github.com/tetratelabs/wazero/internal/fstest"
-	"github.com/tetratelabs/wazero/internal/platform"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/experimental/sys"
+	"github.com/kjanat/wazero/internal/fstest"
+	"github.com/kjanat/wazero/internal/platform"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func TestDirFS(t *testing.T) {
@@ -749,8 +749,13 @@ func TestDirFS_Symlink(t *testing.T) {
 
 	require.EqualErrno(t, sys.EPERM, testFS.Symlink("/test.txt", "sub/test.txt"))
 	require.EqualErrno(t, sys.EEXIST, testFS.Symlink("sub/test.txt", "sub/test.txt"))
+	require.EqualErrno(t, sys.EEXIST, testFS.Symlink("non-existing", ""))
+	require.EqualErrno(t, sys.EEXIST, testFS.Symlink("non-existing", "."))
+	require.EqualErrno(t, sys.EEXIST, testFS.Symlink("non-existing", "/"))
+	require.EqualErrno(t, sys.EEXIST, testFS.Symlink("non-existing", "sub/"))
 	// Non-existing old name is allowed.
 	require.EqualErrno(t, 0, testFS.Symlink("non-existing", "aa"))
+	require.EqualErrno(t, sys.EEXIST, testFS.Symlink("non-existing", "aa"))
 	require.EqualErrno(t, 0, testFS.Symlink("sub/", "symlinked-subdir"))
 
 	st, err := os.Lstat(path.Join(tmpDir, "aa"))

@@ -3,7 +3,7 @@ package testcases
 import (
 	"math"
 
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 const ExportedFunctionName = "f"

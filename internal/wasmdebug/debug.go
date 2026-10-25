@@ -10,9 +10,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/internal/wasmruntime"
-	"github.com/tetratelabs/wazero/sys"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/internal/wasmruntime"
+	"github.com/kjanat/wazero/sys"
 )
 
 // FuncName returns the naming convention of "moduleName.funcName".
@@ -101,7 +101,7 @@ type ErrorBuilder interface {
 	AddFrame(funcName string, paramTypes, resultTypes []api.ValueType, sources []string)
 
 	// FromRecovered returns an error with the wasm stack trace appended to it.
-	FromRecovered(recovered interface{}) error
+	FromRecovered(recovered any) error
 }
 
 func NewErrorBuilder() ErrorBuilder {
@@ -119,7 +119,7 @@ type stackTrace struct {
 // This is exported for testing purpose.
 const GoRuntimeErrorTracePrefix = "Go runtime stack trace:"
 
-func (s *stackTrace) FromRecovered(recovered interface{}) error {
+func (s *stackTrace) FromRecovered(recovered any) error {
 	if false {
 		debug.PrintStack()
 	}

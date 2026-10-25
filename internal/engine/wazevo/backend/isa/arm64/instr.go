@@ -5,10 +5,10 @@ import (
 	"math"
 	"unsafe"
 
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/backend"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/backend/regalloc"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/ssa"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/wazevoapi"
+	"github.com/kjanat/wazero/internal/engine/wazevo/backend"
+	"github.com/kjanat/wazero/internal/engine/wazevo/backend/regalloc"
+	"github.com/kjanat/wazero/internal/engine/wazevo/ssa"
+	"github.com/kjanat/wazero/internal/engine/wazevo/wazevoapi"
 )
 
 type (
@@ -154,10 +154,10 @@ func (i *instruction) Defs(regs *[]regalloc.VReg) []regalloc.VReg {
 		*regs = append(*regs, i.rd)
 	case defKindCall:
 		_, _, retIntRealRegs, retFloatRealRegs, _ := backend.ABIInfoFromUint64(i.u2)
-		for i := byte(0); i < retIntRealRegs; i++ {
+		for i := range retIntRealRegs {
 			*regs = append(*regs, regInfo.RealRegToVReg[intParamResultRegs[i]])
 		}
-		for i := byte(0); i < retFloatRealRegs; i++ {
+		for i := range retFloatRealRegs {
 			*regs = append(*regs, regInfo.RealRegToVReg[floatParamResultRegs[i]])
 		}
 	default:
@@ -346,10 +346,10 @@ func (i *instruction) Uses(regs *[]regalloc.VReg) []regalloc.VReg {
 		fallthrough
 	case useKindCall:
 		argIntRealRegs, argFloatRealRegs, _, _, _ := backend.ABIInfoFromUint64(i.u2)
-		for i := byte(0); i < argIntRealRegs; i++ {
+		for i := range argIntRealRegs {
 			*regs = append(*regs, regInfo.RealRegToVReg[intParamResultRegs[i]])
 		}
-		for i := byte(0); i < argFloatRealRegs; i++ {
+		for i := range argFloatRealRegs {
 			*regs = append(*regs, regInfo.RealRegToVReg[floatParamResultRegs[i]])
 		}
 	case useKindRDRewrite:

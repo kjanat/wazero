@@ -6,11 +6,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/backend"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/backend/regalloc"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/ssa"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/wazevoapi"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/engine/wazevo/backend"
+	"github.com/kjanat/wazero/internal/engine/wazevo/backend/regalloc"
+	"github.com/kjanat/wazero/internal/engine/wazevo/ssa"
+	"github.com/kjanat/wazero/internal/engine/wazevo/wazevoapi"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func TestAddressMode_format(t *testing.T) {
@@ -454,7 +454,6 @@ func TestMachine_collectAddends(t *testing.T) {
 			offset: math.MaxUint32, // zero-extended -1
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			ctx, b, m := newSetupWithMockContext()
 			ptr, verify := tc.setup(ctx, b, m)
@@ -511,7 +510,6 @@ func TestMachine_addReg64ToReg64(t *testing.T) {
 			rm:  regalloc.FromRealReg(x12, regalloc.RegTypeInt),
 		},
 	} {
-		tc := tc
 		t.Run(tc.exp, func(t *testing.T) {
 			ctx, _, m := newSetupWithMockContext()
 			ctx.vRegCounter = nextVRegID - 1
@@ -542,7 +540,6 @@ func TestMachine_addRegToReg64Ext(t *testing.T) {
 			ext: extendOpSXTW,
 		},
 	} {
-		tc := tc
 		t.Run(tc.exp, func(t *testing.T) {
 			ctx, _, m := newSetupWithMockContext()
 			ctx.vRegCounter = nextVRegID - 1

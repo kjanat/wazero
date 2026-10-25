@@ -3,9 +3,9 @@ package backend
 import (
 	"testing"
 
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/backend/regalloc"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/ssa"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/engine/wazevo/backend/regalloc"
+	"github.com/kjanat/wazero/internal/engine/wazevo/ssa"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 const (
@@ -265,7 +265,6 @@ func TestAbiImpl_init(t *testing.T) {
 			},
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			abi := FunctionABI{}
 			abi.Init(tc.sig, intParamResultRegs, floatParamResultRegs)

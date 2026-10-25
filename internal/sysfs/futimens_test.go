@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tetratelabs/wazero/experimental/sys"
-	"github.com/tetratelabs/wazero/internal/platform"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/experimental/sys"
+	"github.com/kjanat/wazero/internal/platform"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func TestUtimens(t *testing.T) {

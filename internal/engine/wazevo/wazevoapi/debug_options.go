@@ -67,7 +67,7 @@ const (
 
 // CheckStackGuardPage checks the given stack guard page is not corrupted.
 func CheckStackGuardPage(s []byte) {
-	for i := 0; i < StackGuardCheckGuardPageSize; i++ {
+	for i := range StackGuardCheckGuardPageSize {
 		if s[i] != 0 {
 			panic(
 				fmt.Sprintf("BUG: stack guard page is corrupted:\n\tguard_page=%s\n\tstack=%s",

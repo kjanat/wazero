@@ -8,10 +8,10 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/tetratelabs/wazero/experimental"
-	"github.com/tetratelabs/wazero/internal/platform"
-	"github.com/tetratelabs/wazero/internal/testing/require"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero/experimental"
+	"github.com/kjanat/wazero/internal/platform"
+	"github.com/kjanat/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 func Test_sharedFunctionsFinalizer(t *testing.T) {
@@ -37,7 +37,7 @@ func Test_executablesFinalizer(t *testing.T) {
 
 type fakeFinalizer map[*executables]func(module *executables)
 
-func (f fakeFinalizer) setFinalizer(obj interface{}, finalizer interface{}) {
+func (f fakeFinalizer) setFinalizer(obj any, finalizer any) {
 	cf := obj.(*executables)
 	if _, ok := f[cf]; ok { // easier than adding a field for testing.T
 		panic(fmt.Sprintf("BUG: %v already had its finalizer set", cf))
@@ -138,7 +138,7 @@ func TestEngine_sortedCompiledModules(t *testing.T) {
 		cm   *compiledModule
 		addr uintptr
 	}
-	for i := 0; i < 4; i++ {
+	for range 4 {
 		cm := &compiledModule{executables: &executables{executable: make([]byte, 100)}}
 		cms = append(cms, struct {
 			cm   *compiledModule

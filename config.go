@@ -6,19 +6,20 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"maps"
 	"math"
 	"net"
 	"time"
 
-	"github.com/tetratelabs/wazero/api"
-	experimentalsys "github.com/tetratelabs/wazero/experimental/sys"
-	"github.com/tetratelabs/wazero/internal/filecache"
-	"github.com/tetratelabs/wazero/internal/internalapi"
-	"github.com/tetratelabs/wazero/internal/platform"
-	internalsock "github.com/tetratelabs/wazero/internal/sock"
-	internalsys "github.com/tetratelabs/wazero/internal/sys"
-	"github.com/tetratelabs/wazero/internal/wasm"
-	"github.com/tetratelabs/wazero/sys"
+	"github.com/kjanat/wazero/api"
+	experimentalsys "github.com/kjanat/wazero/experimental/sys"
+	"github.com/kjanat/wazero/internal/filecache"
+	"github.com/kjanat/wazero/internal/internalapi"
+	"github.com/kjanat/wazero/internal/platform"
+	internalsock "github.com/kjanat/wazero/internal/sock"
+	internalsys "github.com/kjanat/wazero/internal/sys"
+	"github.com/kjanat/wazero/internal/wasm"
+	"github.com/kjanat/wazero/sys"
 )
 
 // RuntimeConfig controls runtime behavior, with the default implementation as
@@ -133,7 +134,7 @@ type RuntimeConfig interface {
 	// However, if you use this in tests of a package not named as `main`, then wazero cannot obtain the correct
 	// version of wazero due to the known issue of debug.BuildInfo function: https://github.com/golang/go/issues/33976.
 	// As a consequence, your cache won't contain the correct version information and always be treated as `dev` version.
-	// To avoid this issue, you can pass -ldflags "-X github.com/tetratelabs/wazero/internal/version.version=foo" when running tests.
+	// To avoid this issue, you can pass -ldflags "-X github.com/kjanat/wazero/internal/version.version=foo" when running tests.
 	WithCompilationCache(CompilationCache) RuntimeConfig
 
 	// WithCustomSections toggles parsing of "custom sections". Defaults to false.
@@ -697,9 +698,7 @@ func NewModuleConfig() ModuleConfig {
 func (c *moduleConfig) clone() *moduleConfig {
 	ret := *c // copy except maps which share a ref
 	ret.environKeys = make(map[string]int, len(c.environKeys))
-	for key, value := range c.environKeys {
-		ret.environKeys[key] = value
-	}
+	maps.Copy(ret.environKeys, c.environKeys)
 	return &ret
 }
 

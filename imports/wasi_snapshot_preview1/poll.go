@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/experimental/sys"
-	internalsys "github.com/tetratelabs/wazero/internal/sys"
-	"github.com/tetratelabs/wazero/internal/wasip1"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/experimental/sys"
+	internalsys "github.com/kjanat/wazero/internal/sys"
+	"github.com/kjanat/wazero/internal/wasip1"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 // pollOneoff is the WASI function named PollOneoffName that concurrently
@@ -94,7 +94,7 @@ func pollOneoffFn(_ context.Context, mod api.Module, params []uint64) sys.Errno 
 
 	// Layout is subscription_u: Union
 	// https://github.com/WebAssembly/WASI/blob/snapshot-01/phases/snapshot/docs.md#subscription_u
-	for i := uint32(0); i < nsubscriptions; i++ {
+	for i := range nsubscriptions {
 		inOffset := i * 48
 		outOffset := nevents * 32
 

@@ -1,9 +1,9 @@
 package wasm
 
 import (
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/internal/internalapi"
-	"github.com/tetratelabs/wazero/internal/wasmdebug"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/internal/internalapi"
+	"github.com/kjanat/wazero/internal/wasmdebug"
 )
 
 // ImportedFunctions returns the definitions of each imported function.
@@ -119,7 +119,7 @@ type FunctionDefinition struct {
 	name       string
 	// Debugname is exported for testing purpose.
 	Debugname string
-	goFunc    interface{}
+	goFunc    any
 	// Functype is exported for testing purpose.
 	Functype    *FunctionType
 	importDesc  *Import
@@ -163,7 +163,7 @@ func (f *FunctionDefinition) ExportNames() []string {
 }
 
 // GoFunction implements the same method as documented on api.FunctionDefinition.
-func (f *FunctionDefinition) GoFunction() interface{} {
+func (f *FunctionDefinition) GoFunction() any {
 	return f.goFunc
 }
 

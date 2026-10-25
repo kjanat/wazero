@@ -6,8 +6,8 @@ import (
 	"math"
 	"testing"
 
-	"github.com/tetratelabs/wazero/internal/testing/binaryencoding"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/testing/binaryencoding"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func TestLimitsType(t *testing.T) {

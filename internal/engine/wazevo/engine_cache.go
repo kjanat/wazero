@@ -10,15 +10,15 @@ import (
 	"io"
 	"unsafe"
 
-	"github.com/tetratelabs/wazero/experimental"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/backend"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/ssa"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/wazevoapi"
-	"github.com/tetratelabs/wazero/internal/filecache"
-	"github.com/tetratelabs/wazero/internal/platform"
-	"github.com/tetratelabs/wazero/internal/u32"
-	"github.com/tetratelabs/wazero/internal/u64"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero/experimental"
+	"github.com/kjanat/wazero/internal/engine/wazevo/backend"
+	"github.com/kjanat/wazero/internal/engine/wazevo/ssa"
+	"github.com/kjanat/wazero/internal/engine/wazevo/wazevoapi"
+	"github.com/kjanat/wazero/internal/filecache"
+	"github.com/kjanat/wazero/internal/platform"
+	"github.com/kjanat/wazero/internal/u32"
+	"github.com/kjanat/wazero/internal/u64"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 var crc = crc32.MakeTable(crc32.Castagnoli)
@@ -174,7 +174,7 @@ func serializeCompiledModule(wazeroVersion string, cm *compiledModule) io.Reader
 		l := len(sm.wasmBinaryOffsets)
 		buf.Write(u64.LeBytes(uint64(l)))
 		executableAddr := uintptr(unsafe.Pointer(&cm.executable[0]))
-		for i := 0; i < l; i++ {
+		for i := range l {
 			buf.Write(u64.LeBytes(sm.wasmBinaryOffsets[i]))
 			// executableOffsets is absolute address, so we need to subtract executableAddr.
 			buf.Write(u64.LeBytes(uint64(sm.executableOffsets[i] - executableAddr)))
@@ -221,7 +221,7 @@ func deserializeCompiledModule(wazeroVersion string, reader io.ReadCloser) (cm *
 	cm = &compiledModule{functionOffsets: make([]int, functionsNum), executables: &executables{}}
 
 	var eightBytes [8]byte
-	for i := uint32(0); i < functionsNum; i++ {
+	for i := range functionsNum {
 		// Read the offset of each function in the executable.
 		var offset uint64
 		if offset, err = readUint64(reader, &eightBytes); err != nil {
@@ -275,7 +275,7 @@ func deserializeCompiledModule(wazeroVersion string, reader io.ReadCloser) (cm *
 			return nil, false, err
 		}
 		executableOffset := uintptr(unsafe.Pointer(&cm.executable[0]))
-		for i := uint64(0); i < sourceMapLen; i++ {
+		for i := range sourceMapLen {
 			wasmBinaryOffset, err := readUint64(reader, &eightBytes)
 			if err != nil {
 				err = fmt.Errorf("compilationcache: error reading source map[%d] wasm binary offset: %v", i, err)

@@ -6,11 +6,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tetratelabs/wazero"
-	"github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
-	"github.com/tetratelabs/wazero/internal/platform"
-	"github.com/tetratelabs/wazero/internal/testing/dwarftestdata"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero"
+	"github.com/kjanat/wazero/imports/wasi_snapshot_preview1"
+	"github.com/kjanat/wazero/internal/platform"
+	"github.com/kjanat/wazero/internal/testing/dwarftestdata"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 var dwarfTests = map[string]testCase{

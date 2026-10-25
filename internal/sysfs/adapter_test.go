@@ -11,10 +11,10 @@ import (
 	"syscall"
 	"testing"
 
-	experimentalsys "github.com/tetratelabs/wazero/experimental/sys"
-	"github.com/tetratelabs/wazero/internal/fstest"
-	"github.com/tetratelabs/wazero/internal/testing/require"
-	"github.com/tetratelabs/wazero/sys"
+	experimentalsys "github.com/kjanat/wazero/experimental/sys"
+	"github.com/kjanat/wazero/internal/fstest"
+	"github.com/kjanat/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/sys"
 )
 
 func TestAdaptFS_MkDir(t *testing.T) {

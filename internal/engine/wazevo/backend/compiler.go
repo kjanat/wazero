@@ -3,10 +3,11 @@ package backend
 import (
 	"context"
 	"fmt"
+	"slices"
 
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/backend/regalloc"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/ssa"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/wazevoapi"
+	"github.com/kjanat/wazero/internal/engine/wazevo/backend/regalloc"
+	"github.com/kjanat/wazero/internal/engine/wazevo/ssa"
+	"github.com/kjanat/wazero/internal/engine/wazevo/wazevoapi"
 )
 
 // NewCompiler returns a new Compiler that can generate a machine code.
@@ -327,10 +328,8 @@ func (c *compiler) MatchInstrOneOf(def SSAValueDefinition, opcodes []ssa.Opcode)
 	}
 
 	opcode := instr.Opcode()
-	for _, op := range opcodes {
-		if opcode == op {
-			return opcode
-		}
+	if slices.Contains(opcodes, opcode) {
+		return opcode
 	}
 	return ssa.OpcodeInvalid
 }

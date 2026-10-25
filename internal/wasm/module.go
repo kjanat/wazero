@@ -10,9 +10,9 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/experimental"
-	"github.com/tetratelabs/wazero/internal/wasmdebug"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/experimental"
+	"github.com/kjanat/wazero/internal/wasmdebug"
 )
 
 // Module is a WebAssembly binary representation.
@@ -726,23 +726,23 @@ func (f *FunctionType) key() string {
 	if f.string != "" {
 		return f.string
 	}
-	var ret string
+	var ret strings.Builder
 	for _, b := range f.Params {
-		ret += ValueTypeName(b)
+		ret.WriteString(ValueTypeName(b))
 	}
 	if len(f.Params) == 0 {
-		ret += "v_"
+		ret.WriteString("v_")
 	} else {
-		ret += "_"
+		ret.WriteString("_")
 	}
 	for _, b := range f.Results {
-		ret += ValueTypeName(b)
+		ret.WriteString(ValueTypeName(b))
 	}
 	if len(f.Results) == 0 {
-		ret += "v"
+		ret.WriteString("v")
 	}
-	f.string = ret
-	return ret
+	f.string = ret.String()
+	return ret.String()
 }
 
 // String implements fmt.Stringer.
@@ -842,7 +842,7 @@ type Code struct {
 	//
 	// Note: This has no serialization format, so is not encodable.
 	// See https://www.w3.org/TR/2019/REC-wasm-core-1-20191205/#host-functions%E2%91%A2
-	GoFunc interface{}
+	GoFunc any
 
 	// BodyOffsetInCodeSection is the offset of the beginning of the body in the code section.
 	// This is used for DWARF based stack trace where a program counter represents an offset in code section.

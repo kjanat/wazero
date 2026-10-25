@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/experimental"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/ssa"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/testcases"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/wazevoapi"
-	"github.com/tetratelabs/wazero/internal/testing/require"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/experimental"
+	"github.com/kjanat/wazero/internal/engine/wazevo/ssa"
+	"github.com/kjanat/wazero/internal/engine/wazevo/testcases"
+	"github.com/kjanat/wazero/internal/engine/wazevo/wazevoapi"
+	"github.com/kjanat/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 func TestCompiler_LowerToSSA(t *testing.T) {
@@ -2990,8 +2990,6 @@ blk9: () <-- (blk4)
 `,
 		},
 	} {
-
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			// Just in case let's check the test module is valid.
 			features := tc.features
@@ -3057,7 +3055,6 @@ func TestSignatureForListener(t *testing.T) {
 			},
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			before, after := SignatureForListener(tc.sig)
 			require.Equal(t, tc.before, before)
@@ -3098,7 +3095,7 @@ func TestCompiler_declareSignatures(t *testing.T) {
 		}
 
 		require.Equal(t, len(expected), len(declaredSigs))
-		for i := 0; i < len(expected); i++ {
+		for i := range expected {
 			require.Equal(t, expected[i].String(), declaredSigs[i].String(), i)
 		}
 	})
@@ -3136,7 +3133,7 @@ func TestCompiler_declareSignatures(t *testing.T) {
 			{ID: 19, Params: []ssa.Type{ssa.TypeI64, ssa.TypeI32, ssa.TypeI64}, Results: []ssa.Type{ssa.TypeI32}},
 		}
 		require.Equal(t, len(expected), len(declaredSigs))
-		for i := 0; i < len(declaredSigs); i++ {
+		for i := range declaredSigs {
 			require.Equal(t, expected[i].String(), declaredSigs[i].String(), i)
 		}
 	})

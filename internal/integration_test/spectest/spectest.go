@@ -10,12 +10,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tetratelabs/wazero"
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/internal/moremath"
-	"github.com/tetratelabs/wazero/internal/testing/require"
-	"github.com/tetratelabs/wazero/internal/wasm"
-	"github.com/tetratelabs/wazero/internal/wasmruntime"
+	"github.com/kjanat/wazero"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/internal/moremath"
+	"github.com/kjanat/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/wasm"
+	"github.com/kjanat/wazero/internal/wasmruntime"
 )
 
 type (
@@ -37,7 +37,7 @@ type (
 		As string `json:"as,omitempty"`
 
 		// Set when type == "assert_return" || "action"
-		Action commandAction      `json:"action,omitempty"`
+		Action commandAction      `json:"action"`
 		Exps   []commandActionVal `json:"expected"`
 
 		// Set when type == "assert_malformed"
@@ -59,8 +59,8 @@ type (
 	commandActionVal struct {
 		ValType string `json:"type"`
 		// LaneType is not empty if ValueType == "v128"
-		LaneType laneType    `json:"lane_type"`
-		Value    interface{} `json:"value"`
+		LaneType laneType `json:"lane_type"`
+		Value    any      `json:"value"`
 	}
 )
 
@@ -115,7 +115,7 @@ func (c commandActionVal) String() string {
 		// All the in and out funcref params are null in spectest (cannot represent non-null as it depends on runtime impl).
 		v = "null"
 	case "v128":
-		simdValues, ok := c.Value.([]interface{})
+		simdValues, ok := c.Value.([]any)
 		if !ok {
 			panic("BUG")
 		}
@@ -183,7 +183,7 @@ func (c command) getAssertReturnArgsExps() (args []uint64, exps []uint64) {
 
 func (c commandActionVal) toUint64s() (ret []uint64) {
 	if c.ValType == "v128" {
-		strValues, ok := c.Value.([]interface{})
+		strValues, ok := c.Value.([]any)
 		if !ok {
 			panic("BUG")
 		}
@@ -211,8 +211,8 @@ func (c commandActionVal) toUint64s() (ret []uint64) {
 	}
 }
 
-func buildLaneUint64(raw []interface{}, width, valNum int) (lo, hi uint64) {
-	for i := 0; i < valNum; i++ {
+func buildLaneUint64(raw []any, width, valNum int) (lo, hi uint64) {
+	for i := range valNum {
 		str := raw[i].(string)
 
 		var v uint64
@@ -333,8 +333,8 @@ func Run(t *testing.T, testDataFS embed.FS, ctx context.Context, config wazero.R
 	caseNames := make([]string, 0, len(files))
 	for _, f := range files {
 		filename := f.Name()
-		if strings.HasSuffix(filename, ".json") {
-			caseNames = append(caseNames, strings.TrimSuffix(filename, ".json"))
+		if before, ok := strings.CutSuffix(filename, ".json"); ok {
+			caseNames = append(caseNames, before)
 		}
 	}
 

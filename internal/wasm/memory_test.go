@@ -8,9 +8,9 @@ import (
 	"time"
 	"unsafe"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/experimental"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/experimental"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func TestMemoryPageConsts(t *testing.T) {
@@ -865,7 +865,6 @@ func TestNewMemoryInstance_Shared(t *testing.T) {
 
 	me := &mockModuleEngine{}
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			m := NewMemoryInstance(tc.mem, nil, me)
 			require.Equal(t, tc.mem.Min, m.Min)
@@ -892,7 +891,7 @@ func TestMemoryInstance_WaitNotifyOnce(t *testing.T) {
 
 		ch := make(chan string)
 		// Reuse same offset 3 times to verify reuse
-		for i := 0; i < 3; i++ {
+		for range 3 {
 			go func() {
 				res := mem.Wait32(0, 0, -1, reader)
 				propagateWaitResult(t, ch, res)

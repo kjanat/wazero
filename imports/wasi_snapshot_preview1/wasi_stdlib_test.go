@@ -17,15 +17,15 @@ import (
 	gofstest "testing/fstest"
 	"time"
 
-	"github.com/tetratelabs/wazero"
-	"github.com/tetratelabs/wazero/api"
-	experimentalsock "github.com/tetratelabs/wazero/experimental/sock"
-	experimentalsys "github.com/tetratelabs/wazero/experimental/sys"
-	"github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
-	"github.com/tetratelabs/wazero/internal/fstest"
-	internalsys "github.com/tetratelabs/wazero/internal/sys"
-	"github.com/tetratelabs/wazero/internal/testing/require"
-	"github.com/tetratelabs/wazero/sys"
+	"github.com/kjanat/wazero"
+	"github.com/kjanat/wazero/api"
+	experimentalsock "github.com/kjanat/wazero/experimental/sock"
+	experimentalsys "github.com/kjanat/wazero/experimental/sys"
+	"github.com/kjanat/wazero/imports/wasi_snapshot_preview1"
+	"github.com/kjanat/wazero/internal/fstest"
+	internalsys "github.com/kjanat/wazero/internal/sys"
+	"github.com/kjanat/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/sys"
 )
 
 // sleepALittle directly slows down test execution. So, use this sparingly and
@@ -74,13 +74,11 @@ func Test_fdReaddir_ls(t *testing.T) {
 
 	tons := path.Join(tmpDir, "tons")
 	require.NoError(t, os.Mkdir(tons, 0o0777))
-	for i := 0; i < direntCountTons; i++ {
+	for i := range direntCountTons {
 		require.NoError(t, os.WriteFile(path.Join(tons, strconv.Itoa(i)), nil, 0o0666))
 	}
 
 	for toolchain, bin := range toolchains {
-		toolchain := toolchain
-		bin := bin
 		t.Run(toolchain, func(t *testing.T) {
 			var expectDots int
 			if toolchain == "zig-cc" {
@@ -155,7 +153,7 @@ ENOTDIR
 }
 
 func requireLsOut(t *testing.T, expected []string, expectDots int, console string) {
-	for i := 0; i < expectDots; i++ {
+	for range expectDots {
 		expected = append(expected, "./.", "./..")
 	}
 
@@ -183,8 +181,6 @@ func Test_fdReaddir_stat(t *testing.T) {
 	}
 
 	for toolchain, bin := range toolchains {
-		toolchain := toolchain
-		bin := bin
 		t.Run(toolchain, func(t *testing.T) {
 			testFdReaddirStat(t, bin)
 		})
@@ -209,8 +205,6 @@ func Test_preopen(t *testing.T) {
 	for toolchain, bin := range map[string][]byte{
 		"zig": wasmZig,
 	} {
-		toolchain := toolchain
-		bin := bin
 		t.Run(toolchain, func(t *testing.T) {
 			testPreopen(t, bin)
 		})
@@ -356,8 +350,6 @@ func Test_Open(t *testing.T) {
 	for toolchain, bin := range map[string][]byte{
 		"zig-cc": wasmZigCc,
 	} {
-		toolchain := toolchain
-		bin := bin
 		t.Run(toolchain, func(t *testing.T) {
 			testOpenReadOnly(t, bin)
 			testOpenWriteOnly(t, bin)
@@ -394,8 +386,6 @@ func Test_Sock(t *testing.T) {
 	}
 
 	for toolchain, bin := range toolchains {
-		toolchain := toolchain
-		bin := bin
 		t.Run(toolchain, func(t *testing.T) {
 			testSock(t, bin)
 		})
@@ -438,8 +428,6 @@ func Test_HTTP(t *testing.T) {
 	}
 
 	for toolchain, bin := range toolchains {
-		toolchain := toolchain
-		bin := bin
 		t.Run(toolchain, func(t *testing.T) {
 			testHTTP(t, bin)
 		})
@@ -490,8 +478,6 @@ func Test_Stdin(t *testing.T) {
 	}
 
 	for toolchain, bin := range toolchains {
-		toolchain := toolchain
-		bin := bin
 		t.Run(toolchain, func(t *testing.T) {
 			testStdin(t, bin)
 		})

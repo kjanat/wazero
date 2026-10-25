@@ -3,7 +3,7 @@ package ssa
 import (
 	"testing"
 
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func Test_maybeInvertBranch(t *testing.T) {
@@ -603,7 +603,6 @@ func TestBuilder_LayoutBlocks(t *testing.T) {
 			},
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			b := NewBuilder().(*builder)
 			tc.setup(b)

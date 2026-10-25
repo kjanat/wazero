@@ -56,7 +56,7 @@ func TestCapturePanic(t *testing.T) {
 func TestFail(t *testing.T) {
 	tests := []struct {
 		name           string
-		formatWithArgs []interface{}
+		formatWithArgs []any
 		expectedLog    string
 	}{
 		{
@@ -65,32 +65,32 @@ func TestFail(t *testing.T) {
 		},
 		{
 			name:           "message formatWithArgs =: string",
-			formatWithArgs: []interface{}{"because"},
+			formatWithArgs: []any{"because"},
 			expectedLog:    "failed: because",
 		},
 		{
 			name:           "message formatWithArgs = [number]",
-			formatWithArgs: []interface{}{1},
+			formatWithArgs: []any{1},
 			expectedLog:    "failed: 1",
 		},
 		{
 			name:           "message formatWithArgs = [struct]",
-			formatWithArgs: []interface{}{struct{}{}},
+			formatWithArgs: []any{struct{}{}},
 			expectedLog:    "failed: {}",
 		},
 		{
 			name:           "message formatWithArgs = [string, string]",
-			formatWithArgs: []interface{}{"because", "this"},
+			formatWithArgs: []any{"because", "this"},
 			expectedLog:    "failed: because this",
 		},
 		{
 			name:           "message formatWithArgs = [format, string]",
-			formatWithArgs: []interface{}{"because %s", "this"},
+			formatWithArgs: []any{"because %s", "this"},
 			expectedLog:    "failed: because this",
 		},
 		{
 			name:           "message formatWithArgs = [format, struct]",
-			formatWithArgs: []interface{}{"because %s", struct{}{}},
+			formatWithArgs: []any{"because %s", struct{}{}},
 			expectedLog:    "failed: because {}",
 		},
 	}
@@ -657,7 +657,7 @@ type mockT struct {
 }
 
 // Fatal implements TestingT.Fatal
-func (t *mockT) Fatal(args ...interface{}) {
+func (t *mockT) Fatal(args ...any) {
 	if t.log != "" {
 		t.t.Fatal("already called Fatal(")
 	}

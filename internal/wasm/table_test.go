@@ -5,9 +5,9 @@ import (
 	"math"
 	"testing"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/internal/leb128"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/internal/leb128"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func Test_resolveImports_table(t *testing.T) {
@@ -937,7 +937,7 @@ func TestModule_buildTables(t *testing.T) {
 				Tables:  append(tc.importedTables, make([]*TableInstance, len(tc.module.TableSection))...),
 				Globals: tc.importedGlobals,
 			}
-			err := m.buildTables(tc.module, false)
+			err := m.buildTables(tc.module, false, nil)
 			require.NoError(t, err)
 
 			require.Equal(t, tc.expectedTables, m.Tables)
@@ -1023,7 +1023,7 @@ func TestModule_buildTable_Errors(t *testing.T) {
 				Tables:  append(tc.importedTables, make([]*TableInstance, len(tc.module.TableSection))...),
 				Globals: tc.importedGlobals,
 			}
-			err := m.buildTables(tc.module, false)
+			err := m.buildTables(tc.module, false, nil)
 			require.EqualError(t, err, tc.expectedErr)
 		})
 	}

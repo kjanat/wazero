@@ -7,12 +7,12 @@ import (
 	"math"
 	"testing"
 
-	"github.com/tetratelabs/wazero"
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/internal/platform"
-	"github.com/tetratelabs/wazero/internal/testing/binaryencoding"
-	"github.com/tetratelabs/wazero/internal/testing/require"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/internal/platform"
+	"github.com/kjanat/wazero/internal/testing/binaryencoding"
+	"github.com/kjanat/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 const (
@@ -43,7 +43,6 @@ func BenchmarkHostFunctionCall(b *testing.B) {
 	binary.LittleEndian.PutUint32(m.MemoryInstance.Buffer[offset:], math.Float32bits(val))
 
 	for _, fn := range []string{callGoReflectHostName, callGoHostName} {
-		fn := fn
 
 		b.Run(fn, func(b *testing.B) {
 			ce := getCallEngine(m, fn)
@@ -112,7 +111,6 @@ func TestBenchmarkFunctionCall(t *testing.T) {
 		{name: "go", ce: callGoHost},
 		{name: "go-reflect", ce: callGoReflectHost},
 	} {
-		f := f
 		t.Run(f.name, func(t *testing.T) {
 			for _, tc := range tests {
 				binary.LittleEndian.PutUint32(mem[tc.offset:], math.Float32bits(tc.val))

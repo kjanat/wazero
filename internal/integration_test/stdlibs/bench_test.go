@@ -12,10 +12,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tetratelabs/wazero"
-	"github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
-	"github.com/tetratelabs/wazero/internal/testing/require"
-	"github.com/tetratelabs/wazero/sys"
+	"github.com/kjanat/wazero"
+	"github.com/kjanat/wazero/imports/wasi_snapshot_preview1"
+	"github.com/kjanat/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/sys"
 )
 
 func BenchmarkZig(b *testing.B) {

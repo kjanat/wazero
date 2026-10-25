@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/experimental"
-	"github.com/tetratelabs/wazero/internal/leb128"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/experimental"
+	"github.com/kjanat/wazero/internal/leb128"
 )
 
 // The wazero specific limitation described at RATIONALE.md.
@@ -458,7 +458,7 @@ func (m *Module) validateFunctionWithMaxStackValues(
 			}
 
 			sts.ls = sts.ls[:0]
-			for i := uint32(0); i < nl; i++ {
+			for range nl {
 				l, n, err := leb128.DecodeUint32(br)
 				if err != nil {
 					return fmt.Errorf("read immediate: %w", err)

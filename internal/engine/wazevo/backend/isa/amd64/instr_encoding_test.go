@@ -5,7 +5,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func TestInstruction_format_encode(t *testing.T) {
@@ -4231,7 +4231,6 @@ func TestInstruction_format_encode(t *testing.T) {
 			wantFormat: "lock xadd.b %rdi, 123(%rsi)",
 		},
 	} {
-		tc := tc
 		t.Run(tc.wantFormat, func(t *testing.T) {
 			i := &instruction{}
 			tc.setup(i)

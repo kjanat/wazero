@@ -8,12 +8,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/tetratelabs/wazero/experimental/sys"
-	internalsys "github.com/tetratelabs/wazero/internal/sys"
-	"github.com/tetratelabs/wazero/internal/sysfs"
-	testfs "github.com/tetratelabs/wazero/internal/testing/fs"
-	"github.com/tetratelabs/wazero/internal/testing/hammer"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/experimental/sys"
+	internalsys "github.com/kjanat/wazero/internal/sys"
+	"github.com/kjanat/wazero/internal/sysfs"
+	testfs "github.com/kjanat/wazero/internal/testing/fs"
+	"github.com/kjanat/wazero/internal/testing/hammer"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func TestModuleInstance_String(t *testing.T) {
@@ -360,13 +360,11 @@ func TestModuleInstance_CloseModuleOnCanceledOrTimeout(t *testing.T) {
 		cc := &ModuleInstance{ModuleName: "test", s: s}
 		cancelChan := make(chan struct{})
 		var wg sync.WaitGroup
-		wg.Add(1)
 
 		// Ensure that fn returned by closeModuleOnCanceledOrTimeout exists after cancelFn is called.
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			cc.closeModuleOnCanceledOrTimeout(context.Background(), cancelChan)
-		}()
+		})
 		close(cancelChan)
 		wg.Wait()
 	})

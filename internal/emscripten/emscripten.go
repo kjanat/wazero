@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/internal/wasm"
-	"github.com/tetratelabs/wazero/sys"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/internal/wasm"
+	"github.com/kjanat/wazero/sys"
 )
 
 const FunctionNotifyMemoryGrowth = "emscripten_notify_memory_growth"

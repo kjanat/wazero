@@ -3,7 +3,7 @@ package wazevoapi
 import (
 	"testing"
 
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func TestNewNilVarLength(t *testing.T) {
@@ -56,11 +56,11 @@ func TestAppendAndView(t *testing.T) {
 	})
 	t.Run("non zero start", func(t *testing.T) {
 		v := pool.Allocate(10)
-		for i := uint64(0); i < 10; i++ {
+		for i := range uint64(10) {
 			v.Append(&pool, i)
 		}
 		require.Equal(t, []uint64{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, v.View())
-		for i := uint64(0); i < 20; i++ {
+		for i := range uint64(20) {
 			v.Append(&pool, i)
 		}
 		require.Equal(t, []uint64{
@@ -74,7 +74,7 @@ func TestAppendAndView(t *testing.T) {
 func TestCut(t *testing.T) {
 	pool := NewVarLengthPool[uint64]()
 	v := pool.Allocate(10)
-	for i := uint64(0); i < 10; i++ {
+	for i := range uint64(10) {
 		v.Append(&pool, i)
 	}
 	v.Cut(5)

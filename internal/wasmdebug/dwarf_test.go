@@ -5,12 +5,12 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/internal/testing/dwarftestdata"
-	"github.com/tetratelabs/wazero/internal/testing/hammer"
-	"github.com/tetratelabs/wazero/internal/testing/require"
-	"github.com/tetratelabs/wazero/internal/wasm"
-	"github.com/tetratelabs/wazero/internal/wasm/binary"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/internal/testing/dwarftestdata"
+	"github.com/kjanat/wazero/internal/testing/hammer"
+	"github.com/kjanat/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/wasm"
+	"github.com/kjanat/wazero/internal/wasm/binary"
 )
 
 func TestDWARFLines_Line_Zig(t *testing.T) {
@@ -58,7 +58,6 @@ func TestDWARFLines_Line_Zig(t *testing.T) {
 			"lib/zig/std/start.zig:199:5",
 		}},
 	} {
-		tc := tc
 		t.Run(fmt.Sprintf("%#x/%s", tc.offset, tc.exp), func(t *testing.T) {
 			// Ensures that DWARFLines.Line is goroutine-safe.
 			hammer.NewHammer(t, 100, 5).Run(func(p, n int) {
@@ -150,7 +149,6 @@ func TestDWARFLines_Line_Rust(t *testing.T) {
 			"/library/std/src/sys/backtrace.rs:154:18",
 		}},
 	} {
-		tc := tc
 		t.Run(fmt.Sprintf("%#x/%s", tc.offset, tc.exp), func(t *testing.T) {
 			actual := mod.DWARFLines.Line(tc.offset)
 
@@ -226,7 +224,6 @@ func TestDWARFLines_Line_TinyGo(t *testing.T) {
 		// any inlined function invocation here.
 		{offset: 0x1a62 - codeSecStart, exp: []string{"runtime/runtime_tinygowasm.go:70:6"}},
 	} {
-		tc := tc
 		t.Run(fmt.Sprintf("%#x/%s", tc.offset, tc.exp), func(t *testing.T) {
 			actual := mod.DWARFLines.Line(tc.offset)
 			require.Equal(t, len(tc.exp), len(actual), "\nexp: %s\ngot: %s", strings.Join(tc.exp, "\n"), strings.Join(actual, "\n"))

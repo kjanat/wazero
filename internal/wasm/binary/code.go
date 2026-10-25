@@ -6,8 +6,8 @@ import (
 	"io"
 	"math"
 
-	"github.com/tetratelabs/wazero/internal/leb128"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero/internal/leb128"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 func decodeCode(r *bytes.Reader, codeSectionStart uint64, ret *wasm.Code) (err error) {
@@ -29,7 +29,7 @@ func decodeCode(r *bytes.Reader, codeSectionStart uint64, ret *wasm.Code) (err e
 	// Validate the locals.
 	bytesRead = 0
 	var sum uint64
-	for i := uint32(0); i < ls; i++ {
+	for range ls {
 		num, n, err := leb128.DecodeUint32(r)
 		if err != nil {
 			return fmt.Errorf("read n of locals: %v", err)
@@ -64,7 +64,7 @@ func decodeCode(r *bytes.Reader, codeSectionStart uint64, ret *wasm.Code) (err e
 	}
 
 	localTypes := make([]wasm.ValueType, 0, sum)
-	for i := uint32(0); i < ls; i++ {
+	for range ls {
 		num, bytesRead, err := leb128.DecodeUint32(r)
 		remaining -= int64(bytesRead) + 1 // +1 for the subsequent ReadByte
 		if err != nil {
@@ -78,7 +78,7 @@ func decodeCode(r *bytes.Reader, codeSectionStart uint64, ret *wasm.Code) (err e
 			return fmt.Errorf("read type of local: %v", err)
 		}
 
-		for j := uint32(0); j < num; j++ {
+		for range num {
 			localTypes = append(localTypes, b)
 		}
 	}

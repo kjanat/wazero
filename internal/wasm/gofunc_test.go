@@ -6,8 +6,8 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 type arbitrary struct{}
@@ -18,7 +18,7 @@ var testCtx = context.WithValue(context.Background(), arbitrary{}, "arbitrary")
 func Test_parseGoFunc(t *testing.T) {
 	tests := []struct {
 		name              string
-		input             interface{}
+		input             any
 		expectNeedsModule bool
 		expectedType      *FunctionType
 	}{
@@ -71,7 +71,7 @@ func Test_parseGoFunc(t *testing.T) {
 func Test_parseGoFunc_Errors(t *testing.T) {
 	tests := []struct {
 		name        string
-		input       interface{}
+		input       any
 		expectedErr string
 	}{
 		{
@@ -132,7 +132,7 @@ func Test_callGoFunc(t *testing.T) {
 
 	tests := []struct {
 		name                         string
-		input                        interface{}
+		input                        any
 		inputParams, expectedResults []uint64
 	}{
 		{
@@ -221,10 +221,7 @@ func Test_callGoFunc(t *testing.T) {
 			require.NoError(t, err)
 
 			resultLen := len(tc.expectedResults)
-			stackLen := len(tc.inputParams)
-			if resultLen > stackLen {
-				stackLen = resultLen
-			}
+			stackLen := max(resultLen, len(tc.inputParams))
 			stack := make([]uint64, stackLen)
 			copy(stack, tc.inputParams)
 

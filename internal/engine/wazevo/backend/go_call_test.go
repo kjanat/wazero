@@ -3,8 +3,8 @@ package backend
 import (
 	"testing"
 
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/ssa"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/engine/wazevo/ssa"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func Test_goFunctionCallRequiredStackSize(t *testing.T) {
@@ -46,7 +46,6 @@ func Test_goFunctionCallRequiredStackSize(t *testing.T) {
 			exp:      16,
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			requiredSize, _ := GoFunctionCallRequiredStackSize(tc.sig, tc.argBegin)
 			require.Equal(t, tc.exp, requiredSize)

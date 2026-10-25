@@ -5,18 +5,19 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"slices"
 	"strconv"
 	"testing"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/experimental"
-	"github.com/tetratelabs/wazero/internal/internalapi"
-	"github.com/tetratelabs/wazero/internal/leb128"
-	"github.com/tetratelabs/wazero/internal/sys"
-	"github.com/tetratelabs/wazero/internal/testing/hammer"
-	"github.com/tetratelabs/wazero/internal/testing/require"
-	"github.com/tetratelabs/wazero/internal/u32"
-	"github.com/tetratelabs/wazero/internal/u64"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/experimental"
+	"github.com/kjanat/wazero/internal/internalapi"
+	"github.com/kjanat/wazero/internal/leb128"
+	"github.com/kjanat/wazero/internal/sys"
+	"github.com/kjanat/wazero/internal/testing/hammer"
+	"github.com/kjanat/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/u32"
+	"github.com/kjanat/wazero/internal/u64"
 )
 
 func TestModuleInstance_Memory(t *testing.T) {
@@ -274,14 +275,14 @@ func TestStore_hammer_close(t *testing.T) {
 
 	const instCount = 10000
 	instances := make([]api.Module, instCount)
-	for i := 0; i < instCount; i++ {
+	for i := range instCount {
 		mod, instantiateErr := s.Instantiate(testCtx, importingModule, strconv.Itoa(i), sys.DefaultContext(nil), []FunctionTypeID{0})
 		require.NoError(t, instantiateErr)
 		instances[i] = mod
 	}
 
 	hammer.NewHammer(t, 100, 2).Run(func(p, n int) {
-		for i := 0; i < instCount; i++ {
+		for i := range instCount {
 			if i == instCount/2 {
 				// Close store concurrently as well.
 				err := s.CloseWithExitCode(testCtx, 0)
@@ -534,7 +535,7 @@ func TestStore_getFunctionTypeID(t *testing.T) {
 		const max = 10
 		s.functionMaxTypes = max
 		s.typeIDs = make(map[string]FunctionTypeID)
-		for i := 0; i < max; i++ {
+		for i := range max {
 			s.typeIDs[strconv.Itoa(i)] = 0
 		}
 		_, err := s.GetFunctionTypeID(&FunctionType{})
@@ -955,12 +956,7 @@ func TestModuleInstance_applyData(t *testing.T) {
 }
 
 func globalsContain(globals []*GlobalInstance, want *GlobalInstance) bool {
-	for _, f := range globals {
-		if f == want {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(globals, want)
 }
 
 func TestModuleInstance_applyElements(t *testing.T) {

@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/tetratelabs/wazero/internal/testing/maintester"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/testing/maintester"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 // Test_main ensures the following will work:
@@ -15,7 +15,7 @@ import (
 func Test_main(t *testing.T) {
 	stdout, _ := maintester.TestMain(t, main, "main")
 
-	for i := 0; i < 50; i++ {
+	for i := range 50 {
 		require.True(t, strings.Contains(stdout, strconv.Itoa(i*2)))
 	}
 }

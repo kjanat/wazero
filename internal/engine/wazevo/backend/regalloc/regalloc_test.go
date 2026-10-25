@@ -2,11 +2,11 @@ package regalloc
 
 import (
 	"fmt"
-	"sort"
+	"slices"
 	"testing"
 
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/wazevoapi"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/engine/wazevo/wazevoapi"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 type (
@@ -336,7 +336,6 @@ func TestAllocator_livenessAnalysis(t *testing.T) {
 			},
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			f := tc.setup()
 			a := _newAllocator(&RegisterInfo{
@@ -359,12 +358,8 @@ func TestAllocator_livenessAnalysis(t *testing.T) {
 						for _, s := range actual.liveIns {
 							actuals = append(actuals, s.v.ID())
 						}
-						sort.Slice(actuals, func(i, j int) bool {
-							return actuals[i] < actuals[j]
-						})
-						sort.Slice(exp.liveIns, func(i, j int) bool {
-							return exp.liveIns[i] < exp.liveIns[j]
-						})
+						slices.Sort(actuals)
+						slices.Sort(exp.liveIns)
 						require.Equal(t, exp.liveIns, actuals, "live ins")
 					}
 				})

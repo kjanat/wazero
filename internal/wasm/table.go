@@ -3,9 +3,13 @@ package wasm
 import (
 	"fmt"
 	"math"
+	"runtime"
 	"sync"
+	"sync/atomic"
+	"unsafe"
 
-	"github.com/tetratelabs/wazero/api"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/experimental"
 )
 
 // Table describes the limits of elements and its type in a table.
@@ -108,6 +112,31 @@ type TableInstance struct {
 	involvingModuleInstances []*ModuleInstance
 	// involvingModuleInstancesMutex is a mutex to protect involvingModuleInstances.
 	involvingModuleInstancesMutex sync.RWMutex
+
+	reservation *tableReservation
+}
+
+// tableReservation must not reference its TableInstance: it is the argument to
+// the table's cleanup, which must work even for cycles of importing modules.
+type tableReservation struct {
+	limiter experimental.TableLimiter
+	size    atomic.Uint32
+}
+
+func (r *tableReservation) release() {
+	r.limiter.Release(r.size.Load())
+}
+
+func (t *TableInstance) reserve(current, desired uint32) bool {
+	maximum := uint32(math.MaxUint32)
+	if t.Max != nil {
+		maximum = *t.Max
+	}
+	if !t.reservation.limiter.Grow(current, desired, maximum) {
+		return false
+	}
+	t.reservation.size.Store(desired)
+	return true
 }
 
 // ElementInstance represents an element instance in a module.
@@ -117,6 +146,12 @@ type ElementInstance = []Reference
 
 // Reference is the runtime representation of RefType which is either RefTypeFuncref or RefTypeExternref.
 type Reference = uintptr
+
+// maxHostTableElements is the largest length representable by a host Go slice.
+// Oversized growth fails before allocation or optional limiter admission.
+func maxHostTableElements() uint64 {
+	return uint64(math.MaxInt) / uint64(unsafe.Sizeof(Reference(0)))
+}
 
 // validateTable ensures any ElementSegment is valid. This caches results via Module.validatedActiveElementSegments.
 // Note: limitsType are validated by decoders, so not re-validated here.
@@ -233,16 +268,25 @@ func (m *Module) validateTable(enabledFeatures api.CoreFeatures, tables []Table,
 //
 // If the result `init` is non-nil, it is the `tableInit` parameter of Engine.NewModuleEngine.
 //
-// Note: An error is only possible when an ElementSegment.OffsetExpr is out of range of the TableInstance.Min.
-func (m *ModuleInstance) buildTables(module *Module, skipBoundCheck bool) (err error) {
+// An error is possible when the limiter denies allocation or an element segment is out of bounds.
+func (m *ModuleInstance) buildTables(module *Module, skipBoundCheck bool, limiter experimental.TableLimiter) (err error) {
 	idx := module.ImportTableCount
 	for i := range module.TableSection {
 		tsec := &module.TableSection[i]
 		// The module defining the table is the one that sets its Min/Max etc.
-		m.Tables[idx] = &TableInstance{
-			References: make([]Reference, tsec.Min), Min: tsec.Min, Max: tsec.Max,
+		t := &TableInstance{
+			Min: tsec.Min, Max: tsec.Max,
 			Type: tsec.Type,
 		}
+		if limiter != nil {
+			t.reservation = &tableReservation{limiter: limiter}
+			if !t.reserve(0, tsec.Min) {
+				return fmt.Errorf("table[%d] allocation of %d elements denied by table limiter", idx, tsec.Min)
+			}
+			runtime.AddCleanup(t, (*tableReservation).release, t.reservation)
+		}
+		t.References = make([]Reference, tsec.Min)
+		m.Tables[idx] = t
 		idx++
 	}
 
@@ -285,11 +329,19 @@ func (t *TableInstance) Grow(delta uint32, initialRef Reference) (currentLen uin
 		return
 	}
 
-	if newLen := int64(currentLen) + int64(delta); // adding as 64bit ints to avoid overflow.
-	newLen >= math.MaxUint32 || (t.Max != nil && newLen > int64(*t.Max)) {
+	newLen := uint64(currentLen) + uint64(delta) // adding as 64bit ints to avoid overflow.
+	if newLen >= math.MaxUint32 || newLen > maxHostTableElements() ||
+		(t.Max != nil && newLen > uint64(*t.Max)) {
 		return 0xffffffff // = -1 in signed 32-bit integer.
 	}
 
+	if t.reservation != nil {
+		// The cleanup must not refund a reservation while growth is in progress.
+		defer runtime.KeepAlive(t)
+		if !t.reserve(currentLen, uint32(newLen)) {
+			return 0xffffffff
+		}
+	}
 	t.References = append(t.References, make([]uintptr, delta)...)
 	if initialRef == 0 {
 		return

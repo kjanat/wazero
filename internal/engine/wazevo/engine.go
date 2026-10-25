@@ -12,16 +12,16 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/experimental"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/backend"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/frontend"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/ssa"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/wazevoapi"
-	"github.com/tetratelabs/wazero/internal/filecache"
-	"github.com/tetratelabs/wazero/internal/platform"
-	"github.com/tetratelabs/wazero/internal/version"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/experimental"
+	"github.com/kjanat/wazero/internal/engine/wazevo/backend"
+	"github.com/kjanat/wazero/internal/engine/wazevo/frontend"
+	"github.com/kjanat/wazero/internal/engine/wazevo/ssa"
+	"github.com/kjanat/wazero/internal/engine/wazevo/wazevoapi"
+	"github.com/kjanat/wazero/internal/filecache"
+	"github.com/kjanat/wazero/internal/platform"
+	"github.com/kjanat/wazero/internal/version"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 type (
@@ -40,7 +40,7 @@ type (
 		// sharedFunctions is compiled functions shared by all modules.
 		sharedFunctions *sharedFunctions
 		// setFinalizer defaults to runtime.SetFinalizer, but overridable for tests.
-		setFinalizer func(obj interface{}, finalizer interface{})
+		setFinalizer func(obj any, finalizer any)
 
 		// The followings are reused for compiling shared functions.
 		machine backend.Machine
@@ -155,7 +155,7 @@ func (e *engine) CompileModule(ctx context.Context, module *wasm.Module, listene
 	}
 
 	if wazevoapi.DeterministicCompilationVerifierEnabled {
-		for i := 0; i < wazevoapi.DeterministicCompilationVerifyingIter; i++ {
+		for range wazevoapi.DeterministicCompilationVerifyingIter {
 			_, err := e.compileModule(ctx, module, listeners, ensureTermination)
 			if err != nil {
 				return err

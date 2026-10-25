@@ -6,15 +6,15 @@ import (
 	"os"
 	"testing"
 
-	"github.com/tetratelabs/wazero"
-	"github.com/tetratelabs/wazero/api"
-	experimentalsys "github.com/tetratelabs/wazero/experimental/sys"
-	"github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
-	"github.com/tetratelabs/wazero/internal/sys"
-	"github.com/tetratelabs/wazero/internal/testing/proxy"
-	"github.com/tetratelabs/wazero/internal/testing/require"
-	"github.com/tetratelabs/wazero/internal/wasip1"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero"
+	"github.com/kjanat/wazero/api"
+	experimentalsys "github.com/kjanat/wazero/experimental/sys"
+	"github.com/kjanat/wazero/imports/wasi_snapshot_preview1"
+	"github.com/kjanat/wazero/internal/sys"
+	"github.com/kjanat/wazero/internal/testing/proxy"
+	"github.com/kjanat/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/wasip1"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 // configArgsEnviron ensures the result data are the same between args and ENV.
@@ -39,7 +39,6 @@ func Benchmark_ArgsEnviron(b *testing.B) {
 		wasip1.EnvironGetName,
 		wasip1.EnvironSizesGetName,
 	} {
-		n := n
 		fn := mod.ExportedFunction(n)
 		b.Run(n, func(b *testing.B) {
 			b.ReportAllocs()

@@ -5,17 +5,17 @@ import (
 	"fmt"
 	"sync/atomic"
 
-	"github.com/tetratelabs/wazero/api"
-	experimentalapi "github.com/tetratelabs/wazero/experimental"
-	"github.com/tetratelabs/wazero/internal/engine/interpreter"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo"
-	"github.com/tetratelabs/wazero/internal/expctxkeys"
-	"github.com/tetratelabs/wazero/internal/platform"
-	internalsock "github.com/tetratelabs/wazero/internal/sock"
-	internalsys "github.com/tetratelabs/wazero/internal/sys"
-	"github.com/tetratelabs/wazero/internal/wasm"
-	binaryformat "github.com/tetratelabs/wazero/internal/wasm/binary"
-	"github.com/tetratelabs/wazero/sys"
+	"github.com/kjanat/wazero/api"
+	experimentalapi "github.com/kjanat/wazero/experimental"
+	"github.com/kjanat/wazero/internal/engine/interpreter"
+	"github.com/kjanat/wazero/internal/engine/wazevo"
+	"github.com/kjanat/wazero/internal/expctxkeys"
+	"github.com/kjanat/wazero/internal/platform"
+	internalsock "github.com/kjanat/wazero/internal/sock"
+	internalsys "github.com/kjanat/wazero/internal/sys"
+	"github.com/kjanat/wazero/internal/wasm"
+	binaryformat "github.com/kjanat/wazero/internal/wasm/binary"
+	"github.com/kjanat/wazero/sys"
 )
 
 // Runtime allows embedding of WebAssembly modules.
@@ -274,7 +274,7 @@ func buildFunctionListeners(ctx context.Context, internal *wasm.Module) ([]exper
 	factory := fnlf.(experimentalapi.FunctionListenerFactory)
 	importCount := internal.ImportFunctionCount
 	listeners := make([]experimentalapi.FunctionListener, len(internal.FunctionSection))
-	for i := 0; i < len(listeners); i++ {
+	for i := range listeners {
 		listeners[i] = factory.NewFunctionListener(internal.FunctionDefinition(uint32(i) + importCount))
 	}
 	return listeners, nil

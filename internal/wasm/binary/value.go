@@ -7,8 +7,8 @@ import (
 	"unicode/utf8"
 	"unsafe"
 
-	"github.com/tetratelabs/wazero/internal/leb128"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero/internal/leb128"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 func decodeValueTypes(r *bytes.Reader, num uint32) ([]wasm.ValueType, error) {
@@ -35,7 +35,7 @@ func decodeValueTypes(r *bytes.Reader, num uint32) ([]wasm.ValueType, error) {
 
 // decodeUTF8 decodes a size prefixed string from the reader, returning it and the count of bytes read.
 // contextFormat and contextArgs apply an error format when present
-func decodeUTF8(r *bytes.Reader, contextFormat string, contextArgs ...interface{}) (string, uint32, error) {
+func decodeUTF8(r *bytes.Reader, contextFormat string, contextArgs ...any) (string, uint32, error) {
 	size, sizeOfSize, err := leb128.DecodeUint32(r)
 	if err != nil {
 		return "", 0, fmt.Errorf("failed to read %s size: %w", fmt.Sprintf(contextFormat, contextArgs...), err)

@@ -5,9 +5,9 @@ import (
 	"bytes"
 	"math"
 
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/ssa"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/wazevoapi"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero/internal/engine/wazevo/ssa"
+	"github.com/kjanat/wazero/internal/engine/wazevo/wazevoapi"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 // Compiler is in charge of lowering Wasm to SSA IR, and does the optimization
@@ -516,7 +516,7 @@ func (c *Compiler) initializeCurrentBlockKnownBounds() {
 	default:
 		c.pointers = c.pointers[:0]
 		c.bounds = c.bounds[:0]
-		for i := 0; i < preds; i++ {
+		for i := range preds {
 			c.bounds = append(c.bounds, c.getKnownSafeBoundsAtTheEndOfBlocks(currentBlk.Pred(i).ID()).View())
 			c.pointers = append(c.pointers, 0)
 		}
@@ -539,7 +539,7 @@ func (c *Compiler) initializeCurrentBlockKnownBounds() {
 			// Check if current elements are the same across all lists.
 			same := true
 			minBound := uint64(math.MaxUint64)
-			for i := 0; i < preds; i++ {
+			for i := range preds {
 				cb := &c.bounds[i][c.pointers[i]]
 				if cb.id != smallestID {
 					same = false

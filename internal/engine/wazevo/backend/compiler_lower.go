@@ -1,8 +1,8 @@
 package backend
 
 import (
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/backend/regalloc"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/ssa"
+	"github.com/kjanat/wazero/internal/engine/wazevo/backend/regalloc"
+	"github.com/kjanat/wazero/internal/engine/wazevo/ssa"
 )
 
 // Lower implements Compiler.Lower.
@@ -147,7 +147,7 @@ func (c *compiler) lowerBlockArguments(args []ssa.Value, succ ssa.BasicBlock) {
 	c.varEdges = c.varEdges[:0]
 	c.varEdgeTypes = c.varEdgeTypes[:0]
 	c.constEdges = c.constEdges[:0]
-	for i := 0; i < len(args); i++ {
+	for i := range args {
 		dst := succ.Param(i)
 		src := args[i]
 

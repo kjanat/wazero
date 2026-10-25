@@ -3,9 +3,9 @@ package wasm
 import (
 	"testing"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/internal/testing/hammer"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/internal/testing/hammer"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func TestModule_BuildFunctionDefinitions(t *testing.T) {
@@ -252,7 +252,6 @@ func TestModule_BuildFunctionDefinitions(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			tc.m.buildFunctionDefinitions()
 			require.Equal(t, tc.expected, tc.m.FunctionDefinitionSection)
@@ -265,7 +264,6 @@ func TestModule_BuildFunctionDefinitions(t *testing.T) {
 	const nGoroutines = 100
 	const nIterations = 10
 	for _, tc := range tests {
-		tc := tc
 		testName := tc.name + " (concurrent)"
 		t.Run(testName, func(t *testing.T) {
 			hammer.NewHammer(t, nGoroutines, nIterations).

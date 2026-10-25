@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/tetratelabs/wazero/experimental"
-	"github.com/tetratelabs/wazero/internal/expctxkeys"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/experimental"
+	"github.com/kjanat/wazero/internal/expctxkeys"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 type arbitrary struct{}

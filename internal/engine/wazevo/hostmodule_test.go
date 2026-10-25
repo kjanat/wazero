@@ -5,10 +5,10 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/experimental"
-	"github.com/tetratelabs/wazero/internal/testing/require"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/experimental"
+	"github.com/kjanat/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 func Test_writeIface_readIface(t *testing.T) {
@@ -52,7 +52,6 @@ func Test_buildHostModuleOpaque(t *testing.T) {
 			listeners: make([]experimental.FunctionListener, 50),
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			got := buildHostModuleOpaque(tc.m, tc.listeners)
 			opaque := uintptr(unsafe.Pointer(&got[0]))

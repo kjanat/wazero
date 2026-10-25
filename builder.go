@@ -3,8 +3,8 @@ package wazero
 import (
 	"context"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 // HostFunctionBuilder defines a host function (in Go), so that a
@@ -112,7 +112,7 @@ type HostFunctionBuilder interface {
 	//		fn = m.ExportedFunction("__read")
 	//		results, err := fn(ctx, offset, byteCount)
 	//	--snip--
-	WithFunc(interface{}) HostFunctionBuilder
+	WithFunc(any) HostFunctionBuilder
 
 	// WithName defines the optional module-local name of this function, e.g.
 	// "random_get"
@@ -235,7 +235,7 @@ func (r *runtime) NewHostModuleBuilder(moduleName string) HostModuleBuilder {
 // hostFunctionBuilder implements HostFunctionBuilder
 type hostFunctionBuilder struct {
 	b           *hostModuleBuilder
-	fn          interface{}
+	fn          any
 	name        string
 	paramNames  []string
 	resultNames []string
@@ -254,7 +254,7 @@ func (h *hostFunctionBuilder) WithGoModuleFunction(fn api.GoModuleFunction, para
 }
 
 // WithFunc implements HostFunctionBuilder.WithFunc
-func (h *hostFunctionBuilder) WithFunc(fn interface{}) HostFunctionBuilder {
+func (h *hostFunctionBuilder) WithFunc(fn any) HostFunctionBuilder {
 	h.fn = fn
 	return h
 }

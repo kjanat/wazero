@@ -5,7 +5,7 @@ import (
 	"math"
 	"strings"
 
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/wazevoapi"
+	"github.com/kjanat/wazero/internal/engine/wazevo/wazevoapi"
 )
 
 // Opcode represents a SSA instruction.
@@ -2635,10 +2635,10 @@ func (i *Instruction) Format(b Builder) string {
 		instSuffix = fmt.Sprintf(".%s %d, %s, %s", VecLane(i.u2), i.u1, i.v.Format(b), i.v2.Format(b))
 	case OpcodeShuffle:
 		lanes := make([]byte, 16)
-		for idx := 0; idx < 8; idx++ {
+		for idx := range 8 {
 			lanes[idx] = byte(i.u1 >> (8 * idx))
 		}
-		for idx := 0; idx < 8; idx++ {
+		for idx := range 8 {
 			lanes[idx+8] = byte(i.u2 >> (8 * idx))
 		}
 		// Prints Shuffle.[0 1 2 3 4 5 6 7 ...] v2, v3

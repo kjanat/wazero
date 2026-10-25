@@ -8,13 +8,13 @@ import (
 	"math"
 	"testing"
 
-	"github.com/tetratelabs/wazero"
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/internal/platform"
-	"github.com/tetratelabs/wazero/internal/testing/binaryencoding"
-	"github.com/tetratelabs/wazero/internal/testing/nodiff"
-	"github.com/tetratelabs/wazero/internal/testing/require"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/internal/platform"
+	"github.com/kjanat/wazero/internal/testing/binaryencoding"
+	"github.com/kjanat/wazero/internal/testing/nodiff"
+	"github.com/kjanat/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 var ctx = context.Background()
@@ -192,7 +192,7 @@ func Test717(t *testing.T) {
 
 		const expectedLen = 35
 		require.Equal(t, expectedLen, len(res))
-		for i := 0; i < expectedLen; i++ {
+		for i := range expectedLen {
 			require.Equal(t, uint64(i), res[i])
 		}
 	})

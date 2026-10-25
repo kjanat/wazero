@@ -7,11 +7,11 @@ import (
 	"math"
 	"strings"
 
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/backend"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/backend/regalloc"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/ssa"
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/wazevoapi"
-	"github.com/tetratelabs/wazero/internal/platform"
+	"github.com/kjanat/wazero/internal/engine/wazevo/backend"
+	"github.com/kjanat/wazero/internal/engine/wazevo/backend/regalloc"
+	"github.com/kjanat/wazero/internal/engine/wazevo/ssa"
+	"github.com/kjanat/wazero/internal/engine/wazevo/wazevoapi"
+	"github.com/kjanat/wazero/internal/platform"
 )
 
 // NewBackend returns a new backend for arm64.
@@ -1894,7 +1894,7 @@ func (m *machine) lowerCall(si *ssa.Instruction) {
 		// Go's memmove *might* use all xmm0-xmm15, so we need to release them.
 		// https://github.com/golang/go/blob/go1.24.0/src/cmd/compile/abi-internal.md#architecture-specifics
 		// https://github.com/golang/go/blob/go1.24.0/src/runtime/memmove_amd64.s#L286-L301
-		for i := regalloc.RealReg(0); i < 16; i++ {
+		for i := range regalloc.RealReg(16) {
 			m.insert(m.allocateInstr().asDefineUninitializedReg(regInfo.RealRegToVReg[xmm0+i]))
 		}
 		// Since Go 1.24 it may also use DX, which is not reserved for the function call's 3 args.
@@ -1912,7 +1912,7 @@ func (m *machine) lowerCall(si *ssa.Instruction) {
 	}
 
 	if isMemmove {
-		for i := regalloc.RealReg(0); i < 16; i++ {
+		for i := range regalloc.RealReg(16) {
 			m.insert(m.allocateInstr().asNopUseReg(regInfo.RealRegToVReg[xmm0+i]))
 		}
 		m.insert(m.allocateInstr().asNopUseReg(regInfo.RealRegToVReg[rdx]))
@@ -3333,7 +3333,7 @@ func (m *machine) lowerSplat(x, ret ssa.Value, lane ssa.VecLane) {
 
 func (m *machine) lowerShuffle(x, y ssa.Value, lo, hi uint64, ret ssa.Value) {
 	var xMask, yMask [2]uint64
-	for i := 0; i < 8; i++ {
+	for i := range 8 {
 		loLane := byte(lo >> (i * 8))
 		if loLane < 16 {
 			xMask[0] |= uint64(loLane) << (i * 8)

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func TestStore_registerModule(t *testing.T) {
@@ -110,7 +110,7 @@ func TestStore_module(t *testing.T) {
 func TestStore_nameToModuleCap(t *testing.T) {
 	t.Run("nameToModuleCap grows beyond initial cap", func(t *testing.T) {
 		s := newStore()
-		for i := 0; i < 300; i++ {
+		for i := range 300 {
 			require.NoError(t, s.registerModule(&ModuleInstance{ModuleName: fmt.Sprintf("m%d", i)}))
 		}
 
@@ -119,11 +119,11 @@ func TestStore_nameToModuleCap(t *testing.T) {
 
 	t.Run("nameToModuleCap shrinks by half the cap", func(t *testing.T) {
 		s := newStore()
-		for i := 0; i < 400; i++ {
+		for i := range 400 {
 			require.NoError(t, s.registerModule(&ModuleInstance{ModuleName: fmt.Sprintf("m%d", i)}))
 		}
 
-		for i := 0; i < 250; i++ {
+		for i := range 250 {
 			require.NoError(t, s.deleteModule(s.nameToModule[fmt.Sprintf("m%d", i)]))
 		}
 
@@ -132,11 +132,11 @@ func TestStore_nameToModuleCap(t *testing.T) {
 
 	t.Run("nameToModuleCap does not shrink below initial size", func(t *testing.T) {
 		s := newStore()
-		for i := 0; i < 400; i++ {
+		for i := range 400 {
 			require.NoError(t, s.registerModule(&ModuleInstance{ModuleName: fmt.Sprintf("m%d", i)}))
 		}
 
-		for i := 0; i < 350; i++ {
+		for i := range 350 {
 			require.NoError(t, s.deleteModule(s.nameToModule[fmt.Sprintf("m%d", i)]))
 		}
 
@@ -145,10 +145,10 @@ func TestStore_nameToModuleCap(t *testing.T) {
 
 	t.Run("nameToModuleCap does not grow when if nameToModule does not grow", func(t *testing.T) {
 		s := newStore()
-		for i := 0; i < 99; i++ {
+		for i := range 99 {
 			require.NoError(t, s.registerModule(&ModuleInstance{ModuleName: fmt.Sprintf("m%d", i)}))
 		}
-		for i := 0; i < 400; i++ {
+		for i := range 400 {
 			require.NoError(t, s.registerModule(&ModuleInstance{ModuleName: fmt.Sprintf("m%d", i+99)}))
 			require.NoError(t, s.deleteModule(s.nameToModule[fmt.Sprintf("m%d", i+99)]))
 			require.Equal(t, nameToModuleShrinkThreshold, s.nameToModuleCap)

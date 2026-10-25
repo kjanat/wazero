@@ -7,10 +7,10 @@ import (
 	"io"
 	"testing"
 
-	"github.com/tetratelabs/wazero/internal/testing/require"
-	"github.com/tetratelabs/wazero/internal/u32"
-	"github.com/tetratelabs/wazero/internal/u64"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/u32"
+	"github.com/kjanat/wazero/internal/u64"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 var testVersion = "0.0.1"
@@ -278,7 +278,6 @@ func TestDeserializeCompiledModule(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			cm, staleCache, err := deserializeCompiledModule(testVersion, io.NopCloser(bytes.NewReader(tc.in)))
 

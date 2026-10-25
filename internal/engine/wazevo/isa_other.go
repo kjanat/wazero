@@ -3,7 +3,7 @@
 package wazevo
 
 import (
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/backend"
+	"github.com/kjanat/wazero/internal/engine/wazevo/backend"
 )
 
 func newMachine() backend.Machine {

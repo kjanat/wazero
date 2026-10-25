@@ -1,6 +1,6 @@
 # wazero: the zero dependency WebAssembly runtime for Go developers
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/tetratelabs/wazero.svg)](https://pkg.go.dev/github.com/tetratelabs/wazero) [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Go Reference](https://pkg.go.dev/badge/github.com/kjanat/wazero.svg)](https://pkg.go.dev/github.com/kjanat/wazero) [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 WebAssembly is a way to safely run code compiled in other languages. Runtimes
 execute WebAssembly Modules (Wasm), which are most often binaries with a `.wasm`
@@ -69,7 +69,7 @@ or change internal details with a patch version, e.g. 1.0.0 to 1.0.1.
 
 You can get the latest version of wazero like this.
 ```bash
-go get github.com/tetratelabs/wazero@latest
+go get github.com/kjanat/wazero@latest
 ```
 
 Please give us a [star][10] if you end up using wazero!
