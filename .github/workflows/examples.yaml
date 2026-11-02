@@ -1,14 +1,14 @@
 name: Examples
 on:
   pull_request:
-    branches: [main]
+    branches: [master]
     paths:
       - '.github/workflows/examples.yaml'
       - 'examples/**'
       - 'imports/**/example/**'
       - 'Makefile'
   push:
-    branches: [main]
+    branches: [master]
     paths:
       - '.github/workflows/examples.yaml'
       - 'examples/**'

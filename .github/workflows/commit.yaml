@@ -2,13 +2,13 @@ name: Test
 on:
   workflow_dispatch:
   pull_request:
-    branches: [main]
+    branches: [master]
     paths-ignore:  # ignore docs as they are built with Netlify.
       - '**/*.md'
       - 'site/**'
       - 'netlify.toml'
   push:
-    branches: [main]
+    branches: [master]
     paths-ignore:  # ignore docs as they are built with Netlify.
       - '**/*.md'
       - 'site/**'
@@ -102,8 +102,8 @@ jobs:
         if: runner.os == 'Linux'
         run: make coverage
 
-      - name: "Upload coverage report"  # only on main push and only once (not per OS)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && runner.os == 'Linux'
+      - name: "Upload coverage report"  # only on master push and only once (not per OS)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master' && runner.os == 'Linux'
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
         run: bash <(curl -s https://codecov.io/bash)
@@ -302,6 +302,6 @@ jobs:
       # bugs which might exist in binary parser, validation, or instantiation phase while not pressuring CI jobs.
       - run: make fuzz fuzz_timeout_seconds=60
         if: ${{ github.event_name  == 'pull_request' }}
-      # Run a bit longer on main branch push!
+      # Run a bit longer on master branch push!
       - run: make fuzz fuzz_timeout_seconds=180
         if: ${{ github.event_name  == 'push' }}
