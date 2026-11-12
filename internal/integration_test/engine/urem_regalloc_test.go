@@ -6,9 +6,9 @@ import (
 	"encoding/binary"
 	"testing"
 
-	"github.com/tetratelabs/wazero"
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 //go:embed testdata/urem_regalloc.wasm

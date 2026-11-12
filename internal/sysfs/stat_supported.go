@@ -9,8 +9,8 @@ import (
 	"io/fs"
 	"os"
 
-	experimentalsys "github.com/tetratelabs/wazero/experimental/sys"
-	"github.com/tetratelabs/wazero/sys"
+	experimentalsys "github.com/kjanat/wazero/experimental/sys"
+	"github.com/kjanat/wazero/sys"
 )
 
 // dirNlinkIncludesDot is true because even though os.File filters out dot

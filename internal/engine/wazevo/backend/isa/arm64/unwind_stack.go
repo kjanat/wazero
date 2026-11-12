@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"unsafe"
 
-	"github.com/tetratelabs/wazero/internal/wasmdebug"
+	"github.com/kjanat/wazero/internal/wasmdebug"
 )
 
 // UnwindStack implements wazevo.unwindStack.

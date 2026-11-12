@@ -5,10 +5,10 @@ import (
 	"math"
 	"testing"
 
-	"github.com/tetratelabs/wazero"
-	"github.com/tetratelabs/wazero/experimental"
-	"github.com/tetratelabs/wazero/internal/testing/binaryencoding"
-	"github.com/tetratelabs/wazero/internal/testing/require"
+	"github.com/kjanat/wazero"
+	"github.com/kjanat/wazero/experimental"
+	"github.com/kjanat/wazero/internal/testing/binaryencoding"
+	"github.com/kjanat/wazero/internal/testing/require"
 )
 
 func TestTableLimiterFailedAllocationRefund(t *testing.T) {

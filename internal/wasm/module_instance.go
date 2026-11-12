@@ -5,8 +5,8 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/sys"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/sys"
 )
 
 // FailIfClosed returns a sys.ExitError if CloseWithExitCode was called.

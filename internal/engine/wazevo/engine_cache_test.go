@@ -8,10 +8,10 @@ import (
 	"testing"
 	"testing/iotest"
 
-	"github.com/tetratelabs/wazero/internal/testing/require"
-	"github.com/tetratelabs/wazero/internal/u32"
-	"github.com/tetratelabs/wazero/internal/u64"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/u32"
+	"github.com/kjanat/wazero/internal/u64"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 var testVersion = "0.0.1"

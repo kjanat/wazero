@@ -4,8 +4,8 @@ import (
 	"testing"
 	"unsafe"
 
-	"github.com/tetratelabs/wazero/internal/testing/require"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 func Test_Offsets(t *testing.T) {

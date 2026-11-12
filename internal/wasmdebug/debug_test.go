@@ -5,9 +5,9 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/internal/testing/require"
-	"github.com/tetratelabs/wazero/internal/wasmruntime"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/internal/testing/require"
+	"github.com/kjanat/wazero/internal/wasmruntime"
 )
 
 func TestFuncName(t *testing.T) {

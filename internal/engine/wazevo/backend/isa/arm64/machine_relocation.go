@@ -6,7 +6,7 @@ import (
 	"math"
 	"sort"
 
-	"github.com/tetratelabs/wazero/internal/engine/wazevo/backend"
+	"github.com/kjanat/wazero/internal/engine/wazevo/backend"
 )
 
 const (

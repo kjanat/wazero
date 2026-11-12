@@ -3,7 +3,7 @@ package experimental
 import (
 	"context"
 
-	"github.com/tetratelabs/wazero/internal/expctxkeys"
+	"github.com/kjanat/wazero/internal/expctxkeys"
 )
 
 // TableLimiter controls the number of elements allocated for WebAssembly tables.

@@ -8,8 +8,8 @@ import (
 	"sync/atomic"
 	"unsafe"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/experimental"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/experimental"
 )
 
 // Table describes the limits of elements and its type in a table.

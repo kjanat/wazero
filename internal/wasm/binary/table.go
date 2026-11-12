@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"fmt"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/internal/wasm"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/internal/wasm"
 )
 
 // decodeTable returns the wasm.Table decoded with the WebAssembly 1.0 (20191205) Binary Format.

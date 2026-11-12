@@ -10,9 +10,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/tetratelabs/wazero/api"
-	"github.com/tetratelabs/wazero/internal/wasmruntime"
-	"github.com/tetratelabs/wazero/sys"
+	"github.com/kjanat/wazero/api"
+	"github.com/kjanat/wazero/internal/wasmruntime"
+	"github.com/kjanat/wazero/sys"
 )
 
 // FuncName returns the naming convention of "moduleName.funcName".
