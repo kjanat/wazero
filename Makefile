@@ -37,20 +37,23 @@ build.examples.as:
 build.examples.zig: examples/allocation/zig/testdata/greet.wasm imports/wasi_snapshot_preview1/example/testdata/zig/cat.wasm imports/wasi_snapshot_preview1/testdata/zig/wasi.wasm
 	@cd internal/testing/dwarftestdata/testdata/zig; zig build; mv zig-out/*/main.wasm ./ # Need DWARF custom sections.
 
-tinygo_reactor_sources_reactor := examples/basic/testdata/add.go examples/allocation/tinygo/testdata/greet.go
+tinygo_sources_reactor := examples/basic/testdata/add.go examples/allocation/tinygo/testdata/greet.go
 .PHONY: build.examples.tinygo_reactor
 build.examples.tinygo_reactor: $(tinygo_sources_reactor)
 	@for f in $^; do \
-	    tinygo build -o $$(echo $$f | sed -e 's/\.go/\.wasm/') -scheduler=none --no-debug --target=wasip1 -buildmode=c-shared $$f; \
+	    tinygo build -o $$(echo $$f | sed -e 's/\.go/\.wasm/') -scheduler=none --no-debug --target=wasip1 -buildmode=c-shared $$f || exit 1; \
 	done
 
-tinygo_sources_clis := examples/cli/testdata/cli.go imports/wasi_snapshot_preview1/example/testdata/tinygo/cat.go imports/wasi_snapshot_preview1/testdata/tinygo/wasi.go cmd/wazero/testdata/cat/cat.go
+tinygo_sources_clis := imports/wasi_snapshot_preview1/example/testdata/tinygo/cat.go imports/wasi_snapshot_preview1/testdata/tinygo/wasi.go cmd/wazero/testdata/cat/cat.go
 .PHONY: build.examples.tinygo_clis
-build.examples.tinygo_clis: $(tinygo_sources_clis)
-	@for f in $^; do \
-	    tinygo build -o $$(echo $$f | sed -e 's/\.go/\.wasm/') -scheduler=none --no-debug --target=wasip1 $$f; \
+build.examples.tinygo_clis: $(tinygo_sources_clis) examples/cli/testdata/cli.go
+	@for f in $(tinygo_sources_clis); do \
+	    tinygo build -o $$(echo $$f | sed -e 's/\.go/\.wasm/') -scheduler=none --no-debug --target=wasip1 $$f || exit 1; \
 	done
 	@mv cmd/wazero/testdata/cat/cat.wasm cmd/wazero/testdata/cat/cat-tinygo.wasm
+# cli.go imports flag. Since Go 1.27 that import reaches a goroutine in the
+# time package, which TinyGo rejects with -scheduler=none.
+	@tinygo build -o examples/cli/testdata/cli.wasm --no-debug --target=wasip1 examples/cli/testdata/cli.go
 
 .PHONY: build.examples.tinygo
 build.examples.tinygo: build.examples.tinygo_reactor build.examples.tinygo_clis

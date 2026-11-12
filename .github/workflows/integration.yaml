@@ -128,7 +128,7 @@ jobs:
     strategy:
       fail-fast: false # don't fail fast as sometimes failures are arch/OS specific
       matrix:
-        os: [ubuntu-26.04, macos-26, windows-2022]
+        os: [ubuntu-26.04, macos-26, windows-2025]
 
     steps:
       - uses: actions/cache@v6
