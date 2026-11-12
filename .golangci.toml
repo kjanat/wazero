@@ -2,7 +2,7 @@ version = "2"
 
 [linters]
 default = "standard"
-enable  = ["testableexamples"]
+enable = ["testableexamples"]
 
 [linters.settings.staticcheck]
 checks = ["SA*", "S*"]
@@ -12,6 +12,6 @@ presets = ["comments", "common-false-positives", "legacy", "std-error-handling"]
 
 # wazevo calls these assembly entry points through go:linkname.
 [[linters.exclusions.rules]]
-path    = '^internal/engine/wazevo/backend/isa/(amd64|arm64)/abi_entry_(amd64|arm64)\.go$'
-text    = "func (entrypoint|afterGoFunctionCallEntrypoint) is unused"
+path = '^internal/engine/wazevo/backend/isa/(amd64|arm64)/abi_entry_(amd64|arm64)\.go$'
+text = "func (entrypoint|afterGoFunctionCallEntrypoint) is unused"
 linters = ["unused"]

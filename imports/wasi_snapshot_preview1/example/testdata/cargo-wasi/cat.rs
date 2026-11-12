@@ -10,7 +10,12 @@ fn main() {
         if let Ok(mut file) = File::open(&path) {
             io::copy(&mut file, &mut io::stdout()).unwrap();
         } else {
-            writeln!(io::stderr(), "error opening: {}: No such file or directory", path).unwrap();
+            writeln!(
+                io::stderr(),
+                "error opening: {}: No such file or directory",
+                path
+            )
+            .unwrap();
             exit(1);
         }
     }

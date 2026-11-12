@@ -5,6 +5,7 @@ golangci_lint := github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.15.0
 asmfmt        := github.com/klauspost/asmfmt/cmd/asmfmt@v1.3.2
 # sync this with netlify.toml!
 hugo          := github.com/gohugoio/hugo@v0.115.2
+kjanat_fmt    := @kjanat/fmt@0.62.0
 
 # Make 3.81 doesn't support '**' globbing: Set explicitly instead of recursion.
 all_sources   := $(wildcard *.go */*.go */*/*.go */*/*/*.go */*/*/*.go */*/*/*/*.go)
@@ -151,6 +152,7 @@ build.spectest:
 	@$(MAKE) build.spectest.extended_const
 	@$(MAKE) build.spectest.exception_handling
 	@$(MAKE) build.spectest.typed_function_references
+	@npx --yes $(kjanat_fmt) internal/integration_test/spectest
 
 .PHONY: build.spectest.v1
 build.spectest.v1: # Note: wabt by default uses >1.0 features, so wast2json flags might drift as they include more. See WebAssembly/wabt#1878

@@ -1,8 +1,8 @@
 use std::env;
 use std::fs;
 use std::io;
-use std::io::{Read,Write};
-use std::net::{TcpListener};
+use std::io::{Read, Write};
+use std::net::TcpListener;
 use std::os::wasi::io::FromRawFd;
 use std::process::exit;
 use std::str::from_utf8;
@@ -79,9 +79,10 @@ fn main_sock() {
 
                         // Exit instead of accepting another connection.
                         exit(0);
-                    },
+                    }
                     Err(e) => writeln!(io::stderr(), "failed to read data: {}", e).unwrap(),
-                } {}
+                }
+                {}
             }
             Err(e) => writeln!(io::stderr(), "failed to read connection: {}", e).unwrap(),
         }

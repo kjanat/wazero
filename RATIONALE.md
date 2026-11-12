@@ -221,8 +221,8 @@ the `NewXxx` constructor functions. In other words, there's less support load wh
 Here's an example:
 
 ```go
-rt := &RuntimeConfig{} // not initialized properly (fields are nil which shouldn't be)
-rt := RuntimeConfig{} // not initialized properly (should be a pointer)
+rt := &RuntimeConfig{}          // not initialized properly (fields are nil which shouldn't be)
+rt := RuntimeConfig{}           // not initialized properly (should be a pointer)
 rt := wazero.NewRuntimeConfig() // initialized properly
 ```
 
@@ -288,7 +288,7 @@ For example, both of these are the same sort of error:
 
 ```go
 append(slice, element) // bug as only the return value has the updated slice.
-cfg.WithName(next) // bug as only the return value has the updated name.
+cfg.WithName(next)     // bug as only the return value has the updated name.
 ```
 
 Here's an example of correct use: re-assigning explicitly or via chaining.
@@ -298,7 +298,7 @@ cfg = cfg.WithName(name) // explicit
 
 mod, err = rt.InstantiateModuleWithConfig(ctx, code, cfg.WithName(name)) // implicit
 if err != nil {
-  return err
+	return err
 }
 ```
 

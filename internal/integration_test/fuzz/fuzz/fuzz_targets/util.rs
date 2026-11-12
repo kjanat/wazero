@@ -19,7 +19,7 @@ use ctor::ctor;
 use libc::SIGSTKSZ;
 use libfuzzer_sys::arbitrary::Unstructured;
 use nix::libc::{sigaltstack, stack_t};
-use nix::sys::signal::{sigaction, SaFlags, SigAction, SigHandler, SigSet, Signal};
+use nix::sys::signal::{SaFlags, SigAction, SigHandler, SigSet, Signal, sigaction};
 use std::ptr::null_mut;
 use wasm_smith::Config;
 

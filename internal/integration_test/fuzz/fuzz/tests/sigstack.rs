@@ -2,9 +2,9 @@ extern crate libc;
 extern crate nix;
 
 use libc::SIGSTKSZ;
-use libc::{pthread_kill, pthread_self, SIGUSR1};
+use libc::{SIGUSR1, pthread_kill, pthread_self};
 use nix::sys::signal;
-use nix::sys::signal::{sigaction, SaFlags, SigAction, SigHandler, SigSet};
+use nix::sys::signal::{SaFlags, SigAction, SigHandler, SigSet, sigaction};
 use std::thread;
 use std::time::Duration;
 
@@ -43,9 +43,11 @@ fn main() {
         }
 
         let main_thread_id = pthread_self();
-        thread::spawn(move || loop {
-            thread::sleep(Duration::from_millis(1));
-            pthread_kill(main_thread_id, SIGUSR1);
+        thread::spawn(move || {
+            loop {
+                thread::sleep(Duration::from_millis(1));
+                pthread_kill(main_thread_id, SIGUSR1);
+            }
         });
         test_signal_stack();
     }
