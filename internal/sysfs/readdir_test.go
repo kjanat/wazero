@@ -35,7 +35,7 @@ func TestReaddirnames(t *testing.T) {
 		switch path {
 		case "dir/kqueue":
 			return sys.Stat_t{}, experimentalsys.EBADF
-		case "dir/removed":
+		case "dir/removed", "renamed", "renamed/file":
 			return sys.Stat_t{}, experimentalsys.ENOENT
 		case "dir/broken":
 			return sys.Stat_t{}, experimentalsys.EIO
@@ -75,6 +75,13 @@ func TestReaddirnames(t *testing.T) {
 		dirents, errno := readdirnames(dir, "dir", 1, lstat)
 		require.EqualErrno(t, 0, errno)
 		require.Zero(t, len(dirents))
+	})
+
+	t.Run("a directory that left its path fails the read", func(t *testing.T) {
+		dir := &fakeDir{names: []string{"file"}}
+
+		_, errno := readdirnames(dir, "renamed", -1, lstat)
+		require.EqualErrno(t, experimentalsys.ENOENT, errno)
 	})
 
 	t.Run("other stat errors fail the read", func(t *testing.T) {

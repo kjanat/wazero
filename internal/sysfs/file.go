@@ -544,12 +544,22 @@ func readdirnames(
 		}
 
 		dirents = make([]experimentalsys.Dirent, 0, len(names))
+		dirChecked := false
 		for _, name := range names {
 			var st sys.Stat_t
 			switch st, errno = lstat(path.Join(dirPath, name)); errno {
 			case 0:
 				dirents = append(dirents, experimentalsys.Dirent{Name: name, Ino: st.Ino, Type: st.Mode.Type()})
-			case experimentalsys.ENOENT, experimentalsys.EBADF:
+			case experimentalsys.EBADF:
+			case experimentalsys.ENOENT:
+				// The entry was removed, unless the directory itself was
+				// renamed or removed and dirPath names nothing anymore.
+				if !dirChecked {
+					if _, errno = lstat(dirPath); errno != 0 {
+						return nil, errno
+					}
+					dirChecked = true
+				}
 			default:
 				return nil, errno
 			}
