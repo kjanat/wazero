@@ -40,14 +40,14 @@ jobs:
           wasm_tools_url=https://github.com/bytecodealliance/wasm-tools/releases/download/v${wasm_tools_version}/wasm-tools-${wasm_tools_version}-x86_64-linux.tar.gz
           curl -sSL ${wasm_tools_url} | tar --strip-components 1 -C /usr/local/bin -xzf - wasm-tools-${wasm_tools_version}-x86_64-linux/wasm-tools
 
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with: # not cache: true as we also need to cache golint
           cache: false
           go-version: ${{ env.GO_VERSION }}
 
-      - uses: actions/cache@v5
+      - uses: actions/cache@v6
         with:
           path: |
             ~/.cache/go-build
@@ -77,9 +77,9 @@ jobs:
           - "1.27" # Floor Go version of wazero
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ matrix.go-version }}
 
@@ -126,9 +126,9 @@ jobs:
             arch: riscv64
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-go@v6
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ matrix.go-version }}
 
@@ -187,7 +187,7 @@ jobs:
             version: "10.1"
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Build test binaries
         run: |
@@ -202,7 +202,7 @@ jobs:
           GOOS: ${{ matrix.os.name }}
 
       - name: Run built test binaries
-        uses: cross-platform-actions/action@v0.32.0
+        uses: cross-platform-actions/action@v1.7.0
         env:
           WAZEROCLI: ./wazerocli
         with:
@@ -232,7 +232,7 @@ jobs:
             action: "vmactions/solaris-vm@v1"
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Build test binaries
         run: |
@@ -272,12 +272,12 @@ jobs:
             arch: arm64
 
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-go@v6
+      - uses: actions/checkout@v7
+      - uses: actions/setup-go@v7
         with:
           go-version: ${{ env.GO_VERSION }}
 
-      - uses: actions/cache@v5
+      - uses: actions/cache@v6
         id: cache
         with:
           # Cache corpus and artifacts so that we don't start from scratch but rather with a meaningful corpus
