@@ -32,7 +32,7 @@ concurrency:
 jobs:
   check:
     name: Pre-commit check
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Install latest wast2json and wasm-tools
         run: | # Needed for build.spectest. wabt includes wast2json; wasm-tools is used for exception-handling spectests.
@@ -70,7 +70,7 @@ jobs:
       fail-fast: false # don't fail fast as sometimes failures are arch/OS specific
       matrix: # Use versions consistent with wazero's Go support policy.
         platform:
-          - os: ubuntu-24.04
+          - os: ubuntu-26.04
             arch: amd64
           - os: windows-2025
             arch: amd64
@@ -118,15 +118,13 @@ jobs:
         go-version:
           - "1.27" # Floor Go version of wazero
         platform:
-          - os: ubuntu-24.04
+          - os: ubuntu-26.04
             arch: amd64
-          - os: ubuntu-24.04
+          - os: ubuntu-26.04
             arch: amd64
             no_prot_exec: true
-          - os: ubuntu-24.04-arm
+          - os: ubuntu-26.04-arm
             arch: arm64
-          - os: ubuntu-24.04-riscv
-            arch: riscv64
 
     steps:
       - uses: actions/checkout@v7
@@ -184,7 +182,7 @@ jobs:
 
   test_bsd:
     name: amd64, ${{ matrix.os.name }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     strategy:
       fail-fast: false # don't fail fast as sometimes failures are OS specific
       matrix:
@@ -228,7 +226,7 @@ jobs:
 
   test_vm:
     name: amd64, ${{ matrix.os.name }}
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     strategy:
       fail-fast: false # don't fail fast as sometimes failures are OS specific
       matrix:
@@ -288,7 +286,7 @@ jobs:
       fail-fast: false # don't fail fast as sometimes failures are arch/OS specific
       matrix: # Use versions consistent with wazero's Go support policy.
         platform:
-          - os: ubuntu-24.04
+          - os: ubuntu-26.04
             arch: amd64
           - os: macos-26
             arch: arm64

@@ -14,7 +14,7 @@ jobs:
   copy-images:
     permissions:
       packages: write
-    runs-on: ubuntu-24.04 # Hard-coding an LTS means maintenance, but only once each 2 years!
+    runs-on: ubuntu-26.04 # Hard-coding an LTS means maintenance, but only once each 2 years!
     strategy:
       matrix:
         # Be precise in tag versions to improve reproducibility

@@ -28,7 +28,7 @@ concurrency:
 jobs:
   pre_release:
     name: Pre-release build
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     # This allows us to test in the following job regardless of the event (tag or not).
     outputs:
       VERSION: ${{ steps.dist.outputs.VERSION }}
@@ -83,7 +83,7 @@ jobs:
     strategy:
       fail-fast: false # don't fail fast as sometimes failures are arch/OS specific
       matrix:
-        os: [ubuntu-24.04, macos-26, windows-2025]
+        os: [ubuntu-26.04, macos-26, windows-2025]
 
     steps:
       - uses: actions/checkout@v7
@@ -126,7 +126,7 @@ jobs:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     needs: pre_release_test
     name: Release
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     permissions:
       contents: write
     steps:
