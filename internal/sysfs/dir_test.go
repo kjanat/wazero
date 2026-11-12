@@ -37,7 +37,6 @@ func TestFSFileReaddir(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-
 		t.Run(tc.name, func(t *testing.T) {
 			dotF, errno := sysfs.OpenFSFile(tc.fs, ".", sys.O_RDONLY, 0)
 			require.EqualErrno(t, 0, errno)

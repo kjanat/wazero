@@ -12,7 +12,7 @@ This demo configures AssemblyScript imports for errors and trace messages.
 ```bash
 $ go run assemblyscript.go 7
 hello_world returned: 10
-sad sad world at index.ts:7:3
+sad sad world at index.ts:7:2
 ```
 
 Note: [index.ts](testdata/index.ts) avoids use of JavaScript functions that use

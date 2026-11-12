@@ -2549,7 +2549,6 @@ blk9: () <-- (blk4)
 `,
 		},
 	} {
-
 		t.Run(tc.name, func(t *testing.T) {
 			// Just in case let's check the test module is valid.
 			features := tc.features

@@ -231,7 +231,6 @@ func TestFileIno(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-
 		t.Run(tc.name, func(t *testing.T) {
 			d, errno := OpenFSFile(tc.fs, ".", experimentalsys.O_RDONLY, 0)
 			require.EqualErrno(t, 0, errno)
@@ -269,7 +268,6 @@ func TestFileIsDir(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-
 		t.Run(tc.name, func(t *testing.T) {
 			t.Run("file", func(t *testing.T) {
 				f, errno := OpenFSFile(tc.fs, wazeroFile, experimentalsys.O_RDONLY, 0)
@@ -319,7 +317,6 @@ func TestFileReadAndPread(t *testing.T) {
 	buf := make([]byte, 3)
 
 	for _, tc := range tests {
-
 		t.Run(tc.name, func(t *testing.T) {
 			f, errno := OpenFSFile(tc.fs, wazeroFile, experimentalsys.O_RDONLY, 0)
 			require.EqualErrno(t, 0, errno)
@@ -534,7 +531,6 @@ func TestFileRead_empty(t *testing.T) {
 	buf := make([]byte, 3)
 
 	for _, tc := range tests {
-
 		t.Run(tc.name, func(t *testing.T) {
 			f, errno := OpenFSFile(tc.fs, emptyFile, experimentalsys.O_RDONLY, 0)
 			require.EqualErrno(t, 0, errno)
@@ -603,7 +599,6 @@ func TestFileRead_Errors(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-
 		t.Run(tc.name, func(t *testing.T) {
 			t.Run("EBADF when not open for reading", func(t *testing.T) {
 				// The descriptor exists, but not open for reading
@@ -640,7 +635,6 @@ func TestFileSeek(t *testing.T) {
 	buf := make([]byte, 3)
 
 	for _, tc := range tests {
-
 		t.Run(tc.name, func(t *testing.T) {
 			f, errno := tc.openFile(wazeroFile)
 			require.EqualErrno(t, 0, errno)
@@ -738,7 +732,6 @@ func TestFileSeek_empty(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-
 		t.Run(tc.name, func(t *testing.T) {
 			f, errno := OpenFSFile(tc.fs, emptyFile, experimentalsys.O_RDONLY, 0)
 			require.EqualErrno(t, 0, errno)
@@ -849,7 +842,6 @@ func TestFileWrite_empty(t *testing.T) {
 	var emptyBuf []byte
 
 	for _, tc := range tests {
-
 		t.Run(tc.name, func(t *testing.T) {
 			n, errno := tc.fn(f, emptyBuf)
 			require.EqualErrno(t, 0, errno)
@@ -887,7 +879,6 @@ func TestFileWrite_Unsupported(t *testing.T) {
 	buf := []byte("wazero")
 
 	for _, tc := range tests {
-
 		t.Run(tc.name, func(t *testing.T) {
 			_, errno := tc.fn(f, buf)
 			require.EqualErrno(t, experimentalsys.ENOSYS, errno)
@@ -923,7 +914,6 @@ func TestFileWrite_Errors(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-
 		t.Run(tc.name, func(t *testing.T) {
 			t.Run("EBADF when not open for writing", func(t *testing.T) {
 				// The descriptor exists, but not open for writing
