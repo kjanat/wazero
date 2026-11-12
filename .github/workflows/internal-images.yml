@@ -12,6 +12,8 @@ on:
 # Using these avoid docker.io rate-limits particularly on pull requests.
 jobs:
   copy-images:
+    permissions:
+      packages: write
     runs-on: ubuntu-24.04 # Hard-coding an LTS means maintenance, but only once each 2 years!
     strategy:
       matrix:

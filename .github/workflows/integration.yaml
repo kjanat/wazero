@@ -23,6 +23,9 @@ env: # Update this prior to requiring a higher minor version in go.mod
   BINARYEN_VERSION: "116"
   STDLIB_TESTS: "internal/integration_test/stdlibs"
 
+permissions:
+  contents: read
+
 concurrency:
   # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-using-concurrency-to-cancel-any-in-progress-job-or-run
   group: ${{ github.ref }}-${{ github.workflow }}-${{ github.actor }}
@@ -33,9 +36,9 @@ jobs:
     name: Build Zig test binary
     runs-on: ubuntu-24.04
     env:
-      ZIG_INSTALL: ~/zig-install
-      ZIG_SOURCE: ~/zig-source
-      BINARYEN_INSTALL: ~/binaryen-install
+      ZIG_INSTALL: zig-install
+      ZIG_SOURCE: zig-source
+      BINARYEN_INSTALL: binaryen-install
 
     steps:
       - name: Checkout wazero
@@ -53,27 +56,27 @@ jobs:
       - name: Install Zig build
         if: steps.binary-cache.outputs.cache-hit != 'true'
         run: |
-          mkdir -p ${{ env.ZIG_INSTALL }}
-          curl -sSL https://ziglang.org/download/${{ env.ZIG_VERSION }}/zig-linux-x86_64-${{ env.ZIG_VERSION }}.tar.xz | tar -xJ --strip-components=1 -C ${{ env.ZIG_INSTALL }}
+          mkdir -p "$HOME/$ZIG_INSTALL"
+          curl -sSL "https://ziglang.org/download/${ZIG_VERSION}/zig-linux-x86_64-${ZIG_VERSION}.tar.xz" | tar -xJ --strip-components=1 -C "$HOME/$ZIG_INSTALL"
 
       - name: Download Zig source code
         if: steps.binary-cache.outputs.cache-hit != 'true'
         run: |
-          mkdir -p ${{ env.ZIG_SOURCE }}
-          curl -sSL https://ziglang.org/download/${{ env.ZIG_VERSION }}/zig-${{ env.ZIG_VERSION }}.tar.xz | tar -xJ --strip-components=1 -C ${{ env.ZIG_SOURCE }}
+          mkdir -p "$HOME/$ZIG_SOURCE"
+          curl -sSL "https://ziglang.org/download/${ZIG_VERSION}/zig-${ZIG_VERSION}.tar.xz" | tar -xJ --strip-components=1 -C "$HOME/$ZIG_SOURCE"
 
       - name: Install Binaryen build
         if: steps.binary-cache.outputs.cache-hit != 'true'
         run: |
-          mkdir -p ${{ env.BINARYEN_INSTALL }}
-          curl -sSL https://github.com/WebAssembly/binaryen/releases/download/version_${{ env.BINARYEN_VERSION }}/binaryen-version_${{ env.BINARYEN_VERSION }}-x86_64-linux.tar.gz | tar -xz --strip-components=1 -C ${{ env.BINARYEN_INSTALL }}
+          mkdir -p "$HOME/$BINARYEN_INSTALL"
+          curl -sSL "https://github.com/WebAssembly/binaryen/releases/download/version_${BINARYEN_VERSION}/binaryen-version_${BINARYEN_VERSION}-x86_64-linux.tar.gz" | tar -xz --strip-components=1 -C "$HOME/$BINARYEN_INSTALL"
 
       - name: Build Stdlib test binary
         if: steps.binary-cache.outputs.cache-hit != 'true'
         run: |
-          PATH=${{ env.ZIG_INSTALL }}:${{ env.BINARYEN_INSTALL }}/bin:$PATH
-          cd ${{ env.STDLIB_TESTS }}
-          make build.zig zigroot=${{ env.ZIG_SOURCE }}
+          PATH="$HOME/$ZIG_INSTALL:$HOME/$BINARYEN_INSTALL/bin:$PATH"
+          cd "$STDLIB_TESTS"
+          make build.zig zigroot="$HOME/$ZIG_SOURCE"
 
   zig:
     needs: build_zig_test_binary
@@ -116,7 +119,7 @@ jobs:
 
       - name: Run built test binaries
         run: |
-          cd ${{ env.STDLIB_TESTS }}
+          cd "$STDLIB_TESTS"
           go test -bench='BenchmarkZig' -timeout=20m -benchtime=1x
 
   wasi-testsuite:
@@ -219,7 +222,7 @@ jobs:
       - if: ${{ steps.cache-go-test-binaries.outputs.cache-hit != 'true' }}
         name: Build Test Binaries
         run: |
-          cd ${{ env.STDLIB_TESTS }}
+          cd "$STDLIB_TESTS"
           make build.gowasip1
 
       # The wasip1 stdlib tests are really path sensitive, so they expect a writeable /tmp directory to be available.
@@ -230,7 +233,7 @@ jobs:
 
       - name: Run built test binaries
         run: |
-          cd ${{ env.STDLIB_TESTS }}
+          cd "$STDLIB_TESTS"
           go test -bench='BenchmarkWasip1' -timeout=20m -benchtime=1x
 
   libsodium:

@@ -21,6 +21,9 @@ defaults:
   run: # use bash for all operating systems unless overridden
     shell: bash
 
+permissions:
+  contents: read
+
 concurrency:
   # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#example-using-concurrency-to-cancel-any-in-progress-job-or-run
   group: ${{ github.ref }}-${{ github.workflow }}-${{ github.actor }}
@@ -134,9 +137,9 @@ jobs:
 
       - name: Build test binaries
         run: |
-          parent="$(dirname $PWD)/"
-          go list -f '{{.Dir}}' ./... | egrep -v 'spectest' | while IFS= read -r pkg; do
-          basepath="${pkg#${parent}}"
+          parent="$(dirname "$PWD")/"
+          go list -f '{{.Dir}}' ./... | grep -E -v 'spectest' | while IFS= read -r pkg; do
+          basepath="${pkg#"${parent}"}"
           echo go test "${pkg}" -c -o "_tests/${basepath}.test"
           go test "${pkg}" -c -o "_tests/${basepath}.test"
           done
@@ -170,7 +173,14 @@ jobs:
 
       - name: Run built test binaries
         # This runs all tests compiled above in sequence. Note: This mounts /tmp to allow t.TempDir() in tests.
-        run: find _tests -name "*.test" | xargs -t -Itestbin docker run --platform linux/${{ matrix.platform.arch }} -v $(pwd)/testbin:/test -v $(pwd)/wazerocli:/wazero -e WAZEROCLI=/wazero --tmpfs /tmp ${{ matrix.platform.no_prot_exec && '--security-opt seccomp=$PWD/no-prot-exec.json' }} --rm -t wazero:test
+        env:
+          NO_PROT_EXEC: ${{ matrix.platform.no_prot_exec }}
+        run: |
+          seccomp=()
+          if [ "$NO_PROT_EXEC" = true ]; then
+            seccomp=(--security-opt "seccomp=$PWD/no-prot-exec.json")
+          fi
+          find _tests -name "*.test" -print0 | xargs -0 -t -Itestbin docker run --platform linux/${{ matrix.platform.arch }} -v "$PWD/testbin:/test" -v "$PWD/wazerocli:/wazero" -e WAZEROCLI=/wazero --tmpfs /tmp "${seccomp[@]}" --rm -t wazero:test
 
   test_bsd:
     name: amd64, ${{ matrix.os.name }}
@@ -191,9 +201,9 @@ jobs:
 
       - name: Build test binaries
         run: |
-          parent="$(dirname $PWD)/"
-          go list -f '{{.Dir}}' ./... | egrep -v 'imports|sysfs' | while IFS= read -r pkg; do
-          basepath="${pkg#${parent}}"
+          parent="$(dirname "$PWD")/"
+          go list -f '{{.Dir}}' ./... | grep -E -v 'imports|sysfs' | while IFS= read -r pkg; do
+          basepath="${pkg#"${parent}"}"
           echo go test "${pkg}" -c -o "_tests/${basepath}.test"
           go test "${pkg}" -c -o "_tests/${basepath}.test"
           done
@@ -201,18 +211,20 @@ jobs:
         env:
           GOOS: ${{ matrix.os.name }}
 
-      - name: Run built test binaries
+      - name: Start VM
         uses: cross-platform-actions/action@v1.7.0
-        env:
-          WAZEROCLI: ./wazerocli
         with:
           operating_system: ${{ matrix.os.name }}
           version: ${{ matrix.os.version }}
           shell: bash
           sync_files: runner-to-vm
-          environment_variables: WAZEROCLI
-          # This runs all tests compiled above in sequence.
-          run: find _tests -name "*.test" | xargs -t -Itestbin nice testbin -test.short -test.v
+
+      - name: Run built test binaries
+        shell: cpa.sh {0} --sync-files runner-to-vm --environment-variables WAZEROCLI
+        env:
+          WAZEROCLI: ./wazerocli
+        # This runs all tests compiled above in sequence.
+        run: find _tests -name "*.test" | xargs -t -Itestbin nice testbin -test.short -test.v
 
   test_vm:
     name: amd64, ${{ matrix.os.name }}
@@ -223,39 +235,49 @@ jobs:
         os:
           - name: dragonfly
             version: "6.4.2"
-            action: "vmactions/dragonflybsd-vm@v1"
           - name: illumos
             version: "r151054"
-            action: "vmactions/omnios-vm@v1"
           - name: solaris
             version: "11.4"
-            action: "vmactions/solaris-vm@v1"
 
     steps:
       - uses: actions/checkout@v7
 
       - name: Build test binaries
         run: |
-          parent="$(dirname $PWD)/"
-          go list -f '{{.Dir}}' ./... | egrep -v 'imports|sysfs' | while IFS= read -r pkg; do
-          basepath="${pkg#${parent}}"
+          parent="$(dirname "$PWD")/"
+          go list -f '{{.Dir}}' ./... | grep -E -v 'imports|sysfs' | while IFS= read -r pkg; do
+          basepath="${pkg#"${parent}"}"
           echo go test "${pkg}" -c -o "_tests/${basepath}.test"
           go test "${pkg}" -c -o "_tests/${basepath}.test"
           done
           go build -o wazerocli ./cmd/wazero
-          envsubst < ./.github/actions/vmactions/template.yml > ./.github/actions/vmactions/action.yml
         env:
           GOOS: ${{ matrix.os.name }}
-          VMACTIONS: ${{ matrix.os.action }}
 
-      - name: Run built test binaries
-        uses: ./.github/actions/vmactions
-        env:
+      - name: Run built test binaries (dragonfly)
+        if: matrix.os.name == 'dragonfly'
+        uses: vmactions/dragonflybsd-vm@v1
+        env: &vm-env
           WAZEROCLI: ./wazerocli
-        with:
+        with: &vm-with
+          usesh: true
+          copyback: false
           envs: WAZEROCLI
           # This runs all tests compiled above in sequence.
           run: find _tests -name "*.test" | xargs -t -Itestbin nice testbin -test.short -test.v
+
+      - name: Run built test binaries (illumos)
+        if: matrix.os.name == 'illumos'
+        uses: vmactions/omnios-vm@v1
+        env: *vm-env
+        with: *vm-with
+
+      - name: Run built test binaries (solaris)
+        if: matrix.os.name == 'solaris'
+        uses: vmactions/solaris-vm@v1
+        env: *vm-env
+        with: *vm-with
 
   # This ensures that internal/integration_test/fuzz is runnable, and is not intended to
   # run full-length fuzzing while trying to find low-hanging frontend bugs.
