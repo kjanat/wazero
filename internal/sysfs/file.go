@@ -552,8 +552,8 @@ func readdirnames(
 				dirents = append(dirents, experimentalsys.Dirent{Name: name, Ino: st.Ino, Type: st.Mode.Type()})
 			case experimentalsys.EBADF:
 			case experimentalsys.ENOENT:
-				// Either the entry was removed, or the directory was renamed
-				// or removed. lstat of dirPath tells the two apart.
+				// The entry was removed, or the directory was renamed or
+				// removed. In the second case lstat(dirPath) fails as well.
 				if !dirChecked {
 					if _, errno = lstat(dirPath); errno != 0 {
 						return nil, errno
