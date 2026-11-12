@@ -57,7 +57,7 @@ func TestReaddirnames(t *testing.T) {
 		}, dirents)
 	})
 
-	t.Run("a skipped batch is not the end of the directory", func(t *testing.T) {
+	t.Run("keeps reading after a batch of skipped entries", func(t *testing.T) {
 		dir := &fakeDir{names: []string{"kqueue", "file"}}
 
 		dirents, errno := readdirnames(dir, "dir", 1, lstat)
@@ -69,7 +69,7 @@ func TestReaddirnames(t *testing.T) {
 		require.Zero(t, len(dirents))
 	})
 
-	t.Run("only skipped entries read as an empty directory", func(t *testing.T) {
+	t.Run("returns no entries when it skips every entry", func(t *testing.T) {
 		dir := &fakeDir{names: []string{"kqueue"}}
 
 		dirents, errno := readdirnames(dir, "dir", 1, lstat)
@@ -77,14 +77,14 @@ func TestReaddirnames(t *testing.T) {
 		require.Zero(t, len(dirents))
 	})
 
-	t.Run("a directory that left its path fails the read", func(t *testing.T) {
+	t.Run("returns ENOENT after the directory is renamed or removed", func(t *testing.T) {
 		dir := &fakeDir{names: []string{"file"}}
 
 		_, errno := readdirnames(dir, "renamed", -1, lstat)
 		require.EqualErrno(t, experimentalsys.ENOENT, errno)
 	})
 
-	t.Run("other stat errors fail the read", func(t *testing.T) {
+	t.Run("returns other stat errors", func(t *testing.T) {
 		dir := &fakeDir{names: []string{"file", "broken"}}
 
 		_, errno := readdirnames(dir, "dir", -1, lstat)

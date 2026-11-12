@@ -552,8 +552,8 @@ func readdirnames(
 				dirents = append(dirents, experimentalsys.Dirent{Name: name, Ino: st.Ino, Type: st.Mode.Type()})
 			case experimentalsys.EBADF:
 			case experimentalsys.ENOENT:
-				// The entry was removed, unless the directory itself was
-				// renamed or removed and dirPath names nothing anymore.
+				// Either the entry was removed, or the directory was renamed
+				// or removed. lstat of dirPath tells the two apart.
 				if !dirChecked {
 					if _, errno = lstat(dirPath); errno != 0 {
 						return nil, errno
@@ -565,7 +565,7 @@ func readdirnames(
 			}
 		}
 
-		// A batch of skipped entries is not the end of the directory.
+		// Read the next batch when this one had only skipped entries.
 		if n <= 0 || len(names) == 0 || len(dirents) > 0 {
 			return dirents, 0
 		}
