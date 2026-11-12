@@ -386,6 +386,6 @@ dist/wazero_$(VERSION)_%.zip: build/wazero_%/wazero.exe
 # Darwin doesn't have sha256sum. See https://github.com/actions/virtual-environments/issues/90
 sha256sum := $(if $(findstring darwin,$(shell go env GOOS)),shasum -a 256,sha256sum)
 $(checksum_txt): $(non_windows_archives) $(windows_archives)
-	@cd $(@D); touch $(@F); $(sha256sum) * > $(@F)
+	@cd $(@D) && $(sha256sum) $(notdir $^) > $(@F)
 
 dist: $(non_windows_archives) $(windows_archives) $(checksum_txt)
