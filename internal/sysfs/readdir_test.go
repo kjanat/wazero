@@ -10,8 +10,8 @@ import (
 	"github.com/kjanat/wazero/sys"
 )
 
-// fakeDir returns its names like os.File.Readdirnames does: at most n per
-// call when n > 0, and io.EOF once a positive n finds nothing left.
+// fakeDir follows the contract of os.File.Readdirnames. A positive n returns
+// at most n names, and io.EOF when no names are left.
 type fakeDir struct{ names []string }
 
 func (d *fakeDir) Readdirnames(n int) ([]string, error) {

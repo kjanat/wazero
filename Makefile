@@ -51,8 +51,9 @@ build.examples.tinygo_clis: $(tinygo_sources_clis) examples/cli/testdata/cli.go
 	    tinygo build -o $$(echo $$f | sed -e 's/\.go/\.wasm/') -scheduler=none --no-debug --target=wasip1 $$f || exit 1; \
 	done
 	@mv cmd/wazero/testdata/cat/cat.wasm cmd/wazero/testdata/cat/cat-tinygo.wasm
-# cli.go imports flag. Since Go 1.27 that import reaches a goroutine in the
-# time package, which TinyGo rejects with -scheduler=none.
+# cli.go imports flag. With Go 1.27 and -scheduler=none, TinyGo fails to
+# build a program that imports flag. The error is "attempted to start a
+# goroutine without a scheduler" in time/sleep.go.
 	@tinygo build -o examples/cli/testdata/cli.wasm --no-debug --target=wasip1 examples/cli/testdata/cli.go
 
 .PHONY: build.examples.tinygo

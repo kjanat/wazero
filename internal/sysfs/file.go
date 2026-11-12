@@ -521,16 +521,18 @@ func readdir(f readdirFile, path string, n int) (dirents []experimentalsys.Diren
 	return
 }
 
-// readdirnamesFile is a directory that lists the names of its entries, such
-// as os.File.
+// readdirnamesFile is the method of os.File that readdirnames calls.
 type readdirnamesFile interface {
 	Readdirnames(n int) ([]string, error)
 }
 
-// readdirnames stats each entry by path and skips an entry the host cannot
-// stat. os.File.Readdir fails the whole read in that case, and so does
-// os.File.ReadDir before Go 1.27: on darwin, lstat of the kqueue descriptor
-// listed in /dev/fd returns EBADF. See https://go.dev/issue/80143
+// readdirnames lists the names in a directory and runs lstat on each name.
+// It skips a name whose lstat returns EBADF or ENOENT.
+//
+// On darwin, /dev/fd lists the kqueue descriptor of the Go runtime, and lstat
+// of that descriptor returns EBADF. os.File.Readdir returns that error for
+// the whole directory. os.File.ReadDir does the same before Go 1.27.
+// See https://go.dev/issue/80143
 func readdirnames(
 	f readdirnamesFile,
 	dirPath string,
