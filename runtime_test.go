@@ -39,7 +39,7 @@ func (h *HostContext) Done() <-chan struct{} { return nil }
 
 func (h *HostContext) Err() error { return nil }
 
-func (h *HostContext) Value(key interface{}) interface{} { return nil }
+func (h *HostContext) Value(key any) any { return nil }
 
 func TestRuntime_CompileModule(t *testing.T) {
 	tests := []struct {
@@ -887,7 +887,7 @@ func TestNewRuntime_concurrent(t *testing.T) {
 		configs[1] = NewRuntimeConfigInterpreter().WithCompilationCache(c)
 	}
 	wg.Add(num)
-	for i := 0; i < num; i++ {
+	for i := range num {
 		i := i
 		go func() {
 			defer wg.Done()

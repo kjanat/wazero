@@ -52,7 +52,6 @@ func Test_buildHostModuleOpaque(t *testing.T) {
 			listeners: make([]experimental.FunctionListener, 50),
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			got := buildHostModuleOpaque(tc.m, tc.listeners)
 			opaque := uintptr(unsafe.Pointer(&got[0]))

@@ -103,7 +103,7 @@ func TestWriteFdNonblock(t *testing.T) {
 	// From `man 7 pipe`, the default maximum pipe size is 1MiB, so write
 	// more than that to the file until the pipe buffer gets filled up.
 	numWrites := 1111
-	for i := 0; i < numWrites; i++ {
+	for range numWrites {
 		_, e := writeFd(fd, buf)
 		if e != 0 {
 			if runtime.GOOS == "windows" {
@@ -231,7 +231,6 @@ func TestFileIno(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 
 		t.Run(tc.name, func(t *testing.T) {
 			d, errno := OpenFSFile(tc.fs, ".", experimentalsys.O_RDONLY, 0)
@@ -270,7 +269,6 @@ func TestFileIsDir(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 
 		t.Run(tc.name, func(t *testing.T) {
 			t.Run("file", func(t *testing.T) {
@@ -321,7 +319,6 @@ func TestFileReadAndPread(t *testing.T) {
 	buf := make([]byte, 3)
 
 	for _, tc := range tests {
-		tc := tc
 
 		t.Run(tc.name, func(t *testing.T) {
 			f, errno := OpenFSFile(tc.fs, wazeroFile, experimentalsys.O_RDONLY, 0)
@@ -469,7 +466,7 @@ func TestFsFileNonblock(t *testing.T) {
 	defer memFile.Close()
 
 	// An fs.File implementing IsNonblock/SetNonblock gets forwarded.
-	nbf := &nonblockFsFile{pollableFsFile: pollableFsFile{File: memFile}}
+	nbf := &nonblockFsFile{File: memFile}
 	f := &fsFile{file: nbf}
 
 	require.False(t, f.IsNonblock())
@@ -537,7 +534,6 @@ func TestFileRead_empty(t *testing.T) {
 	buf := make([]byte, 3)
 
 	for _, tc := range tests {
-		tc := tc
 
 		t.Run(tc.name, func(t *testing.T) {
 			f, errno := OpenFSFile(tc.fs, emptyFile, experimentalsys.O_RDONLY, 0)
@@ -607,7 +603,6 @@ func TestFileRead_Errors(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 
 		t.Run(tc.name, func(t *testing.T) {
 			t.Run("EBADF when not open for reading", func(t *testing.T) {
@@ -645,7 +640,6 @@ func TestFileSeek(t *testing.T) {
 	buf := make([]byte, 3)
 
 	for _, tc := range tests {
-		tc := tc
 
 		t.Run(tc.name, func(t *testing.T) {
 			f, errno := tc.openFile(wazeroFile)
@@ -744,7 +738,6 @@ func TestFileSeek_empty(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 
 		t.Run(tc.name, func(t *testing.T) {
 			f, errno := OpenFSFile(tc.fs, emptyFile, experimentalsys.O_RDONLY, 0)
@@ -856,7 +849,6 @@ func TestFileWrite_empty(t *testing.T) {
 	var emptyBuf []byte
 
 	for _, tc := range tests {
-		tc := tc
 
 		t.Run(tc.name, func(t *testing.T) {
 			n, errno := tc.fn(f, emptyBuf)
@@ -895,7 +887,6 @@ func TestFileWrite_Unsupported(t *testing.T) {
 	buf := []byte("wazero")
 
 	for _, tc := range tests {
-		tc := tc
 
 		t.Run(tc.name, func(t *testing.T) {
 			_, errno := tc.fn(f, buf)
@@ -932,7 +923,6 @@ func TestFileWrite_Errors(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 
 		t.Run(tc.name, func(t *testing.T) {
 			t.Run("EBADF when not open for writing", func(t *testing.T) {

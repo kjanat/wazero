@@ -92,11 +92,12 @@ codebase productive.
 ### Avoiding cyclic dependencies
 
 wazero shares constants and interfaces with internal code by a sharing pattern described below:
-* shared interfaces and constants go in one package under root: `api`.
-* user APIs and structs depend on `api` and go into the root package `wazero`.
-  * e.g. `InstantiateModule` -> `/wasm.go` depends on the type `api.Module`.
-* implementation code can also depend on `api` in a corresponding package under `/internal`.
-  * Ex  package `wasm` -> `/internal/wasm/*.go` and can depend on the type `api.Module`.
+
+- shared interfaces and constants go in one package under root: `api`.
+- user APIs and structs depend on `api` and go into the root package `wazero`.
+  - e.g. `InstantiateModule` -> `/wasm.go` depends on the type `api.Module`.
+- implementation code can also depend on `api` in a corresponding package under `/internal`.
+  - Ex package `wasm` -> `/internal/wasm/*.go` and can depend on the type `api.Module`.
 
 The above guarantees no cyclic dependencies at the cost of having to re-define symbols that exist in both packages.
 For example, if `wasm.Store` is a type the user needs access to, it is narrowed by a cover type in the `wazero`:
@@ -120,8 +121,9 @@ field.
 In practice, this means shared functionality like memory mutation need to be implemented by interfaces.
 
 Here are some examples:
-* `api.Memory` protects access by exposing functions like `WriteFloat64Le` instead of exporting a buffer (`[]byte`).
-* There is no exported symbol for the `[]byte` representing the `CodeSection`
+
+- `api.Memory` protects access by exposing functions like `WriteFloat64Le` instead of exporting a buffer (`[]byte`).
+- There is no exported symbol for the `[]byte` representing the `CodeSection`
 
 Besides security, this practice prevents other bugs and allows centralization of validation logic such as decoding Wasm.
 
@@ -161,6 +163,7 @@ nullary signature), for example a start function.
 
 Here's an example of calling a function, noting this syntax works for both a
 signature `(param i32 i32) (result i32)` and `(param i64 i64) (result i64)`
+
 ```go
 x, y := uint64(1), uint64(2)
 results, err := mod.ExportedFunction("add").Call(ctx, x, y)
@@ -216,6 +219,7 @@ internal flexibility and avoiding people accidentally mis-initializing by instan
 the `NewXxx` constructor functions. In other words, there's less support load when things can't be done incorrectly.
 
 Here's an example:
+
 ```go
 rt := &RuntimeConfig{} // not initialized properly (fields are nil which shouldn't be)
 rt := RuntimeConfig{} // not initialized properly (should be a pointer)
@@ -223,9 +227,10 @@ rt := wazero.NewRuntimeConfig() // initialized properly
 ```
 
 There are a few drawbacks to this, notably some work for maintainers.
-* Interfaces are decoupled from the structs implementing them, which means the signature has to be repeated twice.
-* Interfaces have to be documented and guarded at time of use, that 3rd party implementations aren't supported.
-* As of Golang 1.21, interfaces are still [not well supported](https://github.com/golang/go/issues/5860) in godoc.
+
+- Interfaces are decoupled from the structs implementing them, which means the signature has to be repeated twice.
+- Interfaces have to be documented and guarded at time of use, that 3rd party implementations aren't supported.
+- As of Golang 1.21, interfaces are still [not well supported](https://github.com/golang/go/issues/5860) in godoc.
 
 ## Config
 
@@ -234,11 +239,13 @@ wazero configures scopes such as Runtime and Module using `XxxConfig` types. For
 customized by a user, e.g., selecting features or a module name override.
 
 ### Why don't we make each configuration setting return an error?
+
 No config types create resources that would need to be closed, nor do they return errors on use. This helps reduce
 resource leaks, and makes chaining easier. It makes it possible to parse configuration (ex by parsing yaml) independent
 of validating it.
 
 Instead of:
+
 ```
 cfg, err = cfg.WithFS(fs)
 if err != nil {
@@ -255,6 +262,7 @@ if err != nil {
 ```
 
 There's only one call site to handle errors:
+
 ```
 cfg = cfg.WithFS(fs).WithName(name)
 mod, err = rt.InstantiateModuleWithConfig(ctx, code, cfg)
@@ -268,6 +276,7 @@ errs, there's nothing they need to close. In other words, users don't need to tr
 partial error, as that is handled internally by the only code that can read configuration fields.
 
 ### Why are configuration immutable?
+
 While it seems certain scopes like `Runtime` won't repeat within a process, they do, possibly in different goroutines.
 For example, some users create a new runtime for each module, and some re-use the same base module configuration with
 only small updates (ex the name) for each instantiation. Making configuration immutable allows them to be safely used in
@@ -276,12 +285,14 @@ any goroutine.
 Since config are immutable, changes apply via return val, similar to `append` in a slice.
 
 For example, both of these are the same sort of error:
+
 ```go
 append(slice, element) // bug as only the return value has the updated slice.
 cfg.WithName(next) // bug as only the return value has the updated name.
 ```
 
 Here's an example of correct use: re-assigning explicitly or via chaining.
+
 ```go
 cfg = cfg.WithName(name) // explicit
 
@@ -292,10 +303,12 @@ if err != nil {
 ```
 
 ### Why aren't configuration assigned with option types?
+
 The option pattern is a familiar one in Go. For example, someone defines a type `func (x X) err` and uses it to update
 the target. For example, you could imagine wazero could choose to make `ModuleConfig` from options vs chaining fields.
 
 Ex instead of:
+
 ```go
 type ModuleConfig interface {
 	WithName(string) ModuleConfig
@@ -324,6 +337,7 @@ configDerived := config.WithName("name")
 ```
 
 An option function could be defined, then refactor each config method into an name prefixed option function:
+
 ```go
 type ModuleConfig interface {
 }
@@ -367,18 +381,21 @@ configDerived := config.WithOptions(ModuleConfigName("name"))
 ```
 
 wazero took the path of the former design primarily due to:
-* interfaces provide natural namespaces for their methods, which is more direct than functions with name prefixes.
-* parsing config into function callbacks is more direct vs parsing config into a slice of functions to do the same.
-* in either case derived config is needed and the options pattern is more awkward to achieve that.
+
+- interfaces provide natural namespaces for their methods, which is more direct than functions with name prefixes.
+- parsing config into function callbacks is more direct vs parsing config into a slice of functions to do the same.
+- in either case derived config is needed and the options pattern is more awkward to achieve that.
 
 There are other reasons such as test and debug being simpler without options: the above list is constrained to conserve
 space. It is accepted that the options pattern is common in Go, which is the main reason for documenting this decision.
 
 ### Why aren't config types deeply structured?
+
 wazero's configuration types cover the two main scopes of WebAssembly use:
-* `RuntimeConfig`: This is the broadest scope, so applies also to compilation
+
+- `RuntimeConfig`: This is the broadest scope, so applies also to compilation
   and instantiation. e.g. This controls the WebAssembly Specification Version.
-* `ModuleConfig`: This affects modules instantiated after compilation and what
+- `ModuleConfig`: This affects modules instantiated after compilation and what
   resources are allowed. e.g. This defines how or if STDOUT is captured. This
   also allows sub-configuration of `FSConfig`.
 
@@ -449,10 +466,12 @@ See http://wasix.org
 See https://github.com/WebAssembly/wasi-cli
 
 ## Runtime == Engine+Store
+
 wazero defines a single user-type which combines the specification concept of `Store` with the unspecified `Engine`
 which manages them.
 
 ### Why not multi-store?
+
 Multi-store isn't supported as the extra tier complicates lifecycle and locking. Moreover, in practice it is unusual for
 there to be an engine that has multiple stores which have multiple modules. More often, it is the case that there is
 either 1 engine with 1 store and multiple modules, or 1 engine with many stores, each having 1 non-host module. In worst
@@ -668,9 +687,10 @@ reason why we started.. simply to allow file write access!
 
 When wazero attempts to do more than what the Go programming language team, it
 has to be carefully evaluated, to:
-* Be possible to implement at least for `os.File` backed files
-* Not be confusing or cognitively hard for virtual file systems and normal use.
-* Affordable: custom code is solely the responsible by the core team, a much
+
+- Be possible to implement at least for `os.File` backed files
+- Not be confusing or cognitively hard for virtual file systems and normal use.
+- Affordable: custom code is solely the responsible by the core team, a much
   smaller group of individuals than who maintain the Go programming language.
 
 Due to problems well known in Go, consideration of the end users who constantly
@@ -706,6 +726,7 @@ of these are reasons to consider a multi-poll API, but do not require exporting
 Should multi-poll becomes critical, `sys.FS` could expose a `Poll` function
 like below, despite it being the non-portable, complicated if possible to
 implement on all platforms and virtual file systems.
+
 ```go
 ready, errno := fs.Poll([]sys.PollFile{{f1, sys.POLLIN}, {f2, sys.POLLOUT}}, timeoutMillis)
 ```
@@ -746,9 +767,10 @@ value (possibly `PWD`). Those unable to control the compiled code should only
 use absolute paths in configuration.
 
 See
-* https://github.com/golang/go/blob/go1.24.0/src/syscall/fs_js.go#L341
-* https://github.com/WebAssembly/wasi-libc/pull/214#issue-673090117
-* https://github.com/ziglang/zig/blob/53a9ee699a35a3d245ab6d1dac1f0687a4dcb42c/src/main.zig#L32
+
+- https://github.com/golang/go/blob/go1.24.0/src/syscall/fs_js.go#L341
+- https://github.com/WebAssembly/wasi-libc/pull/214#issue-673090117
+- https://github.com/ziglang/zig/blob/53a9ee699a35a3d245ab6d1dac1f0687a4dcb42c/src/main.zig#L32
 
 ### Why ignore the error returned by io.Reader when n > 1?
 
@@ -787,9 +809,9 @@ by unix systems: when opening a file, the lowest unused number is picked.
 
 The WASI standard documents that programs cannot expect that file descriptor
 numbers will be allocated with a lowest-first strategy, and they should instead
-assume the values will be random. Since _random_ is a very imprecise concept in
+assume the values will be random. Since *random* is a very imprecise concept in
 computers, we technically satisfying the implementation with the descriptor
-allocation strategy we use in Wazero. We could imagine adding more _randomness_
+allocation strategy we use in Wazero. We could imagine adding more *randomness*
 to the descriptor selection process, however this should never be used as a
 security measure to prevent applications from guessing the next file number so
 there are no strong incentives to complicate the logic.
@@ -852,10 +874,11 @@ discussion until after it is stable and after the reference impl wasmtime
 implements it.
 
 See
- * https://github.com/WebAssembly/wasi-filesystem/blob/ef9fc87c07323a6827632edeb6a7388b31266c8e/example-world.md#directory_entry_stream
- * https://github.com/bytecodealliance/wasmtime/blob/b741f7c79d72492d17ab8a29c8ffe4687715938e/crates/wasi/src/preview2/preview2/filesystem.rs#L286-L296
- * https://github.com/bytecodealliance/preview2-prototyping/blob/e4c04bcfbd11c42c27c28984948d501a3e168121/crates/wasi-preview1-component-adapter/src/lib.rs#L2131-L2137
- * https://github.com/bytecodealliance/preview2-prototyping/blob/e4c04bcfbd11c42c27c28984948d501a3e168121/crates/wasi-preview1-component-adapter/src/lib.rs#L936
+
+- https://github.com/WebAssembly/wasi-filesystem/blob/ef9fc87c07323a6827632edeb6a7388b31266c8e/example-world.md#directory_entry_stream
+- https://github.com/bytecodealliance/wasmtime/blob/b741f7c79d72492d17ab8a29c8ffe4687715938e/crates/wasi/src/preview2/preview2/filesystem.rs#L286-L296
+- https://github.com/bytecodealliance/preview2-prototyping/blob/e4c04bcfbd11c42c27c28984948d501a3e168121/crates/wasi-preview1-component-adapter/src/lib.rs#L2131-L2137
+- https://github.com/bytecodealliance/preview2-prototyping/blob/e4c04bcfbd11c42c27c28984948d501a3e168121/crates/wasi-preview1-component-adapter/src/lib.rs#L936
 
 ### wasip3
 
@@ -868,8 +891,9 @@ later. We can defer design discussion until after it is stable and after the
 reference impl wasmtime implements it.
 
 See
- * https://github.com/WebAssembly/WASI/blob/ddfe3d1dda5d1473f37ecebc552ae20ce5fd319a/docs/WitInWasi.md#Streams
- * https://docs.google.com/presentation/d/1MNVOZ8hdofO3tI0szg_i-Yoy0N2QPU2C--LzVuoGSlE/edit#slide=id.g1270ef7d5b6_0_662
+
+- https://github.com/WebAssembly/WASI/blob/ddfe3d1dda5d1473f37ecebc552ae20ce5fd319a/docs/WitInWasi.md#Streams
+- https://docs.google.com/presentation/d/1MNVOZ8hdofO3tI0szg_i-Yoy0N2QPU2C--LzVuoGSlE/edit#slide=id.g1270ef7d5b6_0_662
 
 ### How do we implement `Pread` with an `fs.File`?
 
@@ -904,8 +928,9 @@ for file descriptor 3 (STDERR+1). The first longest match wins on multiple
 pre-opens, which allows a path like "/tmp" to match regardless of order vs "/".
 
 See
- * https://github.com/WebAssembly/wasi-libc/blob/a02298043ff551ce1157bc2ee7ab74c3bffe7144/libc-bottom-half/sources/preopens.c
- * https://github.com/ziglang/zig/blob/9cb06f3b8bf9ea6b5e5307711bc97328762d6a1d/lib/std/fs/wasi.zig#L50-L53
+
+- https://github.com/WebAssembly/wasi-libc/blob/a02298043ff551ce1157bc2ee7ab74c3bffe7144/libc-bottom-half/sources/preopens.c
+- https://github.com/ziglang/zig/blob/9cb06f3b8bf9ea6b5e5307711bc97328762d6a1d/lib/std/fs/wasi.zig#L50-L53
 
 ### fd_prestat_dir_name
 
@@ -913,9 +938,9 @@ See
 directory of a file descriptor. It has the following three parameters, and the
 third `path_len` has ambiguous semantics.
 
-* `fd`: a file descriptor
-* `path`: the offset for the result path
-* `path_len`: In wazero, `FdPrestatDirName` writes the result path string to
+- `fd`: a file descriptor
+- `path`: the offset for the result path
+- `path_len`: In wazero, `FdPrestatDirName` writes the result path string to
   `path` offset for the exact length of `path_len`.
 
 Wasmer considers `path_len` to be the maximum length instead of the exact
@@ -980,10 +1005,10 @@ In summary, preview1 was changed retrospectively to require dot entries and
 preview2 was changed to require their absence. This rule was reverse engineered
 from wasmtime tests, and affirmed on two false premises:
 
-* POSIX compliance requires dot entries
-  * POSIX literally says these are optional
-* WASI cannot make changes because there are existing P1 programs.
-  * Changes to Preview 1 happened before and after this topic.
+- POSIX compliance requires dot entries
+  - POSIX literally says these are optional
+- WASI cannot make changes because there are existing P1 programs.
+  - Changes to Preview 1 happened before and after this topic.
 
 As of June 2023, wasi-testsuite still only runs on Linux, so compliance of this
 rule on Windows is left to runtimes to decide to validate. The preview2 adapter
@@ -1079,9 +1104,10 @@ In summary, there are no significant upsides in attempting to pre-fetch
 dot-dot's inode, and there are downsides to doing it anyway.
 
 See
- * https://github.com/WebAssembly/wasi-libc/blob/bd950eb128bff337153de217b11270f948d04bb4/libc-bottom-half/cloudlibc/src/libc/dirent/readdir.c#L87-L94
- * https://github.com/WebAssembly/wasi-testsuite/blob/main/tests/rust/src/bin/fd_readdir.rs#L108
- * https://github.com/bytecodealliance/preview2-prototyping/blob/e4c04bcfbd11c42c27c28984948d501a3e168121/crates/wasi-preview1-component-adapter/src/lib.rs#L1037
+
+- https://github.com/WebAssembly/wasi-libc/blob/bd950eb128bff337153de217b11270f948d04bb4/libc-bottom-half/cloudlibc/src/libc/dirent/readdir.c#L87-L94
+- https://github.com/WebAssembly/wasi-testsuite/blob/main/tests/rust/src/bin/fd_readdir.rs#L108
+- https://github.com/bytecodealliance/preview2-prototyping/blob/e4c04bcfbd11c42c27c28984948d501a3e168121/crates/wasi-preview1-component-adapter/src/lib.rs#L1037
 
 ### Why don't we require inodes to be non-zero?
 
@@ -1091,23 +1117,23 @@ a real one from resolving later via `Stat_t.Ino`.
 We define `Ino` like `d_ino` in POSIX which doesn't special-case zero. It can
 be zero for a few reasons:
 
-* The file is not a regular file or directory.
-* The underlying filesystem does not support inodes. e.g. embed:fs
-* A directory doesn't include inodes, but a later stat can. e.g. Windows
-* The backend is based on wasi-filesystem (a.k.a wasip2), which has
+- The file is not a regular file or directory.
+- The underlying filesystem does not support inodes. e.g. embed:fs
+- A directory doesn't include inodes, but a later stat can. e.g. Windows
+- The backend is based on wasi-filesystem (a.k.a wasip2), which has
   `directory_entry.inode` optional, and might remove it entirely.
 
 There are other downsides to returning a zero inode in widely used compilers:
 
-* File equivalence utilities, like `os.SameFile` will not work.
-* wasi-libc's `wasip1` mode will call `lstat` and attempt to retrieve a
+- File equivalence utilities, like `os.SameFile` will not work.
+- wasi-libc's `wasip1` mode will call `lstat` and attempt to retrieve a
   non-zero value (unless the entry is named "..").
 
 A new compiler may accidentally skip a `Dirent` with a zero `Ino` if emulating
 a non-POSIX function and re-using `Dirent.Ino` for `d_fileno`.
 
-* Linux `getdents` doesn't define `d_fileno` must be non-zero
-* BSD `getdirentries` is implementation specific. For example, OpenBSD will
+- Linux `getdents` doesn't define `d_fileno` must be non-zero
+- BSD `getdirentries` is implementation specific. For example, OpenBSD will
   return dirents with a zero `d_fileno`, but Darwin will skip them.
 
 The above shouldn't be a problem, even in the case of BSD, because `wasip1` is
@@ -1135,13 +1161,14 @@ We also document that `Ino` should be non-zero, so that users implementing that
 field will attempt to get it.
 
 See
- * https://github.com/WebAssembly/wasi-filesystem/pull/81
- * https://github.com/WebAssembly/wasi-libc/blob/bd950eb128bff337153de217b11270f948d04bb4/libc-bottom-half/cloudlibc/src/libc/dirent/readdir.c#L87-L94
- * https://linux.die.net/man/3/getdents
- * https://www.unix.com/man-page/osx/2/getdirentries/
- * https://man.openbsd.org/OpenBSD-5.4/getdirentries.2
- * https://github.com/golang/go/blob/go1.24.0/src/syscall/dirent.go#L57-L101
- * https://go-review.googlesource.com/c/go/+/507915
+
+- https://github.com/WebAssembly/wasi-filesystem/pull/81
+- https://github.com/WebAssembly/wasi-libc/blob/bd950eb128bff337153de217b11270f948d04bb4/libc-bottom-half/cloudlibc/src/libc/dirent/readdir.c#L87-L94
+- https://linux.die.net/man/3/getdents
+- https://www.unix.com/man-page/osx/2/getdirentries/
+- https://man.openbsd.org/OpenBSD-5.4/getdirentries.2
+- https://github.com/golang/go/blob/go1.24.0/src/syscall/dirent.go#L57-L101
+- https://go-review.googlesource.com/c/go/+/507915
 
 ## sys.Walltime and Nanotime
 
@@ -1252,6 +1279,7 @@ For example, the below implementation uses CGO, which might result in a 1us
 delay per invocation depending on the platform.
 
 See https://github.com/golang/go/issues/19409#issuecomment-284788196
+
 ```go
 //go:noescape
 //go:linkname osyield runtime.osyield
@@ -1282,22 +1310,22 @@ Notable choices per field are listed below, where `sys.Stat_t` is unlike
 not repeated below is that numeric fields are 64-bit when at least one platform
 defines it that large. Also, zero values are equivalent to nil or absent.
 
-* `Dev` and `Ino` (`Inode`) are both defined unsigned as they are defined
+- `Dev` and `Ino` (`Inode`) are both defined unsigned as they are defined
   opaque, and most `syscall.Stat_t` also defined them unsigned. There are
   separate sections in this document discussing the impact of zero in `Ino`.
-* `Mode` is defined as a `fs.FileMode` even though that is not defined in POSIX
+- `Mode` is defined as a `fs.FileMode` even though that is not defined in POSIX
   and will not map to all possible values. This is because the current use is
   WASI, which doesn't define any types or features not already supported. By
   using `fs.FileMode`, we can re-use routine experience in Go.
-* `NLink` is unsigned because it is defined that way in `syscall.Stat_t`: there
+- `NLink` is unsigned because it is defined that way in `syscall.Stat_t`: there
   can never be less than zero links to a file. We suggest defaulting to 1 in
   conversions when information is not knowable because at least that many links
   exist.
-* `Size` is signed because it is defined that way in `syscall.Stat_t`: while
+- `Size` is signed because it is defined that way in `syscall.Stat_t`: while
   regular files and directories will always be non-negative, irregular files
   are possibly negative or not defined. Notably sparse files are known to
   return negative values.
-* `Atim`, `Mtim` and `Ctim` are signed because they are defined that way in
+- `Atim`, `Mtim` and `Ctim` are signed because they are defined that way in
   `syscall.Stat_t`: Negative values are time before 1970. The resolution is
   nanosecond because that's the maximum resolution currently supported in Go.
 
@@ -1404,17 +1432,17 @@ pipes and regular files.
 Instead, we emulate its behavior for the cases that are currently
 of interest.
 
-- For regular files, we _always_ report them as ready, as
-[most operating systems do anyway][async-io-windows].
+- For regular files, we *always* report them as ready, as
+  [most operating systems do anyway][async-io-windows].
 
 - For pipes, we invoke [`PeekNamedPipe`][peeknamedpipe]
-for each file handle we detect is a pipe open for reading.
-We currently ignore pipes open for writing.
+  for each file handle we detect is a pipe open for reading.
+  We currently ignore pipes open for writing.
 
 - Notably, we include also support for sockets using the [WinSock
-implementation of `poll`][wsapoll], but instead
-of relying on the timeout argument of the `WSAPoll` function,
-we set a 0-duration timeout so that it behaves like a peek.
+  implementation of `poll`][wsapoll], but instead
+  of relying on the timeout argument of the `WSAPoll` function,
+  we set a 0-duration timeout so that it behaves like a peek.
 
 This way, we can check for regular files all at once,
 at the beginning of the function, then we poll pipes and
@@ -1444,6 +1472,7 @@ wazero treats integer global constant initializers signed as their interpretatio
 example, there is no signed integer [value type](https://www.w3.org/TR/2019/REC-wasm-core-1-20191205/#value-types%E2%91%A0).
 
 To get at the problem, let's use an example.
+
 ```
 (global (export "start_epoch") i64 (i64.const 1620216263544))
 ```
@@ -1467,7 +1496,7 @@ wazero limitations are imposed pragmatically and described below.
 The possible number of function instances in [a module](https://www.w3.org/TR/2019/REC-wasm-core-1-20191205/#module-instances%E2%91%A0) is not specified in the WebAssembly specifications since [`funcaddr`](https://www.w3.org/TR/2019/REC-wasm-core-1-20191205/#syntax-funcaddr) corresponding to a function instance in a store can be arbitrary number.
 wazero limits the maximum function instances to 2^27 as even that number would occupy 1GB in function pointers.
 
-That is because not only we _believe_ that all use cases are fine with the limitation, but also we have no way to test wazero runtimes under these unusual circumstances.
+That is because not only we *believe* that all use cases are fine with the limitation, but also we have no way to test wazero runtimes under these unusual circumstances.
 
 ### Number of function types in a store
 
@@ -1486,7 +1515,7 @@ All the functions are statically analyzed at module instantiation phase, and if 
 
 ### Number of globals in a module
 
-Theoretically, a module can declare globals (including imports) up to 2^32 times. However, wazero limits this to  2^27(134,217,728) per module.
+Theoretically, a module can declare globals (including imports) up to 2^32 times. However, wazero limits this to 2^27(134,217,728) per module.
 That is because internally we store globals in a slice with pointer types (meaning 8 bytes on 64-bit platforms), and therefore 2^27 globals
 means that we have 1 GiB size of slice which seems large enough for most applications.
 
@@ -1496,7 +1525,7 @@ While the the spec says that a module can have up to 2^32 tables, wazero limits 
 One of the reasons is even that number would occupy 1GB in the pointers tables alone. Not only that, we access tables slice by
 table index by using 32-bit signed offset in the compiler implementation, which means that the table index of 2^27 can reach 2^27 * 8 (pointer size on 64-bit machines) = 2^30 offsets in bytes.
 
-We _believe_ that all use cases are fine with the limitation, but also note that we have no way to test wazero runtimes under these unusual circumstances.
+We *believe* that all use cases are fine with the limitation, but also note that we have no way to test wazero runtimes under these unusual circumstances.
 
 If a module reaches this limit, an error is returned at the compilation phase.
 
@@ -1512,7 +1541,8 @@ since it tries to interrupt the execution of Goroutine at any point of function,
 
 Fortunately, our runtime-generated machine codes do not need to take the async preemption into account.
 All the assembly codes are entered via the trampoline implemented as Go Assembler Function (e.g. [arch_amd64.s](./arch_amd64.s)),
-and as of Go 1.20, these assembler functions are considered as _unsafe_ for async preemption:
+and as of Go 1.20, these assembler functions are considered as *unsafe* for async preemption:
+
 - https://github.com/golang/go/blob/go1.24.0/src/runtime/preempt.go#L407-L408
 - https://github.com/golang/go/blob/go1.24.0/src/runtime/traceback.go#L350
 
@@ -1526,7 +1556,7 @@ supports integration with Go contexts to interrupt execution after a timeout, or
 This support is internally implemented as a special opcode `builtinFunctionCheckExitCode` that triggers the execution of
 a Go function (`ModuleInstance.FailIfClosed`) that atomically checks a sentinel value at strategic points in the code.
 
-[It _is indeed_ possible to check the sentinel value directly, without leaving the native world][native_check], thus sparing some cycles;
+[It *is indeed* possible to check the sentinel value directly, without leaving the native world][native_check], thus sparing some cycles;
 however, because native code never preempts (see section above), this may lead to a state where the other goroutines
 never get the chance to run, and thus never get the chance to set the sentinel value; effectively preventing
 cancellation from taking place.
@@ -1536,25 +1566,27 @@ cancellation from taking place.
 ## Golang patterns
 
 ### Hammer tests
+
 Code that uses concurrency primitives, such as locks or atomics, should include "hammer tests", which run large loops
 inside a bounded amount of goroutines, run by half that many `GOMAXPROCS`. These are named consistently "hammer", so
 they are easy to find. The name inherits from some existing tests in [golang/go](https://github.com/golang/go/search?q=hammer&type=code).
 
 Here is an annotated description of the key pieces of a hammer test:
+
 1. `P` declares the count of goroutines to use, defaulting to 8 or 4 if `testing.Short`.
-   * Half this amount are the cores used, and 4 is less than a modern laptop's CPU. This allows multiple "hammer" tests to run in parallel.
+   - Half this amount are the cores used, and 4 is less than a modern laptop's CPU. This allows multiple "hammer" tests to run in parallel.
 2. `N` declares the scale of work (loop) per goroutine, defaulting to value that finishes in ~0.1s on a modern laptop.
-   * When in doubt, try 1000 or 100 if `testing.Short`
-   * Remember, there are multiple hammer tests and CI nodes are slow. Slower tests hurt feedback loops.
+   - When in doubt, try 1000 or 100 if `testing.Short`
+   - Remember, there are multiple hammer tests and CI nodes are slow. Slower tests hurt feedback loops.
 3. `defer runtime.GOMAXPROCS(runtime.GOMAXPROCS(P/2))` makes goroutines switch cores, testing visibility of shared data.
 4. To ensure goroutines execute at the same time, block them with `sync.WaitGroup`, initialized to `Add(P)`.
-   * `sync.WaitGroup` internally uses `runtime_Semacquire` not available in any other library.
-   * `sync.WaitGroup.Add` with a negative value can unblock many goroutines at the same time, e.g. without a for loop.
+   - `sync.WaitGroup` internally uses `runtime_Semacquire` not available in any other library.
+   - `sync.WaitGroup.Add` with a negative value can unblock many goroutines at the same time, e.g. without a for loop.
 5. Track goroutines progress via `finished := make(chan int)` where each goroutine in `P` defers `finished <- 1`.
    1. Tests use `require.XXX`, so `recover()` into `t.Fail` in a `defer` function before `finished <- 1`.
-      * This makes it easier to spot larger concurrency problems as you see each failure, not just the first.
+      - This makes it easier to spot larger concurrency problems as you see each failure, not just the first.
    2. After the `defer` function, await unblocked, then run the stateful function `N` times in a normal loop.
-      * This loop should trigger shared state problems as locks or atomics are contended by `P` goroutines.
+      - This loop should trigger shared state problems as locks or atomics are contended by `P` goroutines.
 6. After all `P` goroutines launch, atomically release all of them with `WaitGroup.Add(-P)`.
 7. Block the runner on goroutine completion, by (`<-finished`) for each `P`.
 8. When all goroutines complete, `return` if `t.Failed()`, otherwise perform follow-up state checks.
@@ -1569,8 +1601,9 @@ once via compare-and-swap (CAS) against a zero value. When we use this pattern, 
 read and update the same numeric field.
 
 In lieu of formal documentation, we infer this pattern works from other sources (besides tests):
- * `sync.WaitGroup` by definition must support calling `Add` from other goroutines. Internally, it uses atomics.
- * rsc in golang/go#5045 writes "atomics guarantee sequential consistency among the atomic variables".
+
+- `sync.WaitGroup` by definition must support calling `Add` from other goroutines. Internally, it uses atomics.
+- rsc in golang/go#5045 writes "atomics guarantee sequential consistency among the atomic variables".
 
 See https://github.com/golang/go/blob/go1.24.0/src/sync/waitgroup.go#L76
 See https://github.com/golang/go/issues/5045#issuecomment-252730563

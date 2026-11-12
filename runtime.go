@@ -274,7 +274,7 @@ func buildFunctionListeners(ctx context.Context, internal *wasm.Module) ([]exper
 	factory := fnlf.(experimentalapi.FunctionListenerFactory)
 	importCount := internal.ImportFunctionCount
 	listeners := make([]experimentalapi.FunctionListener, len(internal.FunctionSection))
-	for i := 0; i < len(listeners); i++ {
+	for i := range listeners {
 		listeners[i] = factory.NewFunctionListener(internal.FunctionDefinition(uint32(i) + importCount))
 	}
 	return listeners, nil

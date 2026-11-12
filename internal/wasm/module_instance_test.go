@@ -360,13 +360,11 @@ func TestModuleInstance_CloseModuleOnCanceledOrTimeout(t *testing.T) {
 		cc := &ModuleInstance{ModuleName: "test", s: s}
 		cancelChan := make(chan struct{})
 		var wg sync.WaitGroup
-		wg.Add(1)
 
 		// Ensure that fn returned by closeModuleOnCanceledOrTimeout exists after cancelFn is called.
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			cc.closeModuleOnCanceledOrTimeout(context.Background(), cancelChan)
-		}()
+		})
 		close(cancelChan)
 		wg.Wait()
 	})

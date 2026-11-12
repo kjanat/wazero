@@ -265,7 +265,6 @@ func TestAbiImpl_init(t *testing.T) {
 			},
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			abi := FunctionABI{}
 			abi.Init(tc.sig, intParamResultRegs, floatParamResultRegs)

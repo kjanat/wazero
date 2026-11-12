@@ -1,6 +1,8 @@
 module github.com/kjanat/wazero/internal/version/testdata
 
-go 1.25.0
+go 1.27.0
+
+toolchain go1.27.4
 
 require github.com/kjanat/wazero v0.0.0-20220818123113-1948909ec0b1
 

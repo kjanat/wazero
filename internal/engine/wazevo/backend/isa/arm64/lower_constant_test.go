@@ -91,7 +91,6 @@ func TestMachine_lowerConstantI32(t *testing.T) {
 			"movk w0, #0xf00, lsl 16",
 		}},
 	} {
-		tc := tc
 		t.Run(fmt.Sprintf("%#x", tc.val), func(t *testing.T) {
 			_, m := newSetup()
 			m.lowerConstantI32(regToVReg(x0), int32(tc.val))
@@ -146,7 +145,6 @@ func TestMachine_lowerConstantI64(t *testing.T) {
 			"movk x0, #0x1, lsl 32",
 		}},
 	} {
-		tc := tc
 		t.Run(fmt.Sprintf("%#x", tc.val), func(t *testing.T) {
 			_, m := newSetup()
 			m.lowerConstantI64(regToVReg(x0), int64(tc.val))

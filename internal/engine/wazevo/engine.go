@@ -40,7 +40,7 @@ type (
 		// sharedFunctions is compiled functions shared by all modules.
 		sharedFunctions *sharedFunctions
 		// setFinalizer defaults to runtime.SetFinalizer, but overridable for tests.
-		setFinalizer func(obj interface{}, finalizer interface{})
+		setFinalizer func(obj any, finalizer any)
 
 		// The followings are reused for compiling shared functions.
 		machine backend.Machine
@@ -167,7 +167,7 @@ func (e *engine) CompileModule(ctx context.Context, module *wasm.Module, listene
 	}
 
 	if wazevoapi.DeterministicCompilationVerifierEnabled {
-		for i := 0; i < wazevoapi.DeterministicCompilationVerifyingIter; i++ {
+		for range wazevoapi.DeterministicCompilationVerifyingIter {
 			_, err := e.compileModule(ctx, module, listeners, ensureTermination)
 			if err != nil {
 				return err

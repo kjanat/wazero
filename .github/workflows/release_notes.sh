@@ -4,11 +4,11 @@
 # .github/workflows/release_notes.sh v1.3.0
 
 tag=$1
-prior_tag=$(git tag -l 'v*'|sed "/${tag}/,+10d"|tail -1)
+prior_tag=$(git tag -l 'v*' | sed "/${tag}/,+10d" | tail -1)
 if [ -n "${prior_tag}" ]; then
-  range="${prior_tag}..${tag}"
+	range="${prior_tag}..${tag}"
 else
-  range=${tag}
+	range=${tag}
 fi
 
 git config log.mailmap true

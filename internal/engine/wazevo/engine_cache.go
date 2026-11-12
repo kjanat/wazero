@@ -175,7 +175,7 @@ func serializeCompiledModule(wazeroVersion string, cm *compiledModule) io.Reader
 		l := len(sm.wasmBinaryOffsets)
 		buf.Write(u64.LeBytes(uint64(l)))
 		executableAddr := uintptr(unsafe.Pointer(&cm.executable[0]))
-		for i := 0; i < l; i++ {
+		for i := range l {
 			buf.Write(u64.LeBytes(sm.wasmBinaryOffsets[i]))
 			// executableOffsets is absolute address, so we need to subtract executableAddr.
 			buf.Write(u64.LeBytes(uint64(sm.executableOffsets[i] - executableAddr)))
@@ -242,7 +242,7 @@ func deserializeCompiledModule(wazeroVersion string, rc io.ReadCloser) (cm *comp
 	cm = &compiledModule{functionOffsets: make([]int, functionsNum), executables: &executables{}}
 
 	var eightBytes [8]byte
-	for i := uint32(0); i < functionsNum; i++ {
+	for i := range functionsNum {
 		// Read the offset of each function in the executable.
 		var offset uint64
 		if offset, err = readUint64(reader, &eightBytes); err != nil {
@@ -296,7 +296,7 @@ func deserializeCompiledModule(wazeroVersion string, rc io.ReadCloser) (cm *comp
 			return nil, false, err
 		}
 		executableOffset := uintptr(unsafe.Pointer(&cm.executable[0]))
-		for i := uint64(0); i < sourceMapLen; i++ {
+		for i := range sourceMapLen {
 			wasmBinaryOffset, err := readUint64(reader, &eightBytes)
 			if err != nil {
 				err = fmt.Errorf("compilationcache: error reading source map[%d] wasm binary offset: %v", i, err)
@@ -320,7 +320,7 @@ func deserializeCompiledModule(wazeroVersion string, rc io.ReadCloser) (cm *comp
 	tableLen := binary.LittleEndian.Uint32(eightBytes[:4])
 	if tableLen > 0 {
 		cm.tryTableInfo = make([]wazevoapi.TryTableInfo, tableLen)
-		for i := uint32(0); i < tableLen; i++ {
+		for i := range tableLen {
 			if _, err = io.ReadFull(reader, eightBytes[:5]); err != nil {
 				return nil, false, fmt.Errorf("compilationcache: error reading try_table[%d] header: %v", i, err)
 			}
@@ -331,7 +331,7 @@ func deserializeCompiledModule(wazeroVersion string, rc io.ReadCloser) (cm *comp
 			}
 			clauseCount := binary.LittleEndian.Uint32(eightBytes[:4])
 			clauses := make([]wazevoapi.CatchClauseInstance, clauseCount)
-			for j := uint32(0); j < clauseCount; j++ {
+			for j := range clauseCount {
 				if _, err = io.ReadFull(reader, eightBytes[:5]); err != nil {
 					return nil, false, fmt.Errorf("compilationcache: error reading catch clause[%d][%d]: %v", i, j, err)
 				}

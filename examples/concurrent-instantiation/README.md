@@ -1,9 +1,9 @@
 ## Concurrent Instantiation example
 
-This example demonstrates how to instantiate multiple Wasm instances per Goroutine __concurrently__.
+This example demonstrates how to instantiate multiple Wasm instances per Goroutine **concurrently**.
 
 ```bash
-$  go run main.go
+$ go run main.go
 0
 98
 4

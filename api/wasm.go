@@ -326,7 +326,7 @@ type FunctionDefinition interface {
 	// binary, e.g. via wazero.HostModuleBuilder
 	//
 	// The expected results are nil, GoFunction or GoModuleFunction.
-	GoFunction() interface{}
+	GoFunction() any
 
 	// ParamTypes are the possibly empty sequence of value types accepted by a
 	// function with this signature.

@@ -25,7 +25,7 @@ $windowsInstaller = New-Object -com WindowsInstaller.Installer
 # All the below chain from this OpenDatabase
 # See https://docs.microsoft.com/en-us/windows/win32/msi/installer-opendatabase
 $database = $windowsInstaller.GetType().InvokeMember(
-  "OpenDatabase", "InvokeMethod", $Null, $windowsInstaller, @($msi, 0)
+	"OpenDatabase", "InvokeMethod", $Null, $windowsInstaller, @($msi, 0)
 )
 
 # We need the ProductCode, which is what wxs Product.Id ends up as:
@@ -34,15 +34,16 @@ $q = "SELECT Value FROM Property WHERE Property = 'ProductCode'"
 $View = $database.GetType().InvokeMember("OpenView", "InvokeMethod", $Null, $database, ($q))
 
 try {
-  # https://docs.microsoft.com/en-us/windows/win32/msi/view-execute
-  $View.GetType().InvokeMember("Execute", "InvokeMethod", $Null, $View, $Null) | Out-Null
+	# https://docs.microsoft.com/en-us/windows/win32/msi/view-execute
+	$View.GetType().InvokeMember("Execute", "InvokeMethod", $Null, $View, $Null) | Out-Null
 
-  $record = $View.GetType().InvokeMember("Fetch", "InvokeMethod", $Null, $View, $Null)
-  $productCode = $record.GetType().InvokeMember("StringData", "GetProperty", $Null, $record, 1)
+	$record = $View.GetType().InvokeMember("Fetch", "InvokeMethod", $Null, $View, $Null)
+	$productCode = $record.GetType().InvokeMember("StringData", "GetProperty", $Null, $record, 1)
 
-  Write-Output $productCode
-} finally {
-  if ($View) {
-    $View.GetType().InvokeMember("Close", "InvokeMethod", $Null, $View, $Null) | Out-Null
-  }
+	Write-Output $productCode
+}
+finally {
+	if ($View) {
+		$View.GetType().InvokeMember("Close", "InvokeMethod", $Null, $View, $Null) | Out-Null
+	}
 }

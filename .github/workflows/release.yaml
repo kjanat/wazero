@@ -2,19 +2,19 @@ name: Release CLI
 on:
   pull_request:
     branches: [master]
-    paths-ignore:  # ignore docs as they are built with Netlify.
-      - '**/*.md'
-      - 'site/**'
-      - 'netlify.toml'
+    paths-ignore: # ignore docs as they are built with Netlify.
+      - "**/*.md"
+      - "site/**"
+      - "netlify.toml"
   push:
     branches: [master]
-    tags: 'v[0-9]+.[0-9]+.[0-9]+**'  # Ex. v0.2.0 v0.2.1-rc2
+    tags: "v[0-9]+.[0-9]+.[0-9]+**" # Ex. v0.2.0 v0.2.1-rc2
 
 env: # Update this prior to requiring a higher minor version in go.mod
-  GO_VERSION: "1.26"
+  GO_VERSION: "1.27"
 
 defaults:
-  run:  # use bash for all operating systems unless overridden
+  run: # use bash for all operating systems unless overridden
     shell: bash
 
 concurrency:
@@ -106,7 +106,7 @@ jobs:
             dist/
 
       - name: Test (linux)
-         # Check if the version was correctly inserted with VERSION variable
+        # Check if the version was correctly inserted with VERSION variable
         if: runner.os == 'Linux'
         run: |
           tar xf dist/wazero_${{ needs.pre_release.outputs.VERSION }}_linux_amd64.tar.gz
@@ -136,7 +136,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
-        with:  # Ensure release_notes.sh can see prior commits
+        with: # Ensure release_notes.sh can see prior commits
           fetch-depth: 0
 
       - uses: actions/cache@v5

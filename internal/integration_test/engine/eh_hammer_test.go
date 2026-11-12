@@ -26,7 +26,6 @@ func TestEHParallelCompilation(t *testing.T) {
 	bin := buildEHModule(numFuncs)
 
 	for _, workers := range []int{2, 4, 8} {
-		workers := workers
 		t.Run(fmt.Sprintf("workers=%d", workers), func(t *testing.T) {
 			ctx := experimental.WithCompilationWorkers(context.Background(), workers)
 			cfg := wazero.NewRuntimeConfigCompiler().
@@ -38,7 +37,7 @@ func TestEHParallelCompilation(t *testing.T) {
 				wazero.NewModuleConfig().WithStartFunctions())
 			require.NoError(t, err)
 
-			for i := 0; i < numFuncs; i++ {
+			for i := range numFuncs {
 				name := fmt.Sprintf("f%d", i)
 				res, err := mod.ExportedFunction(name).Call(ctx)
 				require.NoError(t, err, "function %s", name)
@@ -74,7 +73,7 @@ func buildEHModule(n int) []byte {
 		TagSection: []wasm.Tag{{Type: 1}},
 	}
 
-	for i := 0; i < n; i++ {
+	for i := range n {
 		m.FunctionSection = append(m.FunctionSection, 0) // type 0: () -> (i32)
 		m.ExportSection = append(m.ExportSection, wasm.Export{
 			Type:  wasm.ExternTypeFunc,

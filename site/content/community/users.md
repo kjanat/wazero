@@ -11,8 +11,8 @@ considering their efforts before starting your own!
 ### Libraries
 
 | Name             | Description                                                                                          |
-|:-----------------|------------------------------------------------------------------------------------------------------|
-| [go-pdfium][23]  | [PDFium][24] bindings to do PDF operations in Go, also available as end application [pdfium-cli][25] |                                                    |
+| :--------------- | ---------------------------------------------------------------------------------------------------- |
+| [go-pdfium][23]  | [PDFium][24] bindings to do PDF operations in Go, also available as end application [pdfium-cli][25] | |
 | [wasi-go][33]    | WASI host module for Wazero with experimental support for socket extensions                          |
 | [wazergo][29]    | Generics library for type-safe and high performance wazero host modules                              |
 | [Wetware][28]    | Simple, secure & scalable clusters                                                                   |
@@ -28,8 +28,8 @@ considering their efforts before starting your own!
 ### General purpose plugins
 
 | Name                           | Description                                                                   |
-|:-------------------------------|-------------------------------------------------------------------------------|
-| [Extism][38]                   | Simplified cross-language extensibility in Go & a dozen+ languages|
+| :----------------------------- | ----------------------------------------------------------------------------- |
+| [Extism][38]                   | Simplified cross-language extensibility in Go & a dozen+ languages            |
 | [go-plugin][2]                 | implements [Protocol Buffers][8] services with WebAssembly vi code generation |
 | [waPC][5]                      | implements [Apex][6] interfaces with WebAssembly via code generation          |
 | [wazero-emscripten-embind][36] | Emscripten [Embind][37] and code generation support for Wazero                |
@@ -37,28 +37,28 @@ considering their efforts before starting your own!
 
 ### Infrastructure-as-Code
 
-| Name                   | Description                                        |
-|:-----------------------|----------------------------------------------------|
+| Name       | Description                                                                                                      |
+| :--------- | ---------------------------------------------------------------------------------------------------------------- |
 | [yoke][47] | A WebAssembly-based package deployer for Kubernetes, enabling declarative and programmable deployments with Wasm |
 
 ### Middleware
 
 | Name                   | Description                                        |
-|:-----------------------|----------------------------------------------------|
+| :--------------------- | -------------------------------------------------- |
 | [http-wasm-host-go][3] | serves HTTP handlers implemented in [http-wasm][4] |
 
 ### Network
 
-| Name                   | Description                                                                                          |
-|:-----------------------|------------------------------------------------------------------------------------------------------|
-| [Redpanda Connect][30] | implements 3rd party extension via [WASM processor][31] and [Redpanda Data Transform processor][45]  |
-| [dapr][15]             | implements 3rd party extension via [WASM middleware][16]                                             |
-| [mosn][9]              | implements 3rd party extension via [proxy-wasm][10]                                                  |
+| Name                   | Description                                                                                         |
+| :--------------------- | --------------------------------------------------------------------------------------------------- |
+| [Redpanda Connect][30] | implements 3rd party extension via [WASM processor][31] and [Redpanda Data Transform processor][45] |
+| [dapr][15]             | implements 3rd party extension via [WASM middleware][16]                                            |
+| [mosn][9]              | implements 3rd party extension via [proxy-wasm][10]                                                 |
 
 ### Security
 
 | Name                  | Description                                                                                        |
-|:----------------------|----------------------------------------------------------------------------------------------------|
+| :-------------------- | -------------------------------------------------------------------------------------------------- |
 | [trivy][17]           | implements 3rd party extension via [wasm modules][18]                                              |
 | [RunReveal][34]       | Security data platform which uses Wazero for transforms and alerting                               |
 | [Impart Security][35] | API security solution with a WASM based rules engine using wazero as part of a security mesh layer |
@@ -66,7 +66,7 @@ considering their efforts before starting your own!
 ### Cloud Platforms
 
 | Name          | Description                                                                      |
-|:--------------|----------------------------------------------------------------------------------|
+| :------------ | -------------------------------------------------------------------------------- |
 | [Modus][46]   | An open source, serverless framework for building intelligent functions and APIs |
 | [scale][13]   | implements [Polyglot][14] interfaces with WebAssembly via code generation        |
 | [taubyte][21] | edge computing and web3 platform that runs [serverless functions][22]            |
@@ -75,15 +75,16 @@ considering their efforts before starting your own!
 
 ### Database
 
-| Name          | Description                              |
-|:--------------|------------------------------------------|
-| [wescale][44] | a database proxy that supports OnlineDDL |
+| Name                                            | Description                                                     |
+| :---------------------------------------------- | --------------------------------------------------------------- |
+| [wescale][44]                                   | a database proxy that supports OnlineDDL                        |
 | [Renart](https://github.com/renart-data/renart) | Data platform that embeds Python type checking in Go via wazero |
 
 ### Transpilation
-| Name              | Description                                 |
-|:------------------|---------------------------------------------|
-| [colorer4go][50]  | Far Manager colorer plugin ported via wasm  |
+
+| Name             | Description                                |
+| :--------------- | ------------------------------------------ |
+| [colorer4go][50] | Far Manager colorer plugin ported via wasm |
 
 ## Updating this list
 

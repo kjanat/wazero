@@ -454,7 +454,6 @@ func Test_valuesEq(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			actualMatched, actualValuesMsg := valuesEq(tc.actual, tc.exps, tc.valueTypes, tc.laneTypes, nil)
 			require.Equal(t, tc.expMatched, actualMatched)
@@ -567,7 +566,6 @@ func TestCommandActionVal_toUint64s(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			var c commandActionVal
 			err := json.Unmarshal([]byte(tc.rawCommandActionVal), &c)
@@ -615,7 +613,6 @@ func TestCommand_getAssertReturnArgsExps(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			var c command
 			err := json.Unmarshal([]byte(tc.rawCommand), &c)

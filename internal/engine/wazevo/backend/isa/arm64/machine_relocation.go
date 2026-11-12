@@ -83,7 +83,7 @@ func encodeCallTrampolineIsland(refToBinaryOffset []int, importedFns int, island
 	// and are not accounted for.
 	binaryOffsets := refToBinaryOffset[importedFns:]
 
-	for i := 0; i < len(binaryOffsets); i++ {
+	for i := range binaryOffsets {
 		trampolineOffset := islandOffset + trampolineCallSize*i
 
 		fnOffset := binaryOffsets[i]

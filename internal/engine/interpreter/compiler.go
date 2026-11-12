@@ -348,7 +348,7 @@ func (c *compiler) Next() (*compilationResult, error) {
 	c.result.PendingExceptionTable = c.result.PendingExceptionTable[:0]
 	// Clears the existing entries in LabelCallers.
 	for frameID := uint32(0); frameID <= c.currentFrameID; frameID++ {
-		for k := labelKind(0); k < labelKindNum; k++ {
+		for k := range labelKindNum {
 			delete(c.result.LabelCallers, newLabel(k, frameID))
 		}
 	}
@@ -849,7 +849,7 @@ operatorSwitch:
 				return fmt.Errorf("reading catch count for try_table: %w", err)
 			}
 			c.pc += catchNum - 1
-			for i := uint32(0); i < catchCount; i++ {
+			for range catchCount {
 				if _, _, _, err := c.parseCatchClause(); err != nil {
 					return err
 				}
@@ -867,7 +867,7 @@ operatorSwitch:
 
 		// Parse catch clauses.
 		var pendingClauses []pendingCatchClause
-		for i := uint32(0); i < catchCount; i++ {
+		for range catchCount {
 			kind, tagIdx, labelIdx, err := c.parseCatchClause()
 			if err != nil {
 				return err
@@ -2220,7 +2220,7 @@ operatorSwitch:
 		case wasm.OpcodeVecV128i8x16Shuffle:
 			c.pc++
 			lanes := make([]uint64, 16)
-			for i := uint64(0); i < 16; i++ {
+			for i := range uint64(16) {
 				lanes[i] = uint64(c.body[c.pc+i])
 			}
 			op := newOperationV128Shuffle(lanes)

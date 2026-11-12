@@ -388,7 +388,7 @@ func validateMounts(mounts sliceFlag, stdErr logging.Writer) (rc int, rootPath s
 		}
 
 		readOnly := false
-		if trimmed := strings.TrimSuffix(mount, ":ro"); trimmed != mount {
+		if trimmed, ok := strings.CutSuffix(mount, ":ro"); ok {
 			mount = trimmed
 			readOnly = true
 		}
@@ -435,12 +435,12 @@ func validateMounts(mounts sliceFlag, stdErr logging.Writer) (rc int, rootPath s
 // validateListens returns a non-nil net.Config, if there were any listen flags.
 func validateListens(listens sliceFlag, stdErr logging.Writer) (rc int, config sock.Config) {
 	for _, listen := range listens {
-		idx := strings.LastIndexByte(listen, ':')
-		if idx < 0 {
+		before, after, ok := strings.CutLast(listen, ":")
+		if !ok {
 			fmt.Fprintln(stdErr, "invalid listen")
 			return 1, config
 		}
-		port, err := strconv.Atoi(listen[idx+1:])
+		port, err := strconv.Atoi(after)
 		if err != nil {
 			fmt.Fprintln(stdErr, "invalid listen port:", err)
 			return 1, config
@@ -448,7 +448,7 @@ func validateListens(listens sliceFlag, stdErr logging.Writer) (rc int, config s
 		if config == nil {
 			config = sock.NewConfig()
 		}
-		config = config.WithTCPListener(listen[:idx], port)
+		config = config.WithTCPListener(before, port)
 	}
 	return
 }

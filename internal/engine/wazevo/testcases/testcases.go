@@ -3106,7 +3106,7 @@ var LargeMethodBodyWithManyArgs = TestCase{
 				body.WriteByte(wasm.OpcodeIf)
 				body.WriteByte(blockSignature_vv)
 
-				for i := 0; i < 14000; i++ { // 14000 is an arbitrary number large enough to ensure that arm64 needs to introduce conditional branch trampolines
+				for i := range 14000 { // 14000 is an arbitrary number large enough to ensure that arm64 needs to introduce conditional branch trampolines
 					body.WriteByte(wasm.OpcodeI32Const)
 					body.Write(leb128.EncodeInt32(int32((i * 4) & 0xfffc))) // arbitrary constant that depends on the loop index
 					body.WriteByte(wasm.OpcodeLocalGet)

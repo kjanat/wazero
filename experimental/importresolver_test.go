@@ -19,7 +19,7 @@ func TestImportResolver(t *testing.T) {
 	r := wazero.NewRuntime(ctx)
 	defer r.Close(ctx)
 
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		var callCount int
 		start := func(ctx context.Context) {
 			callCount++

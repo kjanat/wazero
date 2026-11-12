@@ -17,7 +17,7 @@ describing how to jump into the execution of the generated code at run-time.
 ## Entering the Generated Code
 
 At run-time, user space invokes a Wasm function through the public
-`api.Function` interface, using methods `Call()` or `CallWithStack()`.  The
+`api.Function` interface, using methods `Call()` or `CallWithStack()`. The
 implementation of this method, in turn, eventually invokes an ASM
 **trampoline**. The signature of this trampoline in Go code is:
 
@@ -35,13 +35,13 @@ func entrypoint(
   described in the previous sections).
 - `executionContextPtr` is a raw pointer to the `wazevo.executionContext`
   struct. This struct is used to save the state of the Go runtime before
-entering or leaving the generated code. It also holds shared state between the
-Go runtime and the generated code, such as the exit code that is used to
-terminate execution on failure, or suspend it to invoke host functions.
+  entering or leaving the generated code. It also holds shared state between the
+  Go runtime and the generated code, such as the exit code that is used to
+  terminate execution on failure, or suspend it to invoke host functions.
 - `moduleContextPtr` is a pointer to the `wazevo.moduleContextOpaque` struct.
   This struct Its contents are basically the pointers to the module instance,
-specific objects as well as functions. This is sometimes called "VMContext" in
-other Wasm runtimes.
+  specific objects as well as functions. This is sometimes called "VMContext" in
+  other Wasm runtimes.
 - `paramResultStackPtr` is a pointer to the slice where the arguments and
   results of the function are passed.
 - `goAllocatedStackSlicePtr` is an aligned pointer to the Go-allocated stack
@@ -51,6 +51,7 @@ other Wasm runtimes.
 The trampoline can be found in`backend/isa/<arch>/abi_entry_<arch>.s`.
 
 For each given architecture, the trampoline:
+
 - moves the arguments to specific registers to match the behavior of the entry preamble or trampoline function, and
 - finally, it jumps into the execution of the generated code for the preamble
 
@@ -80,7 +81,7 @@ The epilogue reverses part of the process, finally returning control to the
 caller of the `entrypoint()` function, and the Go runtime. The caller of
 `entrypoint()` is also responsible for completing the cleaning up procedure by
 invoking `afterGoFunctionCallEntrypoint()` (again, implemented in
-backend-specific ASM).  which will restore the stack pointers and return
+backend-specific ASM). which will restore the stack pointers and return
 control to the caller of the function.
 
 The arch-specific code can be found in
@@ -91,17 +92,16 @@ The arch-specific code can be found in
 [abi-amd64]: https://tip.golang.org/src/cmd/compile/abi-internal#amd64-architecture
 [abi-cc]: https://tip.golang.org/src/cmd/compile/abi-internal#function-call-argument-and-result-passing
 
-
 ## Leaving the Generated Code
 
 In "[How do compiler functions work?][how-do-compiler-functions-work]", we
-already outlined how _leaving_ the generated code works with the help of a
+already outlined how *leaving* the generated code works with the help of a
 function. We will complete here the picture by briefly describing the code that
 is generated.
 
 When the generated code needs to return control to the Go runtime, it inserts a
 meta-instruction that is called `exitSequence` in both `amd64` and `arm64`
-backends.  This meta-instruction sets the `exitCode` in the
+backends. This meta-instruction sets the `exitCode` in the
 `wazevo.executionContext` struct, restore the stack pointers and then returns
 control to the caller of the `entrypoint()` function described above.
 
@@ -112,8 +112,8 @@ invoked the `exitCode` also indicates the identifier of the host function to be
 invoked.
 
 The magic really happens in the `backend.Machine.CompileGoFunctionTrampoline()`
-method.  This method is actually invoked when host modules are being
-instantiated.  It generates a trampoline that is used to invoke such functions
+method. This method is actually invoked when host modules are being
+instantiated. It generates a trampoline that is used to invoke such functions
 from the generated code.
 
 This trampoline implements essentially the same prologue as the `entrypoint()`,
@@ -182,4 +182,3 @@ under `backend/isa/<arch>/abi_entry_<arch>.s`.
 [go-call-conv-x86]: https://dr-knz.net/go-calling-convention-x86-64.html
 [proposal-register-cc]: https://go.googlesource.com/proposal/+/master/design/40724-register-calling.md#background
 [how-do-compiler-functions-work]: ../../how_do_compiler_functions_work/
-

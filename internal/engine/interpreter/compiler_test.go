@@ -2988,7 +2988,6 @@ func TestCompiler_initializeStack(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			c := &compiler{
 				sig: tc.sig, localTypes: tc.functionLocalTypes,

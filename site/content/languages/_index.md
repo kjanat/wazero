@@ -9,6 +9,7 @@ also known as Wasm. The first step is to take a source file and compile it into
 the Wasm bytecode.
 
 e.g. If your source is in Go, you might compile it with TinyGo.
+
 ```goat
     .-----------.    .----------------------.      .-----------.
    /  main.go  /---->|  tinygo -target=wasi +---->/ main.wasm /
@@ -17,9 +18,9 @@ e.g. If your source is in Go, you might compile it with TinyGo.
 
 Below are notes wazero contributed so far, in alphabetical order by language.
 
-* [TinyGo]({{< relref "/tinygo.md" >}}) e.g. `tinygo build -o X.wasm -target=wasi X.go`
-* [Rust]({{< relref "/rust.md" >}}) e.g. `rustc -o X.wasm --target wasm32-wasip1 X.rs`
-* [Zig]({{< relref "/zig.md" >}}) e.g. `zig build-exe X.zig -target wasm32-wasi`
+- [TinyGo]({{< relref "/tinygo.md" >}}) e.g. `tinygo build -o X.wasm -target=wasi X.go`
+- [Rust]({{< relref "/rust.md" >}}) e.g. `rustc -o X.wasm --target wasm32-wasip1 X.rs`
+- [Zig]({{< relref "/zig.md" >}}) e.g. `zig build-exe X.zig -target wasm32-wasi`
 
 wazero is a runtime that embeds in Go applications, not a web browser. As
 such, these notes bias towards backend use of WebAssembly, not browser use.
@@ -123,12 +124,12 @@ In other words, one function cannot do anything in parallel.
 
 This impacts how programming language primitives translate to Wasm:
 
-* Garbage collection invokes on the runtime host's calling thread instead of
+- Garbage collection invokes on the runtime host's calling thread instead of
   in the background.
-* Language-defined threads or co-routines fail compilation or are limited to
+- Language-defined threads or co-routines fail compilation or are limited to
   sequential processing.
-* Locks and barriers fail compilation or are implemented unsafely.
-* Async functions including I/O execute sequentially.
+- Locks and barriers fail compilation or are implemented unsafely.
+- Async functions including I/O execute sequentially.
 
 Language compilers often used shared infrastructure, such as [LLVM][6] and
 [Binaryen][7]. One tool that helps in translation is Binaryen's [Asyncify][8],

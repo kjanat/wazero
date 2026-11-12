@@ -2550,7 +2550,6 @@ blk9: () <-- (blk4)
 		},
 	} {
 
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			// Just in case let's check the test module is valid.
 			features := tc.features
@@ -2616,7 +2615,6 @@ func TestSignatureForListener(t *testing.T) {
 			},
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			before, after := SignatureForListener(tc.sig)
 			require.Equal(t, tc.before, before)
@@ -2664,7 +2662,7 @@ func TestCompiler_declareSignatures(t *testing.T) {
 		}
 
 		require.Equal(t, len(expected), len(declaredSigs))
-		for i := 0; i < len(expected); i++ {
+		for i := range expected {
 			require.Equal(t, expected[i].String(), declaredSigs[i].String(), i)
 		}
 	})
@@ -2709,7 +2707,7 @@ func TestCompiler_declareSignatures(t *testing.T) {
 			{ID: 24, Params: []ssa.Type{ssa.TypeI64, ssa.TypeI64}},
 		}
 		require.Equal(t, len(expected), len(declaredSigs))
-		for i := 0; i < len(declaredSigs); i++ {
+		for i := range declaredSigs {
 			require.Equal(t, expected[i].String(), declaredSigs[i].String(), i)
 		}
 	})

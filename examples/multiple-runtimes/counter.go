@@ -50,7 +50,7 @@ func main() {
 	m1 := instantiateWithEnv(ctx, runtimeFoo)
 	m2 := instantiateWithEnv(ctx, runtimeBar)
 
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		fmt.Printf("m1 counter=%d\n", counterGet(ctx, m1))
 		fmt.Printf("m2 counter=%d\n", counterGet(ctx, m2))
 	}

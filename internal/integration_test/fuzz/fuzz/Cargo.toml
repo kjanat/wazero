@@ -8,34 +8,34 @@ edition = "2018"
 [package.metadata]
 cargo-fuzz = true
 
-[dependencies]
-libfuzzer-sys = "0.4.7"
-wasm-smith = "0.201.0"
-libc = "0.2"
-nix = { version = "0.28.0" , features = ["signal"]}
-ctor = "0.2.6"
-arbitrary = "1.1.0"
-
 [[bin]]
+doc = false
 name = "memory_no_diff"
 path = "fuzz_targets/memory_no_diff.rs"
 test = false
-doc = false
 
 [[bin]]
+doc = false
 name = "validation"
 path = "fuzz_targets/validation.rs"
 test = false
-doc = false
 
 [[bin]]
+doc = false
 name = "no_diff"
 path = "fuzz_targets/no_diff.rs"
 test = false
-doc = false
 
 [[bin]]
+doc = false
 name = "logging_no_diff"
 path = "fuzz_targets/logging_no_diff.rs"
 test = false
-doc = false
+
+[dependencies]
+arbitrary = "1.1.0"
+ctor = "0.2.6"
+libc = "0.2"
+libfuzzer-sys = "0.4.7"
+nix = { version = "0.28.0", features = ["signal"] }
+wasm-smith = "0.201.0"

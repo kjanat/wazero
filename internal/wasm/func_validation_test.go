@@ -17,12 +17,12 @@ func TestModule_ValidateFunction_validateFunctionWithMaxStackValues(t *testing.T
 
 	// Compile a function which has max+1 const instructions.
 	var body []byte
-	for i := 0; i < valuesNum; i++ {
+	for range valuesNum {
 		body = append(body, OpcodeI32Const, 1)
 	}
 
 	// Drop all the consts so that if the max is higher, this function body would be sound.
-	for i := 0; i < valuesNum; i++ {
+	for range valuesNum {
 		body = append(body, OpcodeDrop)
 	}
 
@@ -3364,7 +3364,6 @@ func TestDecodeBlockType(t *testing.T) {
 			{name: "funcref", in: 0x70, exp: ValueTypeFuncref, expResultNumInUint64: 1},
 			{name: "externref", in: 0x6f, exp: ValueTypeExternref, expResultNumInUint64: 1},
 		} {
-			tc := tc
 			t.Run(tc.name, func(t *testing.T) {
 				actual, read, err := DecodeBlockType(nil, bytes.NewReader([]byte{tc.in}), api.CoreFeaturesV2)
 				require.NoError(t, err)
@@ -3456,7 +3455,6 @@ func TestFuncValidation_UnreachableBrTable_NotModifyTypes(t *testing.T) {
 			},
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.m.validateFunction(&stacks{}, api.CoreFeaturesV2,
 				0, nil, nil, nil, nil, nil, nil, bytes.NewReader(nil))

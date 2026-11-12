@@ -603,7 +603,6 @@ func TestBuilder_LayoutBlocks(t *testing.T) {
 			},
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			b := NewBuilder().(*builder)
 			tc.setup(b)

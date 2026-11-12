@@ -60,7 +60,6 @@ func TestMachine_setupPrologue(t *testing.T) {
 			clobberedRegs: []regalloc.VReg{raxVReg, rcxVReg, xmm0VReg, xmm1VReg, xmm15VReg},
 		},
 	} {
-		tc := tc
 		t.Run(tc.exp, func(t *testing.T) {
 			_, _, m := newSetupWithMockContext()
 			m.DisableStackCheck()
@@ -136,7 +135,6 @@ func TestMachine_postRegAlloc(t *testing.T) {
 			clobberedRegs: []regalloc.VReg{raxVReg, rcxVReg, xmm0VReg, xmm1VReg, xmm15VReg},
 		},
 	} {
-		tc := tc
 		t.Run(tc.exp, func(t *testing.T) {
 			_, _, m := newSetupWithMockContext()
 			m.spillSlotSize = tc.spillSlotSize

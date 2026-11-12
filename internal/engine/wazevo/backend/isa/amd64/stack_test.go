@@ -29,7 +29,6 @@ func TestUnwindStack(t *testing.T) {
 			return stack, exp
 		}},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			stack, exp := tc.setup()
 			bp := uintptr(unsafe.Pointer(&stack[0]))

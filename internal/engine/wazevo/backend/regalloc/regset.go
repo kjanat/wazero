@@ -19,7 +19,7 @@ type RegSet uint64
 
 func (rs RegSet) format(info *RegisterInfo) string { //nolint:unused
 	var ret []string
-	for i := 0; i < 64; i++ {
+	for i := range 64 {
 		if rs&(1<<uint(i)) != 0 {
 			ret = append(ret, info.RealRegName(RealReg(i)))
 		}
@@ -39,7 +39,7 @@ func (rs RegSet) add(r RealReg) RegSet {
 }
 
 func (rs RegSet) Range(f func(allocatedRealReg RealReg)) {
-	for i := 0; i < 64; i++ {
+	for i := range 64 {
 		if rs&(1<<uint(i)) != 0 {
 			f(RealReg(i))
 		}

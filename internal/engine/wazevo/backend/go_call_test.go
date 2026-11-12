@@ -46,7 +46,6 @@ func Test_goFunctionCallRequiredStackSize(t *testing.T) {
 			exp:      16,
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			requiredSize, _ := GoFunctionCallRequiredStackSize(tc.sig, tc.argBegin)
 			require.Equal(t, tc.exp, requiredSize)

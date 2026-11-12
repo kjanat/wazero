@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"slices"
 	"time"
 
 	experimentalsys "github.com/kjanat/wazero/experimental/sys"
@@ -211,10 +212,8 @@ func nullTerminatedByteCount(max uint32, elements [][]byte) (uint32, error) {
 	bufSize, maxSize := uint64(count), uint64(max) // uint64 to allow summing without overflow
 	for _, e := range elements {
 		// As this is null-terminated, We have to validate there are no null characters in the string.
-		for _, c := range e {
-			if c == 0 {
-				return 0, errors.New("contains NUL character")
-			}
+		if slices.Contains(e, 0) {
+			return 0, errors.New("contains NUL character")
 		}
 
 		nextSize := bufSize + uint64(len(e))

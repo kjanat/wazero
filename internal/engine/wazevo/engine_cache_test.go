@@ -311,10 +311,8 @@ func TestDeserializeCompiledModule(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			for _, r := range readers {
-				r := r
 				t.Run(r.name, func(t *testing.T) {
 					cm, staleCache, err := deserializeCompiledModule(testVersion, io.NopCloser(r.wrap(bytes.NewReader(tc.in))))
 

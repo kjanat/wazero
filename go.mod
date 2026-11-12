@@ -1,7 +1,9 @@
 module github.com/kjanat/wazero
 
-// Floor Go version of wazero (current - 1)
-go 1.25.0
+// Floor Go version of wazero
+go 1.27.0
+
+toolchain go1.27.4
 
 // All the beta tags are retracted and replaced with "pre" to prevent users
 // from accidentally upgrading into the broken beta 1.

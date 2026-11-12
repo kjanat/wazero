@@ -39,7 +39,6 @@ func Benchmark_ArgsEnviron(b *testing.B) {
 		wasip1.EnvironGetName,
 		wasip1.EnvironSizesGetName,
 	} {
-		n := n
 		fn := mod.ExportedFunction(n)
 		b.Run(n, func(b *testing.B) {
 			b.ReportAllocs()

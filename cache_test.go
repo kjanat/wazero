@@ -226,7 +226,7 @@ func TestCache_Close(t *testing.T) {
 		c := &cache{engs: [engineKindCount]wasm.Engine{&mockEngine{}, &mockEngine{}}}
 		err := c.Close(testCtx)
 		require.NoError(t, err)
-		for i := engineKind(0); i < engineKindCount; i++ {
+		for i := range engineKindCount {
 			require.True(t, c.engs[i].(*mockEngine).closed)
 		}
 	})

@@ -98,7 +98,7 @@ func pollOneoffFn(_ context.Context, mod api.Module, params []uint64) sys.Errno 
 
 	// Layout is subscription_u: Union
 	// https://github.com/WebAssembly/WASI/blob/snapshot-01/phases/snapshot/docs.md#subscription_u
-	for i := uint32(0); i < nsubscriptions; i++ {
+	for i := range nsubscriptions {
 		inOffset := i * 48
 		outOffset := nevents * 32
 

@@ -40,7 +40,7 @@ func TestTableLimiterLifecycle(t *testing.T) {
 					binary := binaryencoding.EncodeModule(tableGrowModule(1, nil, false))
 					results := make(chan error, 16)
 					var wg sync.WaitGroup
-					for i := 0; i < 16; i++ {
+					for i := range 16 {
 						wg.Add(1)
 						go func(i int) {
 							defer wg.Done()

@@ -357,7 +357,7 @@ type compiledFunction struct {
 	exceptionTable      []exceptionTableEntry
 	listener            experimental.FunctionListener
 	offsetsInWasmBinary []uint64
-	hostFn              interface{}
+	hostFn              any
 	ensureTermination   bool
 	index               wasm.Index
 }
@@ -800,7 +800,7 @@ type functionListenerInvocation struct {
 // recoverOnCall takes the recovered value `recoverOnCall`, and wraps it
 // with the call frame stack traces. Also, reset the state of callEngine
 // so that it can be used for the subsequent calls.
-func (ce *callEngine) recoverOnCall(ctx context.Context, m *wasm.ModuleInstance, v interface{}) (err error) {
+func (ce *callEngine) recoverOnCall(ctx context.Context, m *wasm.ModuleInstance, v any) (err error) {
 	if s, ok := v.(*snapshot); ok {
 		// A snapshot that wasn't handled was created by a different call engine possibly from a nested wasm invocation,
 		// let it propagate up to be handled by the caller.
@@ -2442,7 +2442,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 			idxHi, idxLo := ce.popValue(), ce.popValue()
 			baseHi, baseLo := ce.popValue(), ce.popValue()
 			var newVal [16]byte
-			for i := 0; i < 16; i++ {
+			for i := range 16 {
 				var id byte
 				if i < 8 {
 					id = byte(idxLo >> (i * 8))
@@ -2514,34 +2514,34 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 			var res uint64
 			switch op.B1 {
 			case shapeI8x16:
-				for i := 0; i < 8; i++ {
+				for i := range 8 {
 					if int8(lo>>(i*8)) < 0 {
 						res |= 1 << i
 					}
 				}
-				for i := 0; i < 8; i++ {
+				for i := range 8 {
 					if int8(hi>>(i*8)) < 0 {
 						res |= 1 << (i + 8)
 					}
 				}
 			case shapeI16x8:
-				for i := 0; i < 4; i++ {
+				for i := range 4 {
 					if int16(lo>>(i*16)) < 0 {
 						res |= 1 << i
 					}
 				}
-				for i := 0; i < 4; i++ {
+				for i := range 4 {
 					if int16(hi>>(i*16)) < 0 {
 						res |= 1 << (i + 4)
 					}
 				}
 			case shapeI32x4:
-				for i := 0; i < 2; i++ {
+				for i := range 2 {
 					if int32(lo>>(i*32)) < 0 {
 						res |= 1 << i
 					}
 				}
-				for i := 0; i < 2; i++ {
+				for i := range 2 {
 					if int32(hi>>(i*32)) < 0 {
 						res |= 1 << (i + 2)
 					}
@@ -3099,7 +3099,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 			// https://github.com/WebAssembly/spec/blob/wg-2.0.draft1/proposals/simd/SIMD.md#saturating-integer-addition
 			switch op.B1 {
 			case shapeI8x16:
-				for i := 0; i < 16; i++ {
+				for i := range 16 {
 					var v, w byte
 					if i < 8 {
 						v, w = byte(x1Lo>>(i*8)), byte(x2Lo>>(i*8))
@@ -3133,7 +3133,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 					}
 				}
 			case shapeI16x8:
-				for i := 0; i < 8; i++ {
+				for i := range 8 {
 					var v, w uint16
 					if i < 4 {
 						v, w = uint16(x1Lo>>(i*16)), uint16(x2Lo>>(i*16))
@@ -3181,7 +3181,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 			// https://github.com/WebAssembly/spec/blob/wg-2.0.draft1/proposals/simd/SIMD.md#saturating-integer-subtraction
 			switch op.B1 {
 			case shapeI8x16:
-				for i := 0; i < 16; i++ {
+				for i := range 16 {
 					var v, w byte
 					if i < 8 {
 						v, w = byte(x1Lo>>(i*8)), byte(x2Lo>>(i*8))
@@ -3215,7 +3215,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 					}
 				}
 			case shapeI16x8:
-				for i := 0; i < 8; i++ {
+				for i := range 8 {
 					var v, w uint16
 					if i < 4 {
 						v, w = uint16(x1Lo>>(i*16)), uint16(x2Lo>>(i*16))
@@ -3382,7 +3382,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 		case operationKindV128Popcnt:
 			hi, lo := ce.popValue(), ce.popValue()
 			var retLo, retHi uint64
-			for i := 0; i < 16; i++ {
+			for i := range 16 {
 				var v byte
 				if i < 8 {
 					v = byte(lo >> (i * 8))
@@ -3391,7 +3391,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 				}
 
 				var cnt uint64
-				for i := 0; i < 8; i++ {
+				for i := range 8 {
 					if (v>>i)&0b1 != 0 {
 						cnt++
 					}
@@ -3733,7 +3733,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 			var retHi, retLo uint64
 			switch op.B1 {
 			case shapeI8x16:
-				for i := 0; i < 8; i++ {
+				for i := range 8 {
 					v8 := byte(origin >> (i * 8))
 
 					var v16 uint16
@@ -3750,7 +3750,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 					}
 				}
 			case shapeI16x8:
-				for i := 0; i < 4; i++ {
+				for i := range 4 {
 					v16 := uint16(origin >> (i * 16))
 
 					var v32 uint32
@@ -3795,7 +3795,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 			var retLo, retHi uint64
 			switch op.B1 {
 			case shapeI8x16:
-				for i := 0; i < 8; i++ {
+				for i := range 8 {
 					v1, v2 := byte(x1>>(i*8)), byte(x2>>(i*8))
 
 					var v16 uint16
@@ -3812,7 +3812,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 					}
 				}
 			case shapeI16x8:
-				for i := 0; i < 4; i++ {
+				for i := range 4 {
 					v1, v2 := uint16(x1>>(i*16)), uint16(x2>>(i*16))
 
 					var v32 uint32
@@ -3847,7 +3847,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 			x2hi, x2Lo := ce.popValue(), ce.popValue()
 			x1hi, x1Lo := ce.popValue(), ce.popValue()
 			var retLo, retHi uint64
-			for i := 0; i < 8; i++ {
+			for i := range 8 {
 				var v, w int16
 				if i < 4 {
 					v, w = int16(uint16(x1Lo>>(i*16))), int16(uint16(x2Lo>>(i*16)))
@@ -3883,7 +3883,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 			var retLo, retHi uint64
 			switch op.B1 {
 			case shapeI8x16:
-				for i := 0; i < 8; i++ {
+				for i := range 8 {
 					var v1, v2 byte
 					if i < 4 {
 						v1, v2 = byte(lo>>((i*2)*8)), byte(lo>>((i*2+1)*8))
@@ -3905,7 +3905,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 					}
 				}
 			case shapeI16x8:
-				for i := 0; i < 4; i++ {
+				for i := range 4 {
 					var v1, v2 uint16
 					if i < 2 {
 						v1, v2 = uint16(lo>>((i*2)*16)), uint16(lo>>((i*2+1)*16))
@@ -3981,7 +3981,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 			var retLo, retHi uint64
 			switch op.B1 {
 			case shapeI16x8: // signed/unsigned i16x8 to i8x16
-				for i := 0; i < 8; i++ {
+				for i := range 8 {
 					var v16 uint16
 					if i < 4 {
 						v16 = uint16(x1Lo >> (i * 16))
@@ -4010,7 +4010,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 					}
 					retLo |= uint64(v) << (i * 8)
 				}
-				for i := 0; i < 8; i++ {
+				for i := range 8 {
 					var v16 uint16
 					if i < 4 {
 						v16 = uint16(x2Lo >> (i * 16))
@@ -4040,7 +4040,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 					retHi |= uint64(v) << (i * 8)
 				}
 			case shapeI32x4: // signed/unsigned i32x4 to i16x8
-				for i := 0; i < 4; i++ {
+				for i := range 4 {
 					var v32 uint32
 					if i < 2 {
 						v32 = uint32(x1Lo >> (i * 32))
@@ -4070,7 +4070,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 					retLo |= uint64(v) << (i * 16)
 				}
 
-				for i := 0; i < 4; i++ {
+				for i := range 4 {
 					var v32 uint32
 					if i < 2 {
 						v32 = uint32(x2Lo >> (i * 32))

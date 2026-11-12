@@ -406,7 +406,7 @@ func (b *builder) InsertInstruction(instr *Instruction) {
 	}
 
 	rValues := b.varLengthPool.Allocate(tsl)
-	for i := 0; i < tsl; i++ {
+	for i := range tsl {
 		rn := b.allocateValue(ts[i])
 		rValues = rValues.Append(&b.varLengthPool, rn.setInstructionID(instr.id))
 	}

@@ -351,7 +351,6 @@ blk0: (v0:i32, v1:i64)
 `,
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			b := NewBuilder().(*builder)
 			verifier := tc.setup(b)

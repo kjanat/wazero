@@ -31,7 +31,7 @@ func decodeTypeSection(enabledFeatures api.CoreFeatures, r *bytes.Reader) ([]was
 	}
 
 	var result []wasm.FunctionType
-	for i := uint32(0); i < vs; i++ {
+	for i := range vs {
 		// Peek at the leading byte to check for rec group (0x4e, GC proposal).
 		b, err := r.ReadByte()
 		if err != nil {
@@ -44,7 +44,7 @@ func decodeTypeSection(enabledFeatures api.CoreFeatures, r *bytes.Reader) ([]was
 				return nil, fmt.Errorf("read rec group count: %v", err)
 			}
 			startIdx := uint32(len(result))
-			for j := uint32(0); j < recCount; j++ {
+			for j := range recCount {
 				var ft wasm.FunctionType
 				if err = decodeFunctionType(enabledFeatures, r, &ft); err != nil {
 					return nil, fmt.Errorf("read %d-th type in rec group: %v", j, err)
@@ -53,7 +53,7 @@ func decodeTypeSection(enabledFeatures api.CoreFeatures, r *bytes.Reader) ([]was
 				ft.RecGroupPosition = int(j)
 				result = append(result, ft)
 			}
-			for j := uint32(0); j < recCount; j++ {
+			for j := range recCount {
 				if err := validateTypeForwardRefs(&result[startIdx+j], startIdx+recCount); err != nil {
 					return nil, err
 				}
@@ -112,7 +112,7 @@ func decodeImportSection(
 
 	perModule = make(map[string][]*wasm.Import)
 	result = make([]wasm.Import, vs)
-	for i := uint32(0); i < vs; i++ {
+	for i := range vs {
 		imp := &result[i]
 		if err = decodeImport(r, i, memorySizer, memoryLimitPages, enabledFeatures, imp); err != nil {
 			return
@@ -146,7 +146,7 @@ func decodeFunctionSection(r *bytes.Reader) ([]uint32, error) {
 	}
 
 	result := make([]uint32, vs)
-	for i := uint32(0); i < vs; i++ {
+	for i := range vs {
 		if result[i], _, err = leb128.DecodeUint32(r); err != nil {
 			return nil, fmt.Errorf("get type index: %w", err)
 		}
@@ -202,7 +202,7 @@ func decodeGlobalSection(r *bytes.Reader, enabledFeatures api.CoreFeatures) ([]w
 	}
 
 	result := make([]wasm.Global, vs)
-	for i := uint32(0); i < vs; i++ {
+	for i := range vs {
 		if err = decodeGlobal(r, enabledFeatures, &result[i]); err != nil {
 			return nil, fmt.Errorf("global[%d]: %w", i, err)
 		}
@@ -218,7 +218,7 @@ func decodeExportSection(r *bytes.Reader) ([]wasm.Export, map[string]*wasm.Expor
 
 	exportMap := make(map[string]*wasm.Export, vs)
 	exportSection := make([]wasm.Export, vs)
-	for i := wasm.Index(0); i < vs; i++ {
+	for i := range vs {
 		export := &exportSection[i]
 		err := decodeExport(r, export)
 		if err != nil {
@@ -248,7 +248,7 @@ func decodeElementSection(r *bytes.Reader, enabledFeatures api.CoreFeatures) ([]
 	}
 
 	result := make([]wasm.ElementSegment, vs)
-	for i := uint32(0); i < vs; i++ {
+	for i := range vs {
 		if err = decodeElementSegment(r, enabledFeatures, &result[i]); err != nil {
 			return nil, fmt.Errorf("read element: %w", err)
 		}
@@ -264,7 +264,7 @@ func decodeCodeSection(r *bytes.Reader) ([]wasm.Code, error) {
 	}
 
 	result := make([]wasm.Code, vs)
-	for i := uint32(0); i < vs; i++ {
+	for i := range vs {
 		err = decodeCode(r, codeSectionStart, &result[i])
 		if err != nil {
 			return nil, fmt.Errorf("read %d-th code segment: %v", i, err)
@@ -280,7 +280,7 @@ func decodeDataSection(r *bytes.Reader, enabledFeatures api.CoreFeatures) ([]was
 	}
 
 	result := make([]wasm.DataSegment, vs)
-	for i := uint32(0); i < vs; i++ {
+	for i := range vs {
 		if err = decodeDataSegment(r, enabledFeatures, &result[i]); err != nil {
 			return nil, fmt.Errorf("read data segment: %w", err)
 		}
@@ -295,7 +295,7 @@ func decodeTagSection(r *bytes.Reader) ([]wasm.Tag, error) {
 	}
 
 	result := make([]wasm.Tag, vs)
-	for i := uint32(0); i < vs; i++ {
+	for i := range vs {
 		// Read attribute byte (must be 0x00 per spec).
 		attr, err := r.ReadByte()
 		if err != nil {

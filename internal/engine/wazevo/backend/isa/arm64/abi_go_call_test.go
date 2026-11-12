@@ -589,7 +589,6 @@ func Test_goFunctionCallLoadStackArg(t *testing.T) {
 `,
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				_, _, m := newSetupWithMockContext()
@@ -656,7 +655,6 @@ func Test_goFunctionCallStoreStackResult(t *testing.T) {
 `,
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Run(tc.name, func(t *testing.T) {
 				_, _, m := newSetupWithMockContext()

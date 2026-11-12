@@ -160,7 +160,7 @@ func (e testRuntimeErr) Error() string {
 
 func Test_AddFrame_MaxFrame(t *testing.T) {
 	builder := NewErrorBuilder().(*stackTrace)
-	for i := 0; i < MaxFrames+10; i++ {
+	for range MaxFrames + 10 {
 		builder.AddFrame("x.y", nil, nil, []string{"a.go:1:2", "b.go:3:4"})
 	}
 	require.Equal(t, MaxFrames, builder.frameCount)

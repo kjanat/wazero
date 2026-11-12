@@ -226,7 +226,7 @@ func Test_pollOneoff_Stdin(t *testing.T) {
 			name:            "20ms timeout, fdread on tty (buffer ready): both events are written",
 			nsubscriptions:  2,
 			expectedNevents: 2,
-			stdin:           &ttyStdinFile{StdinFile: sys.StdinFile{Reader: strings.NewReader("test")}},
+			stdin:           &ttyStdinFile{Reader: strings.NewReader("test")},
 			mem: concat(
 				clockNsSub(20*1000*1000),
 				fdReadSub,
@@ -260,7 +260,7 @@ func Test_pollOneoff_Stdin(t *testing.T) {
 			name:            "0ns timeout, fdread on tty (buffer ready): both are written",
 			nsubscriptions:  2,
 			expectedNevents: 2,
-			stdin:           &ttyStdinFile{StdinFile: sys.StdinFile{Reader: strings.NewReader("test")}},
+			stdin:           &ttyStdinFile{Reader: strings.NewReader("test")},
 			mem: concat(
 				clockNsSub(20*1000*1000),
 				fdReadSub,
@@ -362,7 +362,7 @@ func Test_pollOneoff_Stdin(t *testing.T) {
 			name:            "20ms timeout, fdread on blocked tty: only clock event is written",
 			nsubscriptions:  2,
 			expectedNevents: 1,
-			stdin:           &neverReadyTtyStdinFile{StdinFile: sys.StdinFile{Reader: newBlockingReader(t)}},
+			stdin:           &neverReadyTtyStdinFile{Reader: newBlockingReader(t)},
 			mem: concat(
 				clockNsSub(20*1000*1000),
 				fdReadSub,
@@ -481,7 +481,7 @@ func setStdin(t *testing.T, mod api.Module, stdin experimentalsys.File) {
 }
 
 func Test_pollOneoff_Zero(t *testing.T) {
-	poller := &pollStdinFile{StdinFile: sys.StdinFile{Reader: strings.NewReader("test")}, ready: true}
+	poller := &pollStdinFile{Reader: strings.NewReader("test"), ready: true}
 
 	mod, r, log := requireProxyModule(t, wazero.NewModuleConfig())
 	defer r.Close(testCtx)

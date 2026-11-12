@@ -518,7 +518,6 @@ L2:
 `,
 		},
 	} {
-		tc := tc
 		t.Run(tc.exp, func(t *testing.T) {
 			_, _, m := newSetupWithMockContext()
 			m.nextLabel = 1

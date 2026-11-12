@@ -229,7 +229,7 @@ func (l *loggingListener) Abort(ctx context.Context, mod api.Module, def api.Fun
 // logIndented writes an indentation level and prefix prior to calling log to
 // output the log line.
 func (l *loggingListener) logIndented(nestLevel int, prefix string, log func()) {
-	for i := 0; i < nestLevel; i++ {
+	for range nestLevel {
 		l.w.WriteByte('\t') //nolint
 	}
 	l.w.WriteString(prefix) //nolint

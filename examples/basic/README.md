@@ -19,15 +19,18 @@ typically a `%.wasm` file.
 the minimal command to build a `%.wasm` binary.
 
 ```bash
-(cd testdata; tinygo build -buildmode=c-shared -target=wasip1 -o add.wasm add.go)
+(
+  cd testdata
+  tinygo build -buildmode=c-shared -target=wasip1 -o add.wasm add.go
+)
 ```
 
 ### Notes
 
-* Many other languages compile to (target) Wasm including AssemblyScript, C,
+- Many other languages compile to (target) Wasm including AssemblyScript, C,
   C++, Rust, and Zig!
-* The embedding application is often called the "host" in WebAssembly.
-* The Wasm binary is often called the "guest" in WebAssembly. Sometimes they
+- The embedding application is often called the "host" in WebAssembly.
+- The Wasm binary is often called the "guest" in WebAssembly. Sometimes they
   need [imports](../../imports) to implement features such as console output.
   TinyGo's `wasi` target, requires [WASI][2] imports.
 

@@ -465,7 +465,7 @@ func (m *Module) validateFunctionWithMaxStackValues(
 			}
 
 			sts.ls = sts.ls[:0]
-			for i := uint32(0); i < nl; i++ {
+			for range nl {
 				l, n, err := leb128.DecodeUint32(br)
 				if err != nil {
 					return fmt.Errorf("read immediate: %w", err)
@@ -559,8 +559,8 @@ func (m *Module) validateFunctionWithMaxStackValues(
 			}
 			tagType := &m.TypeSection[tags[tagIndex]]
 			// Pop values matching the tag's params in reverse order.
-			for i := len(tagType.Params) - 1; i >= 0; i-- {
-				if err := valueTypeStack.popAndVerifyType(tagType.Params[i]); err != nil {
+			for _, v := range slices.Backward(tagType.Params) {
+				if err := valueTypeStack.popAndVerifyType(v); err != nil {
 					return fmt.Errorf("type mismatch on %s operation: %v", OpcodeThrowName, err)
 				}
 			}
@@ -594,7 +594,7 @@ func (m *Module) validateFunctionWithMaxStackValues(
 			pc += catchNum
 
 			// Validate each catch clause.
-			for i := uint32(0); i < catchCount; i++ {
+			for range catchCount {
 				pc++
 				catchKind := body[pc]
 				switch catchKind {
@@ -2387,8 +2387,8 @@ func (sts *stacks) reset(functionType *FunctionType) {
 }
 
 func (sts *stacks) validateCallSignature(opName string, funcType *FunctionType) error {
-	for i := len(funcType.Params) - 1; i >= 0; i-- {
-		if err := sts.vs.popAndVerifyType(funcType.Params[i]); err != nil {
+	for _, v := range slices.Backward(funcType.Params) {
+		if err := sts.vs.popAndVerifyType(v); err != nil {
 			return fmt.Errorf("type mismatch on %s operation param type: %v", opName, err)
 		}
 	}

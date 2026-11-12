@@ -43,7 +43,6 @@ func BenchmarkHostFunctionCall(b *testing.B) {
 	binary.LittleEndian.PutUint32(m.MemoryInstance.Buffer[offset:], math.Float32bits(val))
 
 	for _, fn := range []string{callGoReflectHostName, callGoHostName} {
-		fn := fn
 
 		b.Run(fn, func(b *testing.B) {
 			ce := getCallEngine(m, fn)
@@ -112,7 +111,6 @@ func TestBenchmarkFunctionCall(t *testing.T) {
 		{name: "go", ce: callGoHost},
 		{name: "go-reflect", ce: callGoReflectHost},
 	} {
-		f := f
 		t.Run(f.name, func(t *testing.T) {
 			for _, tc := range tests {
 				binary.LittleEndian.PutUint32(mem[tc.offset:], math.Float32bits(tc.val))

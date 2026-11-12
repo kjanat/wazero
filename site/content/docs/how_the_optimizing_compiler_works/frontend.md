@@ -108,8 +108,8 @@ You might also have noticed that the instructions do not correspond strictly to
 the original Wasm opcodes. This is because, similarly to the wazero IR used by
 the old compiler, this is a custom IR.
 
-You will also notice that, _on the right-hand side of the assignments_ of any statement,
-no name occurs _twice_: this is why this form is called **single-assignment**.
+You will also notice that, *on the right-hand side of the assignments* of any statement,
+no name occurs *twice*: this is why this form is called **single-assignment**.
 
 Finally, notice how `blk1` and `blk2` end with a jump to the last block `blk3`.
 
@@ -227,7 +227,7 @@ blk0: (exec_ctx:i64, module_ctx:i64)
 ```
 
 This is a simple example of constant propagation and dead code elimination
-occurring within a basic block. However, now  `blk2` is unreachable, because
+occurring within a basic block. However, now `blk2` is unreachable, because
 there is no other edge in the edge that points to it; thus it can be removed
 from the control-flow graph. This is an example of dead-code elimination that
 occurs at the control-flow graph level.
@@ -264,7 +264,6 @@ folds and delete instructions that are essentially no-ops (e.g. shifting by a 0 
 
 `wazevoapi.PrintOptimizedSSA` dumps the SSA form to the console after optimization.
 
-
 ## Block Layout
 
 As we have seen earlier, the SSA form instructions are contained within basic
@@ -279,18 +278,18 @@ instruction, one of the goals of the block layout phase is to maximize the numbe
 with a jump instruction whose target is exactly the next block in the
 sequence. In order to maximize the number of fall-through opportunities, the
 block layout phase might reorder the basic blocks in the control-flow graph,
-and transform the control-flow instructions. For instance, it might _invert_
+and transform the control-flow instructions. For instance, it might *invert*
 some branching conditions.
 
 The end goal is to effectively minimize the number of jumps and branches in
 the machine code that will be generated later.
-
 
 ### Critical Edges
 
 Special attention must be taken when a basic block has multiple predecessors,
 i.e., when it has multiple incoming edges. In particular, an edge between two
 basic blocks is called a **critical edge** when, at the same time:
+
 - the predecessor has multiple successors **and**
 - the successor has multiple predecessors.
 
@@ -364,8 +363,8 @@ blk3: (v5:i32) <-- (blk1,blk2)
 
 <hr>
 
-* Previous Section: [How the Optimizing Compiler Works](../)
-* Next Section: [Back-End](../backend/)
+- Previous Section: [How the Optimizing Compiler Works](../)
+- Next Section: [Back-End](../backend/)
 
 [ssa-blocks]: https://en.wikipedia.org/wiki/Static_single-assignment_form#Block_arguments
 [llvm-mlir]: https://mlir.llvm.org/docs/Rationale/Rationale/#block-arguments-vs-phi-nodes

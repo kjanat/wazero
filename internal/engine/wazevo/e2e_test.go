@@ -960,9 +960,8 @@ func TestE2E(t *testing.T) {
 			}},
 		},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			for i := 0; i < 1; i++ {
+			for i := range 1 {
 				var name string
 				if i == 0 {
 					name = "no cache"
@@ -1040,7 +1039,6 @@ func TestE2E_host_functions(t *testing.T) {
 		{name: "listener", ctx: ctx},
 		{name: "no listener", ctx: context.Background()},
 	} {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			ctx := tc.ctx
 
@@ -1449,7 +1447,7 @@ func TestListener_long_as_is(t *testing.T) {
 	const paramNum = 20
 
 	var body []byte
-	for i := 0; i < paramNum; i++ {
+	for i := range paramNum {
 		body = append(body, wasm.OpcodeLocalGet)
 		body = append(body, leb128.EncodeUint32(uint32(i))...)
 	}
@@ -1496,7 +1494,7 @@ func TestListener_long_many_consts(t *testing.T) {
 	var exp []uint64
 	var body []byte
 	var resultTypes []wasm.ValueType
-	for i := 0; i < paramNum; i++ {
+	for i := range paramNum {
 		exp = append(exp, uint64(i))
 		resultTypes = append(resultTypes, i32)
 		body = append(body, wasm.OpcodeI32Const)

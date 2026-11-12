@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"sync"
 	"sync/atomic"
 
@@ -661,25 +662,25 @@ func structuralTypeKey(ft *FunctionType, typeIDs []FunctionTypeID) string {
 	if !hasConcreteRef {
 		return ft.key()
 	}
-	var ret string
+	var ret strings.Builder
 	for _, b := range ft.Params {
-		ret += structuralValueTypeName(b, typeIDs)
+		ret.WriteString(structuralValueTypeName(b, typeIDs))
 	}
 	if len(ft.Params) == 0 {
-		ret += "v_"
+		ret.WriteString("v_")
 	} else {
-		ret += "_"
+		ret.WriteString("_")
 	}
 	for _, b := range ft.Results {
-		ret += structuralValueTypeName(b, typeIDs)
+		ret.WriteString(structuralValueTypeName(b, typeIDs))
 	}
 	if len(ft.Results) == 0 {
-		ret += "v"
+		ret.WriteString("v")
 	}
 	if ft.RecGroupSize > 1 {
-		ret += fmt.Sprintf("|rec%d/%d", ft.RecGroupPosition, ft.RecGroupSize)
+		ret.WriteString(fmt.Sprintf("|rec%d/%d", ft.RecGroupPosition, ft.RecGroupSize))
 	}
-	return ret
+	return ret.String()
 }
 
 func (s *Store) GetFunctionTypeID(t *FunctionType) (FunctionTypeID, error) {

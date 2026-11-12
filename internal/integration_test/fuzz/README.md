@@ -18,7 +18,6 @@ Currently, we have the following fuzzing targets:
   Therefore, this takes much longer than `no_diff`.
 - `validation`: try compiling maybe-invalid Wasm module binaries. This is to ensure that our validation phase works correctly as well as the engines do not panic during compilation.
 
-
 To run the fuzzer on a target, execute the following command:
 
 ```
@@ -34,7 +33,7 @@ See `cargo fuzz run --help` for the options. Especially, the following flags are
   - usage: `cargo fuzz run no_diff -- -jobs=5` will run 5 parallel workers to run fuzzing jobs.
 - `-max_total_time`: the maximum total time in seconds to run the fuzzer.
   - usage: `cargo fuzz run no_diff -- -max_total_time=100` will run fuzzing for 100 seconds.
-- `-timeout` sets the timeout seconds _per fuzzing run_, not the entire job.
+- `-timeout` sets the timeout seconds *per fuzzing run*, not the entire job.
 - `-rss_limit_mb` sets the memory usage limit which is 2GB by default. Usually 2GB is not enough for some large Wasm binary.
 
 #### Example commands
@@ -63,15 +62,14 @@ To reproduce the failure, execute: WASM_BINARY_PATH=/Users/mathetake/wazero/inte
 ```
 
 then you can check the wasm and wat as well as reproduce the error by running
+
 ```
 WASM_BINARY_PATH=/Users/mathetake/wazero/internal/integration_test/fuzz/wazerolib/testdata/73c61e218b8547ef35271a22ca95f932dcc102bda9b3a9bdf1976e6ed36da31d.wasm go test ./wazerolib/...
 ```
 
-
 Also, in the bottom of the output, you can find the message as
 
 ```
-
 Minimize test case with:
 
         cargo fuzz tmin no_diff fuzz/artifacts/no_diff/crash-d2c1f5307fde6f057454606bcc21d5653be9be8d
@@ -80,7 +78,6 @@ Minimize test case with:
 ```
 
 and you can use that command to "minimize" the input binary while keeping the same error.
-
 
 Alternatively, you can use the following command to minimize the arbitrary input binary:
 

@@ -94,7 +94,7 @@ func TestTableLimiter(t *testing.T) {
 					owner := instantiate(t, r, experimental.WithTableLimiter(ctx, budget), "owner", tableGrowModule(1, nil, false))
 					alias := instantiate(t, r, experimental.WithTableLimiter(ctx, other), "alias", tableGrowModule(1, nil, true))
 					require.NoError(t, owner.Close(ctx))
-					runtime.GC()
+					assertTableRetained(t, budget, alias)
 					grow(t, alias, 2, 1)
 					grow(t, alias, 1, math.MaxUint32)
 					other.check(t, 0)
@@ -131,9 +131,29 @@ func TestTableLimiter(t *testing.T) {
 					_, err := r.Instantiate(experimental.WithTableLimiter(ctx, budget), binaryencoding.EncodeModule(m))
 					require.Error(t, err)
 					require.Contains(t, err.Error(), "unreachable")
-					runtime.GC()
+					assertTableRetained(t, budget, owner)
 					budget.check(t, 2, [3]uint32{0, 2, math.MaxUint32})
 					runtime.KeepAlive(owner)
+				}()
+				awaitTableRelease(t, budget, 2)
+			})
+
+			t.Run("denied allocation retains imported module references", func(t *testing.T) {
+				budget := newTableBudget(2)
+				func() {
+					r := wazero.NewRuntimeWithConfig(ctx, engine.config)
+					defer r.Close(ctx)
+					owner := instantiate(t, r, ctx, "owner", tableGrowModule(1, nil, false))
+					m := &wasm.Module{
+						ImportSection: []wasm.Import{{Module: "owner", Name: "table", Type: wasm.ExternTypeTable, DescTable: wasm.Table{Min: 1, Type: wasm.RefTypeFuncref}}},
+						TableSection: []wasm.Table{
+							{Min: 2, Type: wasm.RefTypeFuncref}, {Min: 1, Type: wasm.RefTypeFuncref},
+						},
+					}
+					_, err := r.Instantiate(experimental.WithTableLimiter(ctx, budget), binaryencoding.EncodeModule(m))
+					require.EqualError(t, err, "table[2] allocation of 1 elements denied by table limiter")
+					assertTableRetained(t, budget, owner)
+					budget.check(t, 2, [3]uint32{0, 2, math.MaxUint32}, [3]uint32{0, 1, math.MaxUint32})
 				}()
 				awaitTableRelease(t, budget, 2)
 			})
@@ -212,6 +232,19 @@ func (b *tableBudget) check(t *testing.T, used uint32, requests ...[3]uint32) {
 	defer b.mu.Unlock()
 	require.Equal(t, used, b.used)
 	require.Equal(t, requests, b.requests)
+}
+
+func assertTableRetained(t *testing.T, budget *tableBudget, retained api.Module) {
+	t.Helper()
+	for range 3 {
+		runtime.GC()
+		select {
+		case elements := <-budget.released:
+			t.Fatalf("released %d elements while their module was retained", elements)
+		case <-time.After(10 * time.Millisecond):
+		}
+	}
+	runtime.KeepAlive(retained)
 }
 
 func awaitTableRelease(t *testing.T, b *tableBudget, elements uint32) {

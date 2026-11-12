@@ -11,7 +11,7 @@ import (
 	"github.com/kjanat/wazero/internal/testing/require"
 )
 
-func TestTableLimiterFailedAllocationRefund(t *testing.T) {
+func TestTableLimiterRejectsHostSizeBeforeReservation(t *testing.T) {
 	ctx := context.Background()
 	budget := newTableBudget(math.MaxUint32)
 	func() {
@@ -30,4 +30,18 @@ func TestTableLimiterFailedAllocationRefund(t *testing.T) {
 		budget.check(t, 1, [3]uint32{0, 0, math.MaxUint32}, [3]uint32{0, 1, math.MaxUint32})
 	}()
 	awaitTableRelease(t, budget, 1)
+}
+
+func TestTableGrowHostSizeWithoutLimiter(t *testing.T) {
+	ctx := context.Background()
+	r := wazero.NewRuntimeWithConfig(ctx, wazero.NewRuntimeConfigInterpreter())
+	defer r.Close(ctx)
+	mod, err := r.Instantiate(ctx, binaryencoding.EncodeModule(tableGrowModule(0, nil, false)))
+	require.NoError(t, err)
+	result, err := mod.ExportedFunction("grow").Call(ctx, 1<<30)
+	require.NoError(t, err)
+	require.Equal(t, []uint64{math.MaxUint32}, result)
+	result, err = mod.ExportedFunction("grow").Call(ctx, 1)
+	require.NoError(t, err)
+	require.Equal(t, []uint64{0}, result)
 }

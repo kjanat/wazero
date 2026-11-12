@@ -310,7 +310,7 @@ func BenchmarkFunctionListener(n int, module api.Module, stack []StackFrame, lis
 	results := stack[0].Results
 	stackIterator := &stackIterator{base: NewStackIterator(stack...)}
 
-	for i := 0; i < n; i++ {
+	for range n {
 		stackIterator.index = -1
 		listener.Before(ctx, module, def, params, stackIterator)
 		listener.After(ctx, module, def, results)

@@ -645,7 +645,7 @@ func Test_compiledModule_Close(t *testing.T) {
 		e := &mockEngine{name: "1", cachedModules: map[*wasm.Module]struct{}{}}
 
 		var cs []*compiledModule
-		for i := 0; i < 10; i++ {
+		for range 10 {
 			m := &wasm.Module{}
 			err := e.CompileModule(ctx, m, nil, false)
 			require.NoError(t, err)

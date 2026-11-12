@@ -21,10 +21,9 @@ Then you can run the test suite against the compiler; e.g.:
 
 ## Caveats
 
-* The standard binary zig distribution does not ship some testdata.
+- The standard binary zig distribution does not ship some testdata.
   You should override with the zig source code path, otherwise some tests will fail.
 
-* Some tests might fail if Go has been installed with homebrew because
+- Some tests might fail if Go has been installed with homebrew because
   the file system layout is different than what the tests expect.
   Easiest fix is to install Go without using brew.
-

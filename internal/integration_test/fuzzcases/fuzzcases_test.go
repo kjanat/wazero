@@ -192,7 +192,7 @@ func Test717(t *testing.T) {
 
 		const expectedLen = 35
 		require.Equal(t, expectedLen, len(res))
-		for i := 0; i < expectedLen; i++ {
+		for i := range expectedLen {
 			require.Equal(t, uint64(i), res[i])
 		}
 	})

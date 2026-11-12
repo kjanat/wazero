@@ -12,14 +12,14 @@ compiler:
 
 Each section will include a brief explanation of the phase, references to the
 code that implements the phase, and a description of the debug flags that can
-be used to inspect that phase.  Please notice that, since the implementation of
+be used to inspect that phase. Please notice that, since the implementation of
 the back-end is architecture-specific, the code might be different for each
 architecture.
 
 ### Code
 
 The higher-level entry-point to the back-end is the
-`backend.Compiler.Compile(context.Context)` method.  This method executes, in
+`backend.Compiler.Compile(context.Context)` method. This method executes, in
 turn, the following methods in the same type:
 
 - `backend.Compiler.Lower()` (instruction selection)
@@ -124,12 +124,12 @@ they are the target for branching instructions such as `b` and `b.ge`.
 ### Code
 
 `backend.Machine` is the interface to the backend. It has a methods to
-translate (lower) the IR to machine code.  Again, as seen earlier in the
+translate (lower) the IR to machine code. Again, as seen earlier in the
 front-end, the term *lowering* is used to indicate translation from a
 higher-level representation to a lower-level representation.
 
 `backend.Machine.LowerInstr(*ssa.Instruction)` is the method that translates an
-SSA instruction to machine code.  Machine-specific implementations of this
+SSA instruction to machine code. Machine-specific implementations of this
 method can be found in package `backend/isa/<arch>` where `<arch>` is either
 `amd64` or `arm64`.
 
@@ -152,11 +152,11 @@ For a given function `f` the register allocation procedure
 
 - `livenessAnalysis(f)` collects the "liveness" information for each virtual
   register. The algorithm is described in [Chapter 9.2 of The SSA
-Book][ssa-book].
+  Book][ssa-book].
 
 - `alloc(f)` allocates registers for the given function. The algorithm is
   derived from [the Go compiler's
-allocator][go-regalloc]
+  allocator][go-regalloc]
 
 At the end of the allocation procedure, we also record the set of registers
 that are **clobbered** by the body of the function. A register is clobbered
@@ -168,7 +168,7 @@ for the finalization phase.
 
 ### Liveness Analysis
 
-Intuitively, a variable or name binding can be considered _live_ at a certain
+Intuitively, a variable or name binding can be considered *live* at a certain
 point in a program, if its value will be used in the future.
 
 For instance:
@@ -183,10 +183,10 @@ For instance:
 
 Variable `x` and `y` are both live at line 4, because they are used in the
 expression `x + y` on line 3; variable `z` is live at line 4, because it is
-used in the return statement.  However, variables `x` and `y` can be considered
-_not_ live at line 4 because they are not used anywhere after line 3.
+used in the return statement. However, variables `x` and `y` can be considered
+*not* live at line 4 because they are not used anywhere after line 3.
 
-Statically, _liveness_ can be approximated by following paths backwards on the
+Statically, *liveness* can be approximated by following paths backwards on the
 control-flow graph, connecting the uses of a given variable to its definitions
 (or its *unique* definition, assuming SSA form).
 
@@ -194,11 +194,11 @@ In practice, while liveness is a property of each name binding at any point in
 the program, it is enough to keep track of liveness at the boundaries of basic
 blocks:
 
-- the _live-in_ set for a given basic block is the set of all bindings that are
+- the *live-in* set for a given basic block is the set of all bindings that are
   live at the entry of that block.
-- the _live-out_ set for a given basic block is the set of all bindings that
+- the *live-out* set for a given basic block is the set of all bindings that
   are live at the exit of that block. A binding is live at the exit of a block
-if it is live at the entry of a successor.
+  if it is live at the entry of a successor.
 
 Because the CFG is a connected graph, it is enough to keep track of either
 live-in or live-out sets, and then propagate the liveness information backward
@@ -243,7 +243,7 @@ consistently to pass values across the involved states.
 
 If the register allocator cannot find a free register for a given virtual
 (live) register, it needs to "spill" the value to the stack to get a free
-register, *i.e.,* stash it temporarily to stack.  When that virtual register is
+register, *i.e.,* stash it temporarily to stack. When that virtual register is
 reused later, we will have to insert instructions to reload the value into a
 real register.
 
@@ -320,7 +320,7 @@ Essentially:
 - each arch-specific basic block exposes iteration over instructions
   (`regalloc.Block` interface)
 - each arch-specific instruction exposes the set of registers it defines and
-  uses  (`regalloc.Instr` interface)
+  uses (`regalloc.Instr` interface)
 
 By defining these interfaces, the register allocation algorithm can assign real
 registers to virtual registers without dealing specifically with the target
@@ -328,15 +328,16 @@ architecture.
 
 In practice, each interface is usually implemented by instantiating a common
 generic struct that comes already with an implementation of all or most of the
-required methods.  For instance,`regalloc.Function`is implemented by
+required methods. For instance,`regalloc.Function`is implemented by
 `backend.RegAllocFunction[*arm64.instruction, *arm64.machine]`.
 
 `backend/isa/<arch>/abi.go` (where `<arch>` is either `arm64` or `amd64`)
 contains the instantiation of the `regalloc.RegisterInfo` struct, which
 declares, among others
+
 - the set of registers that are available for allocation, excluding, for
   instance, those that might be reserved by the runtime or the OS
-(`AllocatableRegisters`)
+  (`AllocatableRegisters`)
 - the registers that might be saved by the callee to the stack
   (`CalleeSavedRegisters`)
 
@@ -350,7 +351,7 @@ declares, among others
 ## Finalization and Encoding
 
 At the end of the register allocation phase, we have enough information to
-finally generate machine code (_encoding_). We are only missing the prologue
+finally generate machine code (*encoding*). We are only missing the prologue
 and epilogue of the function.
 
 ### Prologue and Epilogue
@@ -361,6 +362,7 @@ setting up the stack frame, and the epilogue is responsible for cleaning up the
 stack frame and returning control to the caller.
 
 Generally, this means, at the very least:
+
 - saving the return address
 - a base pointer to the stack; or, equivalently, the height of the stack at the
   beginning of the function
@@ -385,7 +387,6 @@ pointer:
 ```
 
 While, on `arm64`, there is only a stack pointer `SP`:
-
 
 ```goat {width="100%" height="300"}
             (high address)                    (high address)
@@ -414,8 +415,8 @@ registers and the space reserved for the spilled values:
 
 - Spill slots are used to temporarily store the values that needs spilling as
   determined by the register allocator. This section must have a fix height,
-but its contents will change over time, as registers are being spilled and
-reloaded.
+  but its contents will change over time, as registers are being spilled and
+  reloaded.
 - Clobbered registers are, similarly, determined by the register allocator, but
   they are stashed in the prologue and then restored in the epilogue.
 
@@ -500,8 +501,8 @@ the generated code that can be disassembled, but cannot be executed.
 
 <hr>
 
-* Previous Section: [Front-End](../frontend/)
-* Next Section: [Appendix: Trampolines](../appendix/)
+- Previous Section: [Front-End](../frontend/)
+- Next Section: [Appendix: Trampolines](../appendix/)
 
 [ssa-book]: https://pfalcon.github.io/ssabook/latest/book-full.pdf
 [go-regalloc]: https://github.com/golang/go/blob/release-branch.go1.21/src/cmd/compile/internal/ssa/regalloc.go

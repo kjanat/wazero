@@ -13,14 +13,14 @@ func BenchmarkInterfaceVSUnexport(b *testing.B) {
 
 	b.Run("interface", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			for addr := uint32(0); addr < size+1000; addr++ {
+			for addr := range uint32(size + 1000) {
 				memInterface.PutUint32(addr, val)
 			}
 		}
 	})
 	b.Run("struct", func(b *testing.B) {
 		for i := 0; i < b.N; i++ {
-			for addr := uint32(0); addr < size+1000; addr++ {
+			for addr := range uint32(size + 1000) {
 				memStruct.PutUint32(addr, val)
 			}
 		}

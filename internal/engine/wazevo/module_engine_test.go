@@ -397,7 +397,7 @@ func Test_functionInstance_offsets(t *testing.T) {
 }
 
 func Test_newAlignedOpaque(t *testing.T) {
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		s := 16 * (i + 10)
 		buf := newAlignedOpaque(s)
 		require.Equal(t, s, len(buf))

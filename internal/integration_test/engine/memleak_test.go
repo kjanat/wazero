@@ -52,7 +52,7 @@ func testMemoryLeakInstantiateRuntimeAndModule() error {
 
 	hostBuilder := r.NewHostModuleBuilder("test")
 
-	for i := 0; i < 100; i++ {
+	for i := range 100 {
 		hostBuilder.NewFunctionBuilder().WithFunc(func() uint32 { return uint32(i) }).Export(strconv.Itoa(i))
 	}
 

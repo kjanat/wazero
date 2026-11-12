@@ -61,7 +61,7 @@ func testSpecTestCompilerCache(t *testing.T, config wazero.RuntimeConfig) {
 		// the subsequent execution of this test will enter the following "else" block.
 		var exp []string
 		buf := bytes.NewBuffer(nil)
-		for i := 0; i < 2; i++ {
+		for range 2 {
 			cmd := exec.Command(testExecutable)
 			cmd.Args = append(cmd.Args, fmt.Sprintf("-test.run=%s", t.Name()))
 			cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", cachePathKey, cacheDir))

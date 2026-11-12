@@ -15,7 +15,7 @@ import (
 func Test_main(t *testing.T) {
 	stdout, _ := maintester.TestMain(t, main, "main")
 
-	for i := 0; i < 50; i++ {
+	for i := range 50 {
 		require.True(t, strings.Contains(stdout, strconv.Itoa(i*2)))
 	}
 }

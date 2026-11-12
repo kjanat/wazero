@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
+	"maps"
 	"math"
 	"net"
 	"time"
@@ -697,9 +698,7 @@ func NewModuleConfig() ModuleConfig {
 func (c *moduleConfig) clone() *moduleConfig {
 	ret := *c // copy except maps which share a ref
 	ret.environKeys = make(map[string]int, len(c.environKeys))
-	for key, value := range c.environKeys {
-		ret.environKeys[key] = value
-	}
+	maps.Copy(ret.environKeys, c.environKeys)
 	return &ret
 }
 

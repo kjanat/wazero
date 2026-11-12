@@ -74,13 +74,11 @@ func Test_fdReaddir_ls(t *testing.T) {
 
 	tons := path.Join(tmpDir, "tons")
 	require.NoError(t, os.Mkdir(tons, 0o0777))
-	for i := 0; i < direntCountTons; i++ {
+	for i := range direntCountTons {
 		require.NoError(t, os.WriteFile(path.Join(tons, strconv.Itoa(i)), nil, 0o0666))
 	}
 
 	for toolchain, bin := range toolchains {
-		toolchain := toolchain
-		bin := bin
 		t.Run(toolchain, func(t *testing.T) {
 			var expectDots int
 			if toolchain == "zig-cc" {
@@ -155,7 +153,7 @@ ENOTDIR
 }
 
 func requireLsOut(t *testing.T, expected []string, expectDots int, console string) {
-	for i := 0; i < expectDots; i++ {
+	for range expectDots {
 		expected = append(expected, "./.", "./..")
 	}
 
@@ -183,8 +181,6 @@ func Test_fdReaddir_stat(t *testing.T) {
 	}
 
 	for toolchain, bin := range toolchains {
-		toolchain := toolchain
-		bin := bin
 		t.Run(toolchain, func(t *testing.T) {
 			testFdReaddirStat(t, bin)
 		})
@@ -209,8 +205,6 @@ func Test_preopen(t *testing.T) {
 	for toolchain, bin := range map[string][]byte{
 		"zig": wasmZig,
 	} {
-		toolchain := toolchain
-		bin := bin
 		t.Run(toolchain, func(t *testing.T) {
 			testPreopen(t, bin)
 		})
@@ -300,21 +294,21 @@ func Test_Poll(t *testing.T) {
 		{
 			name:            "custom reader, data ready, tty, .5sec",
 			args:            []string{"wasi", "poll", "0", "500"},
-			stdin:           &ttyStdinFile{StdinFile: internalsys.StdinFile{Reader: strings.NewReader("test")}},
+			stdin:           &ttyStdinFile{Reader: strings.NewReader("test")},
 			expectedOutput:  "STDIN",
 			expectedTimeout: 0 * time.Millisecond,
 		},
 		{
 			name:            "custom, blocking reader, no data, tty, .5sec",
 			args:            []string{"wasi", "poll", "0", "500"},
-			stdin:           &neverReadyTtyStdinFile{StdinFile: internalsys.StdinFile{Reader: newBlockingReader(t)}},
+			stdin:           &neverReadyTtyStdinFile{Reader: newBlockingReader(t)},
 			expectedOutput:  "NOINPUT",
 			expectedTimeout: 500 * time.Millisecond, // always timeouts
 		},
 		{
 			name:            "eofReader, not tty, .5sec",
 			args:            []string{"wasi", "poll", "0", "500"},
-			stdin:           &ttyStdinFile{StdinFile: internalsys.StdinFile{Reader: eofReader{}}},
+			stdin:           &ttyStdinFile{Reader: eofReader{}},
 			expectedOutput:  "STDIN",
 			expectedTimeout: 0 * time.Millisecond,
 		},
@@ -356,8 +350,6 @@ func Test_Open(t *testing.T) {
 	for toolchain, bin := range map[string][]byte{
 		"zig-cc": wasmZigCc,
 	} {
-		toolchain := toolchain
-		bin := bin
 		t.Run(toolchain, func(t *testing.T) {
 			testOpenReadOnly(t, bin)
 			testOpenWriteOnly(t, bin)
@@ -394,8 +386,6 @@ func Test_Sock(t *testing.T) {
 	}
 
 	for toolchain, bin := range toolchains {
-		toolchain := toolchain
-		bin := bin
 		t.Run(toolchain, func(t *testing.T) {
 			testSock(t, bin)
 		})
@@ -438,8 +428,6 @@ func Test_HTTP(t *testing.T) {
 	}
 
 	for toolchain, bin := range toolchains {
-		toolchain := toolchain
-		bin := bin
 		t.Run(toolchain, func(t *testing.T) {
 			testHTTP(t, bin)
 		})
@@ -490,8 +478,6 @@ func Test_Stdin(t *testing.T) {
 	}
 
 	for toolchain, bin := range toolchains {
-		toolchain := toolchain
-		bin := bin
 		t.Run(toolchain, func(t *testing.T) {
 			testStdin(t, bin)
 		})

@@ -23,7 +23,7 @@ func Test_encodeCallTrampolineIsland(t *testing.T) {
 	refToBinaryOffset := []int{0: 0, 1: 16, 2: 1600, 3: 16000}
 
 	encodeCallTrampolineIsland(refToBinaryOffset, 0, islandOffset, executable)
-	for i := 0; i < len(refToBinaryOffset); i++ {
+	for i := range refToBinaryOffset {
 		offset := islandOffset + trampolineCallSize*i
 		instrs := executable[offset : offset+trampolineCallSize-4]
 		// Instructions are always the same except for the last immediate.

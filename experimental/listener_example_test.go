@@ -71,7 +71,7 @@ func Example_customListenerFactory() {
 		log.Panicln(err)
 	}
 
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		if _, err = mod.ExportedFunction("rand").Call(ctx, 4); err != nil {
 			log.Panicln(err)
 		}

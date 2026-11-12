@@ -50,7 +50,6 @@ func BenchmarkFsFileRead(b *testing.B) {
 	buf := make([]byte, 3)
 
 	for _, bc := range benches {
-		bc := bc
 
 		b.Run(bc.name, func(b *testing.B) {
 			name := "wazero.txt"

@@ -36,7 +36,7 @@ func main() {
 	wg.Add(goroutines)
 
 	// Instantiate the Wasm module from `compiledWsam`, and invoke the exported "add" function concurrently.
-	for i := 0; i < goroutines; i++ {
+	for i := range goroutines {
 		go func(i int) {
 			defer wg.Done()
 

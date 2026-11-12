@@ -28,7 +28,7 @@ However, experienced Go developers often avoid using CGO because it
 introduces complexity. For example, CGO projects are larger and complicated to
 consume due to their libc + shared library dependency. Debugging is more
 difficult for Go developers when most of a library is written in Rustlang.
-[_CGO is not Go_][5] [ -- _Rob_ _Pike_][6] dives in deeper. In short, the
+[*CGO is not Go*][5] [-- *Rob* *Pike*][6] dives in deeper. In short, the
 primary motivation to start wazero was to avoid CGO.
 
 wazero compiles WebAssembly modules into native assembly (Compiler) by default. You

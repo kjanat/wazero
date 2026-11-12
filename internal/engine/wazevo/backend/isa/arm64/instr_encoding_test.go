@@ -1846,7 +1846,6 @@ func TestInstruction_encode(t *testing.T) {
 			}
 		}},
 	} {
-		tc := tc
 		t.Run(tc.want, func(t *testing.T) {
 			i := &instruction{}
 			tc.setup(i)

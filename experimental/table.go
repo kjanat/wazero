@@ -13,7 +13,8 @@ import (
 // Linear memory is controlled separately by MemoryAllocator.
 //
 // Methods must be safe for concurrent use and must not panic. Release can run on
-// a runtime cleanup goroutine concurrently with Grow.
+// a runtime cleanup goroutine concurrently with Grow. Release should return
+// promptly; long-running work belongs in another goroutine.
 type TableLimiter interface {
 	// Grow is called before allocating a table or increasing its length. current
 	// and desired are element counts, not bytes. maximum is the module's declared

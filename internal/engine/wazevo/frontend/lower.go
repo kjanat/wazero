@@ -3626,7 +3626,7 @@ func (c *Compiler) lowerCurrentOpcode() {
 		c.loweringState.pc += int(catchNum) - 1
 
 		var catchClauses []catchClause
-		for i := uint32(0); i < catchCount; i++ {
+		for range catchCount {
 			c.loweringState.pc++
 			kind := c.wasmFunctionBody[c.loweringState.pc]
 			var tagIdx uint32
@@ -4731,7 +4731,7 @@ func (c *Compiler) reloadLocalsFromSaveArea() {
 	ptr := c.loadLocalsSaveAreaPtr()
 	numParams := len(c.wasmFunctionTyp.Params)
 	numLocals := numParams + len(c.wasmFunctionLocalTypes)
-	for i := 0; i < numLocals; i++ {
+	for i := range numLocals {
 		localIdx := wasm.Index(i)
 		var wasmType wasm.ValueType
 		if i < numParams {
@@ -4754,7 +4754,7 @@ func (c *Compiler) storeAllLocalsToSaveArea() {
 	ptr := c.loadLocalsSaveAreaPtr()
 	numParams := len(c.wasmFunctionTyp.Params)
 	numLocals := numParams + len(c.wasmFunctionLocalTypes)
-	for i := 0; i < numLocals; i++ {
+	for i := range numLocals {
 		localIdx := wasm.Index(i)
 		variable := c.localVariable(localIdx)
 		val := builder.MustFindValue(variable)
@@ -4786,7 +4786,7 @@ func (c *Compiler) emitTryTableLeave() {
 func (c *Compiler) branchExitsTryTable(depth int) bool {
 	state := c.state()
 	tail := len(state.controlFrames) - 1
-	for i := 0; i < depth; i++ {
+	for i := range depth {
 		if state.controlFrames[tail-i].isTryCatch() {
 			return true
 		}
@@ -4806,7 +4806,7 @@ func (c *Compiler) branchExitsTryTable(depth int) bool {
 func (c *Compiler) emitTryTableLeaves(depth int) {
 	state := c.state()
 	tail := len(state.controlFrames) - 1
-	for i := 0; i < depth; i++ {
+	for i := range depth {
 		if state.controlFrames[tail-i].isTryCatch() {
 			c.emitTryTableLeave()
 		}
@@ -4892,7 +4892,7 @@ func (c *Compiler) skipTryTableCatchClauses() {
 	c.loweringState.pc++
 	catchCount, catchNum, _ := leb128.LoadUint32(c.wasmFunctionBody[c.loweringState.pc:])
 	c.loweringState.pc += int(catchNum) - 1
-	for i := uint32(0); i < catchCount; i++ {
+	for range catchCount {
 		c.loweringState.pc++
 		kind := c.wasmFunctionBody[c.loweringState.pc]
 		switch kind {

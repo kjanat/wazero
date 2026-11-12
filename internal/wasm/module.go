@@ -861,26 +861,26 @@ func (f *FunctionType) key() string {
 	if f.string != "" {
 		return f.string
 	}
-	var ret string
+	var ret strings.Builder
 	for _, b := range f.Params {
-		ret += ValueTypeName(b)
+		ret.WriteString(ValueTypeName(b))
 	}
 	if len(f.Params) == 0 {
-		ret += "v_"
+		ret.WriteString("v_")
 	} else {
-		ret += "_"
+		ret.WriteString("_")
 	}
 	for _, b := range f.Results {
-		ret += ValueTypeName(b)
+		ret.WriteString(ValueTypeName(b))
 	}
 	if len(f.Results) == 0 {
-		ret += "v"
+		ret.WriteString("v")
 	}
 	if f.RecGroupSize > 1 {
-		ret += fmt.Sprintf("|rec%d/%d", f.RecGroupPosition, f.RecGroupSize)
+		ret.WriteString(fmt.Sprintf("|rec%d/%d", f.RecGroupPosition, f.RecGroupSize))
 	}
-	f.string = ret
-	return ret
+	f.string = ret.String()
+	return ret.String()
 }
 
 // String implements fmt.Stringer.
@@ -989,7 +989,7 @@ type Code struct {
 	//
 	// Note: This has no serialization format, so is not encodable.
 	// See https://www.w3.org/TR/2019/REC-wasm-core-1-20191205/#host-functions%E2%91%A2
-	GoFunc interface{}
+	GoFunc any
 
 	// BodyOffsetInCodeSection is the offset of the beginning of the body in the code section.
 	// This is used for DWARF based stack trace where a program counter represents an offset in code section.

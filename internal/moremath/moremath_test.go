@@ -125,7 +125,6 @@ func TestUniOp_NaNPropagation(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			if tc.f32 != nil {
 				f32EqualBit(t, canonicalF32, tc.f32(canonicalF32))

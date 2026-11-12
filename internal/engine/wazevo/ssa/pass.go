@@ -131,7 +131,7 @@ func passRedundantPhiEliminationOpt(b *builder) {
 			params := blk.params.View()
 			paramNum := len(params)
 
-			for paramIndex := 0; paramIndex < paramNum; paramIndex++ {
+			for paramIndex := range paramNum {
 				phiValue := params[paramIndex]
 				redundant := true
 
@@ -202,7 +202,7 @@ func passRedundantPhiEliminationOpt(b *builder) {
 
 			// Finally, Remove the param from the blk.
 			paramsCur, redundantParamsCur := 0, 0
-			for paramIndex := 0; paramIndex < paramNum; paramIndex++ {
+			for paramIndex := range paramNum {
 				param := params[paramIndex]
 				if len(redundantParams) == redundantParamsCur || redundantParams[redundantParamsCur].index != paramIndex {
 					params[paramsCur] = param
