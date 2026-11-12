@@ -233,8 +233,8 @@ func (f *osFile) Poll(flag experimentalsys.Pflag, timeoutMillis int32) (ready bo
 	return poll(f.fd, flag, timeoutMillis)
 }
 
-// Readdir implements File.Readdir. Notably, this uses "Readdir", not
-// "ReadDir", from os.File.
+// Readdir implements File.Readdir. Notably, this uses "ReadDir", not
+// "Readdir", from os.File. See readDirEntries.
 func (f *osFile) Readdir(n int) (dirents []experimentalsys.Dirent, errno experimentalsys.Errno) {
 	if f.reopenDir { // re-open the directory if needed.
 		f.reopenDir = false
@@ -243,7 +243,7 @@ func (f *osFile) Readdir(n int) (dirents []experimentalsys.Dirent, errno experim
 		}
 	}
 
-	if dirents, errno = readdir(f.file, f.path, n); errno != 0 {
+	if dirents, errno = readDirEntries(f.file, f.path, n); errno != 0 {
 		errno = adjustReaddirErr(f, f.closed, errno)
 	}
 	return

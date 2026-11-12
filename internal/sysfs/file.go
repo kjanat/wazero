@@ -520,6 +520,48 @@ func readdir(f readdirFile, path string, n int) (dirents []experimentalsys.Diren
 	return
 }
 
+// readDirFile is a directory that lists entries without their file info,
+// such as os.File.
+type readDirFile interface {
+	ReadDir(n int) ([]fs.DirEntry, error)
+}
+
+// readDirEntries stats each entry on its own and skips an entry the host
+// cannot stat. os.File.Readdir fails the whole read in that case: on darwin,
+// lstat of the kqueue descriptor listed in /dev/fd returns EBADF.
+// See https://go.dev/issue/80143
+func readDirEntries(f readDirFile, path string, n int) (dirents []experimentalsys.Dirent, errno experimentalsys.Errno) {
+	for {
+		entries, e := f.ReadDir(n)
+		if errno = experimentalsys.UnwrapOSError(e); errno != 0 {
+			return nil, errno
+		}
+
+		dirents = make([]experimentalsys.Dirent, 0, len(entries))
+		for _, entry := range entries {
+			info, e := entry.Info()
+			switch errno = experimentalsys.UnwrapOSError(e); errno {
+			case 0:
+			case experimentalsys.ENOENT, experimentalsys.EBADF:
+				continue
+			default:
+				return nil, errno
+			}
+
+			var ino sys.Inode
+			if ino, errno = inoFromFileInfo(path, info); errno != 0 {
+				return nil, errno
+			}
+			dirents = append(dirents, experimentalsys.Dirent{Name: info.Name(), Ino: ino, Type: info.Mode().Type()})
+		}
+
+		// A batch of skipped entries is not the end of the directory.
+		if n <= 0 || len(entries) == 0 || len(dirents) > 0 {
+			return dirents, 0
+		}
+	}
+}
+
 func write(w io.Writer, buf []byte) (n int, errno experimentalsys.Errno) {
 	if len(buf) == 0 {
 		return 0, 0 // less overhead on zero-length writes.
