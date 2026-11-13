@@ -2,7 +2,7 @@ name: Release CLI
 on:
   pull_request:
     branches: [master]
-    paths-ignore: # ignore docs as they are built with Netlify.
+    paths-ignore: # Netlify builds the documentation.
       - "**/*.md"
       - "site/**"
       - "netlify.toml"
@@ -57,21 +57,12 @@ jobs:
           echo "VERSION=$VERSION" >> "$GITHUB_OUTPUT"
         shell: bash
 
-      # In order to share the built artifacts in the subsequent tests, we use cache instead of actions/upload-artifacts.
-      # The reason is that upload-artifacts are not globally consistent and sometimes pre_release_test won't be able to
-      # find the artifacts uploaded here. See https://github.com/actions/upload-artifact/issues/21 for more context.
-      # Downside of this is that, we pressure the cache capacity set per repository. We delete all caches created
-      # on PRs on close. See .github/workflows/clear_cache.yaml. On master branch, in any way this cache will be deleted
-      # in 7 days, also this at most a few MB, so this won't be an issue.
-      - uses: actions/cache@v6
-        id: cache
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          # Use share the cache containing archives across OSes.
-          enableCrossOsArchive: true
-          # Note: this creates a cache per run.
-          key: release-artifacts-${{ github.run_id }}
-          path:
-            dist/
+          name: release-artifacts
+          path: dist/
+          if-no-files-found: error
+          compression-level: 0
 
   # pre_release_test tests the artifacts built by pre_release in the OS dependent way.
   pre_release_test:
@@ -88,15 +79,10 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: actions/cache@v6
-        id: cache
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          # We need this cache to run tests.
-          fail-on-cache-miss: true
-          enableCrossOsArchive: true
-          key: release-artifacts-${{ github.run_id }}
-          path:
-            dist/
+          name: release-artifacts
+          path: dist/
 
       - name: Test (linux)
         # Check if the version was correctly inserted with VERSION variable
@@ -134,14 +120,10 @@ jobs:
         with: # Ensure release_notes.sh can see prior commits
           fetch-depth: 0
 
-      - uses: actions/cache@v6
-        id: cache
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          fail-on-cache-miss: true
-          enableCrossOsArchive: true
-          key: release-artifacts-${{ github.run_id }}
-          path:
-            dist/
+          name: release-artifacts
+          path: dist/
 
       - name: Create draft release
         run: |
