@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -26,11 +27,19 @@ func TestOverflowingYearOverrideUsesClock(t *testing.T) {
 	t.Setenv("CURRENT_YEAR", "4294967296")
 	before := time.Now().Year()
 	stdout, _ := maintester.TestMain(t, main, "age-calculator", "0")
-	// Allow for the year rolling over while the module runs.
-	for _, year := range []int{before, time.Now().Year()} {
-		if stdout == fmt.Sprintf("println >> %d\nlog_i32 >> %d\n", year, year) {
-			return
-		}
+	after := time.Now().Year()
+	// The two Wasm calls read the clock separately, so New Year can fall between them.
+	same := func(year int) string {
+		return fmt.Sprintf("println >> %d\nlog_i32 >> %d\n", year, year)
+	}
+	if stdout == same(before) || stdout == same(after) {
+		return
+	}
+	if before != after && stdout == fmt.Sprintf("println >> %d\nlog_i32 >> %d\n", before, after) {
+		return
+	}
+	if strings.Contains(stdout, "println >> 0\n") || strings.Contains(stdout, "log_i32 >> 0\n") {
+		t.Fatalf("wrapped year 0 must be rejected: %q", stdout)
 	}
 	t.Fatalf("overflowing override did not fall back to the clock: %q", stdout)
 }
