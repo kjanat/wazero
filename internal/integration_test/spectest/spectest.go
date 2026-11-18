@@ -600,9 +600,11 @@ func valuesEq(actual, exps []uint64, valTypes []wasm.ValueType, laneTypes map[in
 		}
 		switch tp {
 		case wasm.ValueTypeI32:
-			msgExpValuesStrs = append(msgExpValuesStrs, fmt.Sprintf("%d", uint32(exps[uint64RepPos])))
-			msgActualValuesStrs = append(msgActualValuesStrs, fmt.Sprintf("%d", uint32(actual[uint64RepPos])))
-			matched = matched && uint32(exps[uint64RepPos]) == uint32(actual[uint64RepPos])
+			// Only the low 32 bits of a Wasm i32 or f32 result slot are significant.
+			e, a := exps[uint64RepPos]&math.MaxUint32, actual[uint64RepPos]&math.MaxUint32
+			msgExpValuesStrs = append(msgExpValuesStrs, fmt.Sprintf("%d", e))
+			msgActualValuesStrs = append(msgActualValuesStrs, fmt.Sprintf("%d", a))
+			matched = matched && e == a
 			uint64RepPos++
 		case wasm.ValueTypeI64, wasm.ValueTypeExternref, wasm.ValueTypeFuncref:
 			msgExpValuesStrs = append(msgExpValuesStrs, fmt.Sprintf("%d", exps[uint64RepPos]))
@@ -610,8 +612,8 @@ func valuesEq(actual, exps []uint64, valTypes []wasm.ValueType, laneTypes map[in
 			matched = matched && exps[uint64RepPos] == actual[uint64RepPos]
 			uint64RepPos++
 		case wasm.ValueTypeF32:
-			a := math.Float32frombits(uint32(actual[uint64RepPos]))
-			e := math.Float32frombits(uint32(exps[uint64RepPos]))
+			a := math.Float32frombits(uint32(actual[uint64RepPos] & math.MaxUint32))
+			e := math.Float32frombits(uint32(exps[uint64RepPos] & math.MaxUint32))
 			msgExpValuesStrs = append(msgExpValuesStrs, fmt.Sprintf("%f", e))
 			msgActualValuesStrs = append(msgActualValuesStrs, fmt.Sprintf("%f", a))
 			matched = matched && f32Equal(e, a)

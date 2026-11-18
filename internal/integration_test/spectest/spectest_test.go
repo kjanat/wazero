@@ -121,6 +121,13 @@ func Test_valuesEq(t *testing.T) {
 		expValuesMsg string
 	}{
 		{
+			name:       "matched/32-bit values ignore upper slot bits",
+			exps:       []uint64{0xffffffff, 0x80000000},
+			actual:     []uint64{0xffffffffffffffff, 0xaaaaaaaa80000000},
+			valueTypes: []wasm.ValueType{i32, f32},
+			expMatched: true,
+		},
+		{
 			name:       "matched/i32",
 			exps:       []uint64{0},
 			actual:     []uint64{0},
