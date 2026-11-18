@@ -336,15 +336,12 @@ fuzz:
 	@cd internal/integration_test/fuzz && cargo fuzz run memory_no_diff $(fuzz_default_flags) -max_total_time=$(fuzz_timeout_seconds)
 	@cd internal/integration_test/fuzz && cargo fuzz run validation $(fuzz_default_flags) -max_total_time=$(fuzz_timeout_seconds)
 
-libsodium_revision := 7e86d68e99e60130899fbe3b3ab6e9dce9187a7c
+libsodium_dir := internal/integration_test/libsodium
 
 .PHONY: libsodium
 libsodium:
-	@set -eu; tmp=$$(mktemp -d); trap 'rm -rf "$$tmp"' EXIT; \
-		curl --fail --silent --show-error --location --retry 3 --retry-all-errors --max-time 120 \
-			-o "$$tmp/source.tar.gz" "https://codeload.github.com/jedisct1/webassembly-benchmarks/tar.gz/$(libsodium_revision)"; \
-		tar -xzf "$$tmp/source.tar.gz" -C "$$tmp" "webassembly-benchmarks-$(libsodium_revision)/2022-12/wasm"; \
-		cp "$$tmp/webassembly-benchmarks-$(libsodium_revision)/2022-12/wasm/"*.wasm internal/integration_test/libsodium/testdata/
+	git submodule update --init --depth 1 -- $(libsodium_dir)/_upstream
+	cp $(libsodium_dir)/_upstream/2022-12/wasm/*.wasm $(libsodium_dir)/testdata/
 
 #### CLI release related ####
 

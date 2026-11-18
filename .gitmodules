@@ -1,3 +1,8 @@
 [submodule "site/themes/hello-friend"]
 	path = site/themes/hello-friend
 	url = https://github.com/panr/hugo-theme-hello-friend.git
+[submodule "internal/integration_test/libsodium/_upstream"]
+	path = internal/integration_test/libsodium/_upstream
+	url = https://github.com/jedisct1/webassembly-benchmarks.git
+	branch = master
+	shallow = true
