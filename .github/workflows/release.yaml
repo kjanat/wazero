@@ -114,17 +114,24 @@ jobs:
     name: Release
     runs-on: ubuntu-26.04
     permissions:
-      contents: write
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v7
         with: # Ensure release_notes.sh can see prior commits
           fetch-depth: 0
+          persist-credentials: false
 
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: release-artifacts
           path: dist/
 
+      - name: Get Beepboop publication token
+        id: beepboop
+        uses: kjanat/beepboop/actions/token@3a861875a1dd51f12d1e4f47d8c1bcbd68a7c665 # v1.10.7
+        with:
+          permission-contents: write
       - name: Create draft release
         run: |
           ls dist
@@ -132,4 +139,4 @@ jobs:
           ./.github/workflows/release_notes.sh "${tag}" > release-notes.txt
           gh release create "${tag}" --draft --notes-file release-notes.txt --title "${tag}" ./dist/*
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.beepboop.outputs.token }}
