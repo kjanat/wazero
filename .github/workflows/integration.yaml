@@ -36,7 +36,6 @@ jobs:
     name: Build Zig test binary
     runs-on: ubuntu-26.04
     env:
-      ZIG_INSTALL: zig-install
       ZIG_SOURCE: zig-source
       BINARYEN_INSTALL: binaryen-install
 
@@ -53,11 +52,11 @@ jobs:
           path:
             ${{ env.STDLIB_TESTS }}/testdata/zig
 
-      - name: Install Zig build
+      - name: Set up Zig
         if: steps.binary-cache.outputs.cache-hit != 'true'
-        run: |
-          mkdir -p "$HOME/$ZIG_INSTALL"
-          curl -sSL "https://ziglang.org/download/${ZIG_VERSION}/zig-linux-x86_64-${ZIG_VERSION}.tar.xz" | tar -xJ --strip-components=1 -C "$HOME/$ZIG_INSTALL"
+        uses: kjanat/setup-zig@v3
+        with:
+          version: ${{ env.ZIG_VERSION }}
 
       - name: Download Zig source code
         if: steps.binary-cache.outputs.cache-hit != 'true'
@@ -74,7 +73,7 @@ jobs:
       - name: Build Stdlib test binary
         if: steps.binary-cache.outputs.cache-hit != 'true'
         run: |
-          PATH="$HOME/$ZIG_INSTALL:$HOME/$BINARYEN_INSTALL/bin:$PATH"
+          PATH="$HOME/$BINARYEN_INSTALL/bin:$PATH"
           cd "$STDLIB_TESTS"
           make build.zig zigroot="$HOME/$ZIG_SOURCE"
 
