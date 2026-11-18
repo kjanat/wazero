@@ -210,7 +210,7 @@ jobs:
           GOOS: ${{ matrix.os.name }}
 
       - name: Start VM
-        uses: cross-platform-actions/action@v1.7.0
+        uses: cross-platform-actions/action@v1.8.0
         with:
           operating_system: ${{ matrix.os.name }}
           version: ${{ matrix.os.version }}
