@@ -14,4 +14,4 @@ retract (
 	v1.0.0-beta.1
 )
 
-require golang.org/x/sys v0.44.0
+require golang.org/x/sys v0.50.0
