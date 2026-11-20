@@ -159,7 +159,7 @@ jobs:
       - name: Initialize Python environment
         uses: actions/setup-python@v7
         with:
-          python-version: "3.11" # latest version of python 3
+          python-version: "3.15" # latest version of python 3
           cache: pip
 
       - name: Install dependencies
