@@ -37,5 +37,5 @@ arbitrary = "1.1.0"
 ctor = "0.2.6"
 libc = "0.2"
 libfuzzer-sys = "0.4.7"
-nix = { version = "0.28.0", features = ["signal"] }
+nix = { version = "0.32.0", features = ["signal"] }
 wasm-smith = "0.201.0"
