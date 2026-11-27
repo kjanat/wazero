@@ -13,6 +13,7 @@
   "ignoreTests": false,
   "internalChecksAsSuccess": false,
   "git-submodules": { "enabled": true },
+  "gomod": { "postUpdateOptions": ["gomodTidyAll"] },
   "packageRules": [
     {
       "description": "Batch Go module dependencies separately from compilers and CI tools",
