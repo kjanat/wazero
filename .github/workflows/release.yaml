@@ -129,7 +129,7 @@ jobs:
 
       - name: Get Beepboop publication token
         id: beepboop
-        uses: kjanat/beepboop/actions/token@ab315b3b53a6cf1ec094085bd0e49adbe8095aeb # v1.10.9
+        uses: kjanat/beepboop/actions/token@v1
         with:
           permission-contents: write
       - name: Create draft release
