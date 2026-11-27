@@ -4193,9 +4193,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 
 			switch unsignedType(op.B1) {
 			case unsignedTypeI32:
-				if offset%4 != 0 {
-					panic(wasmruntime.ErrRuntimeUnalignedAtomic)
-				}
+				checkAtomicAlignment(memoryInst, offset, 4)
 				if int(offset) > len(memoryInst.Buffer)-4 {
 					panic(wasmruntime.ErrRuntimeOutOfBoundsMemoryAccess)
 				}
@@ -4206,9 +4204,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 					return value
 				}))
 			case unsignedTypeI64:
-				if offset%8 != 0 {
-					panic(wasmruntime.ErrRuntimeUnalignedAtomic)
-				}
+				checkAtomicAlignment(memoryInst, offset, 8)
 				if int(offset) > len(memoryInst.Buffer)-8 {
 					panic(wasmruntime.ErrRuntimeOutOfBoundsMemoryAccess)
 				}
@@ -4223,9 +4219,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 		case operationKindAtomicMemoryNotify:
 			count := ce.popValue()
 			offset := ce.popMemoryOffset(op)
-			if offset%4 != 0 {
-				panic(wasmruntime.ErrRuntimeUnalignedAtomic)
-			}
+			checkAtomicAlignment(memoryInst, offset, 4)
 			// Just a bounds check
 			if offset >= memoryInst.Size() {
 				panic(wasmruntime.ErrRuntimeOutOfBoundsMemoryAccess)
@@ -4246,9 +4240,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 			offset := ce.popMemoryOffset(op)
 			switch unsignedType(op.B1) {
 			case unsignedTypeI32:
-				if offset%4 != 0 {
-					panic(wasmruntime.ErrRuntimeUnalignedAtomic)
-				}
+				checkAtomicAlignment(memoryInst, offset, 4)
 				memoryInst.Mux.Lock()
 				val, ok := memoryInst.ReadUint32Le(offset)
 				memoryInst.Mux.Unlock()
@@ -4257,9 +4249,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 				}
 				ce.pushValue(uint64(val))
 			case unsignedTypeI64:
-				if offset%8 != 0 {
-					panic(wasmruntime.ErrRuntimeUnalignedAtomic)
-				}
+				checkAtomicAlignment(memoryInst, offset, 8)
 				memoryInst.Mux.Lock()
 				val, ok := memoryInst.ReadUint64Le(offset)
 				memoryInst.Mux.Unlock()
@@ -4281,9 +4271,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 			frame.pc++
 		case operationKindAtomicLoad16:
 			offset := ce.popMemoryOffset(op)
-			if offset%2 != 0 {
-				panic(wasmruntime.ErrRuntimeUnalignedAtomic)
-			}
+			checkAtomicAlignment(memoryInst, offset, 2)
 			memoryInst.Mux.Lock()
 			val, ok := memoryInst.ReadUint16Le(offset)
 			memoryInst.Mux.Unlock()
@@ -4297,9 +4285,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 			offset := ce.popMemoryOffset(op)
 			switch unsignedType(op.B1) {
 			case unsignedTypeI32:
-				if offset%4 != 0 {
-					panic(wasmruntime.ErrRuntimeUnalignedAtomic)
-				}
+				checkAtomicAlignment(memoryInst, offset, 4)
 				memoryInst.Mux.Lock()
 				ok := memoryInst.WriteUint32Le(offset, uint32(val))
 				memoryInst.Mux.Unlock()
@@ -4307,9 +4293,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 					panic(wasmruntime.ErrRuntimeOutOfBoundsMemoryAccess)
 				}
 			case unsignedTypeI64:
-				if offset%8 != 0 {
-					panic(wasmruntime.ErrRuntimeUnalignedAtomic)
-				}
+				checkAtomicAlignment(memoryInst, offset, 8)
 				memoryInst.Mux.Lock()
 				ok := memoryInst.WriteUint64Le(offset, val)
 				memoryInst.Mux.Unlock()
@@ -4331,9 +4315,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 		case operationKindAtomicStore16:
 			val := uint16(ce.popValue())
 			offset := ce.popMemoryOffset(op)
-			if offset%2 != 0 {
-				panic(wasmruntime.ErrRuntimeUnalignedAtomic)
-			}
+			checkAtomicAlignment(memoryInst, offset, 2)
 			memoryInst.Mux.Lock()
 			ok := memoryInst.WriteUint16Le(offset, val)
 			memoryInst.Mux.Unlock()
@@ -4346,9 +4328,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 			offset := ce.popMemoryOffset(op)
 			switch unsignedType(op.B1) {
 			case unsignedTypeI32:
-				if offset%4 != 0 {
-					panic(wasmruntime.ErrRuntimeUnalignedAtomic)
-				}
+				checkAtomicAlignment(memoryInst, offset, 4)
 				memoryInst.Mux.Lock()
 				old, ok := memoryInst.ReadUint32Le(offset)
 				if !ok {
@@ -4374,9 +4354,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 				memoryInst.Mux.Unlock()
 				ce.pushValue(uint64(old))
 			case unsignedTypeI64:
-				if offset%8 != 0 {
-					panic(wasmruntime.ErrRuntimeUnalignedAtomic)
-				}
+				checkAtomicAlignment(memoryInst, offset, 8)
 				memoryInst.Mux.Lock()
 				old, ok := memoryInst.ReadUint64Le(offset)
 				if !ok {
@@ -4435,9 +4413,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 		case operationKindAtomicRMW16:
 			val := ce.popValue()
 			offset := ce.popMemoryOffset(op)
-			if offset%2 != 0 {
-				panic(wasmruntime.ErrRuntimeUnalignedAtomic)
-			}
+			checkAtomicAlignment(memoryInst, offset, 2)
 			memoryInst.Mux.Lock()
 			old, ok := memoryInst.ReadUint16Le(offset)
 			if !ok {
@@ -4470,9 +4446,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 			offset := ce.popMemoryOffset(op)
 			switch unsignedType(op.B1) {
 			case unsignedTypeI32:
-				if offset%4 != 0 {
-					panic(wasmruntime.ErrRuntimeUnalignedAtomic)
-				}
+				checkAtomicAlignment(memoryInst, offset, 4)
 				memoryInst.Mux.Lock()
 				old, ok := memoryInst.ReadUint32Le(offset)
 				if !ok {
@@ -4485,9 +4459,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 				memoryInst.Mux.Unlock()
 				ce.pushValue(uint64(old))
 			case unsignedTypeI64:
-				if offset%8 != 0 {
-					panic(wasmruntime.ErrRuntimeUnalignedAtomic)
-				}
+				checkAtomicAlignment(memoryInst, offset, 8)
 				memoryInst.Mux.Lock()
 				old, ok := memoryInst.ReadUint64Le(offset)
 				if !ok {
@@ -4521,9 +4493,7 @@ func (ce *callEngine) callNativeFunc(ctx context.Context, m *wasm.ModuleInstance
 			rep := uint16(ce.popValue())
 			exp := uint16(ce.popValue())
 			offset := ce.popMemoryOffset(op)
-			if offset%2 != 0 {
-				panic(wasmruntime.ErrRuntimeUnalignedAtomic)
-			}
+			checkAtomicAlignment(memoryInst, offset, 2)
 			memoryInst.Mux.Lock()
 			old, ok := memoryInst.ReadUint16Le(offset)
 			if !ok {
@@ -4910,6 +4880,18 @@ func (ce *callEngine) callNativeFuncWithListener(ctx context.Context, m *wasm.Mo
 	ce.callNativeFunc(ctx, m, f)
 	fnl.After(ctx, m, def, ce.peekValues(typ.ResultNumInUint64))
 	return ctx
+}
+
+// checkAtomicAlignment gives a bounds trap precedence when both checks fail,
+// matching the compiler. Aligned accesses use the operation's normal bounds check.
+func checkAtomicAlignment(memory *wasm.MemoryInstance, offset, width uint32) {
+	if offset%width == 0 {
+		return
+	}
+	if uint64(offset)+uint64(width) > uint64(len(memory.Buffer)) {
+		panic(wasmruntime.ErrRuntimeOutOfBoundsMemoryAccess)
+	}
+	panic(wasmruntime.ErrRuntimeUnalignedAtomic)
 }
 
 // popMemoryOffset takes a memory offset off the stack for use in load and store instructions.

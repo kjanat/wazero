@@ -10,7 +10,28 @@ import (
 	"github.com/kjanat/wazero/api"
 	"github.com/kjanat/wazero/internal/testing/require"
 	"github.com/kjanat/wazero/internal/wasm"
+	"github.com/kjanat/wazero/internal/wasmruntime"
 )
+
+func TestCheckAtomicAlignment(t *testing.T) {
+	mem := &wasm.MemoryInstance{Buffer: make([]byte, 16)}
+	for _, width := range []uint32{2, 4, 8} {
+		for _, tc := range []struct {
+			offset uint32
+			want   error
+		}{
+			{16 - width, nil},
+			{1, wasmruntime.ErrRuntimeUnalignedAtomic},
+			{15, wasmruntime.ErrRuntimeOutOfBoundsMemoryAccess},
+			{math.MaxUint32, wasmruntime.ErrRuntimeOutOfBoundsMemoryAccess},
+		} {
+			t.Run(fmt.Sprintf("width%d/offset%d", width, tc.offset), func(t *testing.T) {
+				defer func() { require.Equal(t, tc.want, recover()) }()
+				checkAtomicAlignment(mem, tc.offset, width)
+			})
+		}
+	}
+}
 
 type arbitrary struct{}
 
