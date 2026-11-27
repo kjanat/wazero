@@ -14,9 +14,22 @@ def fetch(repo, ref, dest, sources):
     with tempfile.TemporaryDirectory() as tmp:
         archive = Path(tmp) / "source.tar.gz"
         subprocess.run(
-            ["curl", "--fail", "--silent", "--show-error", "--location",
-             "--retry", "3", "--connect-timeout", "15", "--max-time", "120",
-             "--output", str(archive), url],
+            [
+                "curl",
+                "--fail",
+                "--silent",
+                "--show-error",
+                "--location",
+                "--retry",
+                "3",
+                "--connect-timeout",
+                "15",
+                "--max-time",
+                "120",
+                "--output",
+                str(archive),
+                url,
+            ],
             check=True,
         )
         with tarfile.open(archive, "r:gz") as tar:
@@ -47,5 +60,10 @@ if __name__ == "__main__":
     repo, ref, dest, *sources = sys.argv[1:]
     try:
         fetch(repo, ref, Path(dest), sources)
-    except (OSError, ValueError, tarfile.TarError, subprocess.CalledProcessError) as exc:
+    except (
+        OSError,
+        ValueError,
+        tarfile.TarError,
+        subprocess.CalledProcessError,
+    ) as exc:
         sys.exit(f"fetch-wast: {exc}")
