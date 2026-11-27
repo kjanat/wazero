@@ -33,7 +33,7 @@ path = "fuzz_targets/logging_no_diff.rs"
 test = false
 
 [dependencies]
-arbitrary = "1.1.0"
+arbitrary = "1.5.0"
 ctor = "1.0.0"
 libc = "0.2"
 libfuzzer-sys = "0.4.7"
