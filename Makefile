@@ -113,6 +113,7 @@ internal/testing/dwarftestdata/testdata/rust/main.wasm.xz:
 	@mv $(@D)/target/$(cargo_target)/release/$(@F) $(@D)
 
 spectest_base_dir := internal/integration_test/spectest
+fetch_wast := python3 $(spectest_base_dir)/fetch-wast.py
 
 spectest_v1_dir := $(spectest_base_dir)/v1
 spectest_v1_testdata_dir := $(spectest_v1_dir)/testdata
@@ -162,8 +163,7 @@ build.spectest:
 build.spectest.v1: # Note: wabt by default uses >1.0 features, so wast2json flags might drift as they include more. See WebAssembly/wabt#1878
 	@rm -rf $(spectest_v1_testdata_dir)
 	@mkdir -p $(spectest_v1_testdata_dir)
-	@cd $(spectest_v1_testdata_dir) \
-		&& curl -sSL 'https://api.github.com/repos/WebAssembly/spec/contents/test/core?ref=$(spec_version_v1)' | jq -r '.[]| .download_url' | grep -E ".wast" | xargs -Iurl curl -sJL url -O
+	@$(fetch_wast) WebAssembly/spec $(spec_version_v1) $(spectest_v1_testdata_dir) test/core
 	@cd $(spectest_v1_testdata_dir) && for f in `find . -name '*.wast'`; do \
 		perl -pi -e 's/\(assert_return_canonical_nan\s(\(invoke\s"f32.demote_f64"\s\((f[0-9]{2})\.const\s[a-z0-9.+:-]+\)\))\)/\(assert_return $$1 \(f32.const nan:canonical\)\)/g' $$f; \
 		perl -pi -e 's/\(assert_return_arithmetic_nan\s(\(invoke\s"f32.demote_f64"\s\((f[0-9]{2})\.const\s[a-z0-9.+:-]+\)\))\)/\(assert_return $$1 \(f32.const nan:arithmetic\)\)/g' $$f; \
@@ -184,18 +184,17 @@ build.spectest.v1: # Note: wabt by default uses >1.0 features, so wast2json flag
 			--disable-reference-types \
 			--debug-names $$f; \
 	done
+	@cd $(spectest_v1_testdata_dir) && set -- *.json; test -s "$$1" || { echo "No generated JSON in $(spectest_v1_testdata_dir)" >&2; exit 1; }
 
 .PHONY: build.spectest.v2
 build.spectest.v2: # Note: SIMD cases are placed in the "simd" subdirectory.
 	@rm -rf $(spectest_v2_testdata_dir)
 	@mkdir -p $(spectest_v2_testdata_dir)
-	@cd $(spectest_v2_testdata_dir) \
-		&& curl -sSL 'https://api.github.com/repos/WebAssembly/spec/contents/test/core?ref=$(spec_version_v2)' | jq -r '.[]| .download_url' | grep -E ".wast" | xargs -Iurl curl -sJL url -O
-	@cd $(spectest_v2_testdata_dir) \
-		&& curl -sSL 'https://api.github.com/repos/WebAssembly/spec/contents/test/core/simd?ref=$(spec_version_v2)' | jq -r '.[]| .download_url' | grep -E ".wast" | xargs -Iurl curl -sJL url -O
+	@$(fetch_wast) WebAssembly/spec $(spec_version_v2) $(spectest_v2_testdata_dir) test/core test/core/simd
 	@cd $(spectest_v2_testdata_dir) && for f in `find . -name '*.wast'`; do \
 		wast2json --debug-names --no-check $$f || true; \
 	done # Ignore the error here as some tests (e.g. comments.wast right now) are not supported by wast2json yet.
+	@cd $(spectest_v2_testdata_dir) && set -- *.json; test -s "$$1" || { echo "No generated JSON in $(spectest_v2_testdata_dir)" >&2; exit 1; }
 
 # Note: We currently cannot build the "threads" subdirectory that spawns threads due to missing support in wast2json.
 # https://github.com/WebAssembly/wabt/issues/2348#issuecomment-1878003959
@@ -203,11 +202,11 @@ build.spectest.v2: # Note: SIMD cases are placed in the "simd" subdirectory.
 build.spectest.threads:
 	@rm -rf $(spectest_threads_testdata_dir)
 	@mkdir -p $(spectest_threads_testdata_dir)
-	@cd $(spectest_threads_testdata_dir) \
-		&& curl -sSL 'https://api.github.com/repos/WebAssembly/threads/contents/test/core/threads?ref=$(spec_version_threads)' | jq -r '.[]| .download_url' | grep -E "/atomic.wast" | xargs -Iurl curl -sJL url -O
+	@$(fetch_wast) WebAssembly/threads $(spec_version_threads) $(spectest_threads_testdata_dir) test/core/threads/atomic.wast
 	@cd $(spectest_threads_testdata_dir) && for f in `find . -name '*.wast'`; do \
 		wast2json --enable-threads --debug-names $$f; \
 	done
+	@cd $(spectest_threads_testdata_dir) && set -- *.json; test -s "$$1" || { echo "No generated JSON in $(spectest_threads_testdata_dir)" >&2; exit 1; }
 
 .PHONY: build.spectest.extended_const
 build.spectest.extended_const:
@@ -219,34 +218,31 @@ build.spectest.extended_const:
 build.spectest.tail_call:
 	@rm -rf $(spectest_tail_call_testdata_dir)
 	@mkdir -p $(spectest_tail_call_testdata_dir)
-	@cd $(spectest_tail_call_testdata_dir) \
-		&& curl -sSL 'https://api.github.com/repos/WebAssembly/testsuite/contents/proposals/tail-call?ref=$(spec_version_tail_call)' | jq -r '.[]| .download_url' | grep -E ".wast" | xargs -Iurl curl -sJL url -O
+	@$(fetch_wast) WebAssembly/testsuite $(spec_version_tail_call) $(spectest_tail_call_testdata_dir) proposals/tail-call
 	@cd $(spectest_tail_call_testdata_dir) && for f in `find . -name '*.wast'`; do \
 		wast2json --enable-tail-call --debug-names $$f; \
 	done
+	@cd $(spectest_tail_call_testdata_dir) && set -- *.json; test -s "$$1" || { echo "No generated JSON in $(spectest_tail_call_testdata_dir)" >&2; exit 1; }
 
 .PHONY: build.spectest.exception_handling
 build.spectest.exception_handling:
 	@rm -rf $(spectest_exception_handling_testdata_dir)
 	@mkdir -p $(spectest_exception_handling_testdata_dir)
-	@cd $(spectest_exception_handling_testdata_dir) \
-		&& curl -sSL 'https://api.github.com/repos/WebAssembly/spec/contents/test/core/exceptions?ref=$(spec_version_exception_handling)' \
-		| jq -r '.[]| .download_url' | grep -E ".wast" | xargs -Iurl curl -sJL url -O
+	@$(fetch_wast) WebAssembly/spec $(spec_version_exception_handling) $(spectest_exception_handling_testdata_dir) test/core/exceptions
 	@cd $(spectest_exception_handling_testdata_dir) && for f in `find . -name '*.wast'`; do \
 		wasm-tools json-from-wast --wasm-dir . -o $$(basename $$f .wast).json $$f || true; \
 	done
+	@cd $(spectest_exception_handling_testdata_dir) && set -- *.json; test -s "$$1" || { echo "No generated JSON in $(spectest_exception_handling_testdata_dir)" >&2; exit 1; }
 
 .PHONY: build.spectest.typed_function_references
 build.spectest.typed_function_references:
 	@rm -rf $(spectest_typed_function_references_testdata_dir)
 	@mkdir -p $(spectest_typed_function_references_testdata_dir)
-	@cd $(spectest_typed_function_references_testdata_dir) \
-		&& for f in $(typed_function_references_wast_files); do \
-			curl -sJL "https://raw.githubusercontent.com/WebAssembly/function-references/$(spec_version_typed_function_references)/test/core/$$f" -O; \
-		done
+	@$(fetch_wast) WebAssembly/function-references $(spec_version_typed_function_references) $(spectest_typed_function_references_testdata_dir) $(addprefix test/core/,$(typed_function_references_wast_files))
 	@cd $(spectest_typed_function_references_testdata_dir) && for f in `find . -name '*.wast'`; do \
 		wasm-tools json-from-wast --wasm-dir . -o $$(basename $$f .wast).json $$f || true; \
 	done
+	@cd $(spectest_typed_function_references_testdata_dir) && set -- *.json; test -s "$$1" || { echo "No generated JSON in $(spectest_typed_function_references_testdata_dir)" >&2; exit 1; }
 
 .PHONY: test
 test:
