@@ -12,6 +12,14 @@
   "git-submodules": { "enabled": true },
   "packageRules": [
     {
+      "description": "Keep Beepboop actions on the floating v1 release channel",
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["action"],
+      "matchPackageNames": ["kjanat/beepboop"],
+      "pinDigests": false,
+      "enabled": false
+    },
+    {
       "description": "Batch Go module dependencies separately from compilers and CI tools",
       "matchManagers": ["gomod"],
       "matchDepTypes": ["require", "indirect"],
