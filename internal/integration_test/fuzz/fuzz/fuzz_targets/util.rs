@@ -23,7 +23,9 @@ use nix::sys::signal::{SaFlags, SigAction, SigHandler, SigSet, Signal, sigaction
 use std::ptr::null_mut;
 use wasm_smith::Config;
 
-#[ctor]
+// SAFETY: This runs before main and only allocates the alternate stack and
+// configures POSIX signal handlers. It does not call into Go or libFuzzer.
+#[ctor(unsafe)]
 /// Sets up the separate stack for signal handlers, and sets the SA_ONSTACK flag for signals that are handled by libFuzzer
 ///  https://github.com/llvm/llvm-project/blob/8eff5704829ba5edd28754fd9ec7665b34fde22a/compiler-rt/lib/fuzzer/FuzzerUtilPosix.cpp#L117-L141
 /// in order to ensure that Go's stacks won't get corrupted accidentally.
