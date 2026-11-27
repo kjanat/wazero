@@ -1,8 +1,77 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "forkProcessing": "enabled",
+  "timezone": "Europe/Amsterdam",
+  "schedule": ["* * * * 1"],
+  "updateNotScheduled": false,
+  "minimumReleaseAge": "1 day",
+  "prConcurrentLimit": 3,
+  "prHourlyLimit": 2,
+  "dependencyDashboard": { "enabled": true },
+  "automerge": false,
   "git-submodules": { "enabled": true },
   "packageRules": [
+    {
+      "description": "Batch Go module dependencies separately from compilers and CI tools",
+      "matchManagers": ["gomod"],
+      "matchDepTypes": ["require", "indirect"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Go module dependencies"
+    },
+    {
+      "description": "Batch the Rust dependencies of the fuzz harness",
+      "matchManagers": ["cargo"],
+      "matchFileNames": ["internal/integration_test/fuzz/fuzz/Cargo.toml"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "Rust fuzz harness dependencies"
+    },
+    {
+      "description": "Batch CI action updates without mixing in language versions or the release token action",
+      "matchManagers": ["github-actions"],
+      "matchDepTypes": ["action", "workflow"],
+      "matchDepNames": ["!kjanat/beepboop"],
+      "matchUpdateTypes": ["minor", "patch", "digest", "pinDigest"],
+      "groupName": "GitHub Actions"
+    },
+    {
+      "description": "Batch Go patch toolchain updates across module directives and CI",
+      "matchPackageNames": ["go", "actions/go-versions"],
+      "matchDatasources": ["golang-version", "github-releases"],
+      "matchUpdateTypes": ["patch"],
+      "groupName": "Go toolchain patches"
+    },
+    {
+      "description": "Use the dashboard to opt into majors and toolchain line changes",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "matchPackageNames": ["go", "actions/go-versions", "actions/python-versions"],
+      "matchDatasources": ["golang-version", "github-releases"],
+      "matchUpdateTypes": ["minor"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Keep the supported Go floor under maintainer control",
+      "matchManagers": ["gomod"],
+      "matchDepTypes": ["golang"],
+      "enabled": false
+    },
+    {
+      "description": "Keep local self-references in the fuzz module and version fixture",
+      "matchManagers": ["gomod"],
+      "matchFileNames": [
+        "internal/integration_test/fuzz/go.mod",
+        "internal/version/testdata/go.mod"
+      ],
+      "matchPackageNames": ["github.com/kjanat/wazero"],
+      "enabled": false
+    },
+    {
+      "description": "Update test fixture submodules only when requested",
+      "matchManagers": ["git-submodules"],
+      "dependencyDashboardApproval": true
+    },
     {
       "matchManagers": ["git-submodules"],
       "matchDepNames": ["site/themes/hello-friend"],
