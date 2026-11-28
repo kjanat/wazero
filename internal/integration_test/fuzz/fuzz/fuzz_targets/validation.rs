@@ -1,9 +1,7 @@
 #![no_main]
 
-use arbitrary::Arbitrary;
 use libfuzzer_sys::arbitrary::{Result, Unstructured};
 use libfuzzer_sys::fuzz_target;
-use wasm_smith::Config;
 
 mod util;
 
@@ -16,7 +14,7 @@ fn run(data: &[u8]) -> Result<()> {
     let mut u = Unstructured::new(data);
 
     // Generate the configuration with possibly invalid functions.
-    let mut config = Config::arbitrary(&mut u)?;
+    let mut config = util::fuzz_config(&mut u)?;
     config.threads_enabled = true;
     config.tail_call_enabled = true;
     config.allow_invalid_funcs = true;

@@ -2,3 +2,6 @@ target/
 corpus/
 artifacts/
 coverage
+
+# Cargo uses the parent workspace lockfile.
+/Cargo.lock

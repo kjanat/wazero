@@ -85,6 +85,21 @@ fn set_signal_stack() {
     }
 }
 
+pub fn fuzz_config(u: &mut Unstructured<'_>) -> arbitrary::Result<Config> {
+    let mut config = Config::arbitrary(u)?;
+
+    // Keep the feature set exercised before the wasm-smith upgrade. Opting in
+    // to the newer generator features needs a separate harness change.
+    config.compact_imports_enabled = false;
+    config.exceptions_enabled = false;
+    config.extended_const_enabled = false;
+    config.gc_enabled = false;
+    config.memory64_enabled = false;
+    config.relaxed_simd_enabled = false;
+    config.disallow_traps = false;
+    Ok(config)
+}
+
 #[allow(dead_code)]
 pub fn run_nodiff(
     data: &[u8],
@@ -94,16 +109,13 @@ pub fn run_nodiff(
     // Create the random source.
     let mut u = Unstructured::new(data);
 
-    // Generate the configuration.
-    let mut config = Config::arbitrary(&mut u)?;
+    let mut config = fuzz_config(&mut u)?;
 
-    // 64-bit memory won't be supported by wazero.
-    config.memory64_enabled = false;
     // For exactly one memory exists.
     config.max_memories = 1;
     config.min_memories = 1;
     // If we don't set the limit, we will soon reach the OOM and the fuzzing will be killed by OS.
-    config.max_memory32_pages = 10;
+    config.max_memory32_bytes = 10 * 64 * 1024; // Ten standard Wasm pages.
     config.memory_max_size_required = true;
     // Don't test too large tables.
     config.max_tables = 2;
@@ -128,12 +140,9 @@ pub fn run_nodiff(
 
     if check_logging {
         config.reference_types_enabled = false;
-    } else {
-        // Enable tail calls, which is disabled by default,
-        // but skip when check_logging: indentation might be different due to different
-        // stack call depths in the interpreter vs. compiler version.
-        config.tail_call_enabled = true;
     }
+    // The interpreter and compiler can log different stack depths for tail calls.
+    config.tail_call_enabled = !check_logging;
 
     // Generate the random module via wasm-smith.
     let mut module = wasm_smith::Module::new(config.clone(), &mut u)?;

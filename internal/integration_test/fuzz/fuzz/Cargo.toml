@@ -33,9 +33,9 @@ path = "fuzz_targets/logging_no_diff.rs"
 test = false
 
 [dependencies]
-arbitrary = "1.1.0"
+arbitrary = "1.5.0"
 ctor = "1.0.0"
 libc = "0.2"
 libfuzzer-sys = "0.4.7"
-nix = { version = "0.28.0", features = ["signal"] }
-wasm-smith = "0.201.0"
+nix = { version = "0.32.0", features = ["signal"] }
+wasm-smith = "0.263.0"
